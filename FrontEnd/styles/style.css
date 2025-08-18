@@ -1,0 +1,127 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1B2A49, #0077B6); /* Navy → Ocean Blue */
+}
+
+
+.container {
+    background: #fff;
+    width: 400px;
+    padding: 35px 45px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s ease;
+}
+.container:hover {
+    transform: translateY(-3px);
+}
+
+
+.logo {
+    text-align: center;
+    margin-bottom: 25px;
+}
+.logo img {
+    width: 85px;
+    height: 85px;
+}
+.logo h2 {
+    margin-top: 12px;
+    color: #1B2A49; /* Navy */
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+
+form {
+    display: none;
+    flex-direction: column;
+    animation: fadeIn 0.4s ease-in-out;
+}
+form.active {
+    display: flex;
+}
+form h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #0077B6; /* Ocean Blue */
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+.input-group i {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #0077B6; /* Ocean */
+    font-size: 1.1rem;
+}
+.input-group input {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    outline: none;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+.input-group input:focus {
+    border-color: #2EC4B6; /* Sea Green */
+    box-shadow: 0 0 8px rgba(46, 196, 182, 0.3);
+}
+
+
+button {
+    padding: 12px;
+    background: #0077B6; /* Ocean Blue */
+    border: none;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+button:hover {
+    background: #2EC4B6; /* Sea Green */
+}
+
+
+form p {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 0.9rem;
+    color: #6C757D; /* Neutral Gray */
+}
+form p span {
+    color: #FF6B35; /* Coral Orange */
+    cursor: pointer;
+    font-weight: bold;
+}
+form p span:hover {
+    text-decoration: underline;
+}
+
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
