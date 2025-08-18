@@ -11,15 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class User {
+public class Ship {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-    private String username;
-    private String password;
+    private Double capacity;
+    private String location;   //country
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private ShipType shipType;
+
+
 }
