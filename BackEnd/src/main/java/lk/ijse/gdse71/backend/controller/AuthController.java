@@ -1,6 +1,7 @@
 package lk.ijse.gdse71.backend.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lk.ijse.gdse71.backend.dto.AuthDTO;
 import lk.ijse.gdse71.backend.dto.AuthResponseDTO;
 import lk.ijse.gdse71.backend.dto.SignupDTO;
@@ -20,13 +21,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<APIResponse> signup(@RequestBody SignupDTO signupDTO){
+    public ResponseEntity<APIResponse> signup(@Valid @RequestBody SignupDTO signupDTO){
         authService.signup(signupDTO);
         return ResponseEntity.ok(new APIResponse(200,"User Signup Successfully!" , signupDTO));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<APIResponse> login(@RequestBody AuthDTO authDTO, HttpServletResponse response) {
+    public ResponseEntity<APIResponse> login(@Valid @RequestBody AuthDTO authDTO, HttpServletResponse response) {
         AuthResponseDTO authResponseDTO = authService.authenticate(authDTO);
 
         //create secure cookie

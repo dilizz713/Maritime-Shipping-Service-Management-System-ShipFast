@@ -43,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDTO authenticate(AuthDTO authDTO) {
-        User user = userRepository.findByUsername(authDTO.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User user = userRepository.findByUsername(authDTO.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User not found! Please signup first"));
         if(!passwordEncoder.matches(
                 authDTO.getPassword(),
                 user.getPassword())){
