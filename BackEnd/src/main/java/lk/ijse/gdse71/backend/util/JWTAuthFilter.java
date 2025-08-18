@@ -29,11 +29,13 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
         if (jwtToken != null) {
             try {
-                username = jwtUtil.extractUserName(jwtToken);
+                 username = jwtUtil.extractUserName(jwtToken);
             } catch (Exception e) {
                 logger.warn("JWT extraction failed: " + e.getMessage());
             }
         }
+
+        System.out.println("👉 Extracted username from JWT: " + username);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -51,6 +53,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+
     }
 
     private String extractToken(HttpServletRequest request) {

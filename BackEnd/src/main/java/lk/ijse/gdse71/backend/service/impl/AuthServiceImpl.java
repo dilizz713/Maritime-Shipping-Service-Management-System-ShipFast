@@ -5,6 +5,8 @@ import lk.ijse.gdse71.backend.dto.AuthResponseDTO;
 import lk.ijse.gdse71.backend.dto.SignupDTO;
 import lk.ijse.gdse71.backend.entity.Role;
 import lk.ijse.gdse71.backend.entity.User;
+import lk.ijse.gdse71.backend.exception.ResourceAlreadyExists;
+import lk.ijse.gdse71.backend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.backend.repo.UserRepository;
 import lk.ijse.gdse71.backend.service.AuthService;
 import lk.ijse.gdse71.backend.util.JWTUtil;
@@ -23,22 +25,25 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String signup(SignupDTO signupDTO) {
-        if(userRepository.findByUsername(signupDTO.getUsername()).isPresent()){
-            throw new RuntimeException("Username is already exists");
+        if(userRepository.findByUsernameAndName(
+                signupDTO.getUsername(),
+                signupDTO.getName()
+                ).isPresent()){
+            throw new ResourceAlreadyExists("This User is already exists");
         }
         User user = User.builder()
                 .name(signupDTO.getName())
                 .username(signupDTO.getUsername())
                 .password(passwordEncoder.encode(signupDTO.getPassword()))
-                .role(Role.valueOf(signupDTO.getRole()))
+                .role(Role.CUSTOMER)
                 .build();
         userRepository.save(user);
-        return "User registered successfully";
+        return "User signup successfully";
     }
 
     @Override
     public AuthResponseDTO authenticate(AuthDTO authDTO) {
-        User user = userRepository.findByUsername(authDTO.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(authDTO.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         if(!passwordEncoder.matches(
                 authDTO.getPassword(),
                 user.getPassword())){

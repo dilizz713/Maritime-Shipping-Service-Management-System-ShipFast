@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.backend.config;
 
+import lk.ijse.gdse71.backend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.backend.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +30,7 @@ public class ApplicationConfig {
                         user.getPassword(),
                         List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
                 )).orElseThrow(
-                        ()->new RuntimeException("User not found")
+                        ()->new ResourceNotFoundException("User not found")
                 );
     }
 }

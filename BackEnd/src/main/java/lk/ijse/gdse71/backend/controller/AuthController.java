@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class AuthController {
     private final AuthService authService;
-    private final UserRepository userRepository;
 
     @PostMapping("/signup")
     public ResponseEntity<APIResponse> signup(@RequestBody SignupDTO signupDTO){
