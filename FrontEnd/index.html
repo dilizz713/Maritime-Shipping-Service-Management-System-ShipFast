@@ -7,84 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        #ship-logo{
-            border-radius: 50%;
-
-        }
-        .navbar {
-            background: linear-gradient(90deg, #004080, #0077b6);
-        }
-        .navbar-brand, .nav-link {
-            color: #fff !important;
-            font-weight: 500;
-        }
-        .nav-link:hover {
-            color: #ffd700 !important;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: bolder;
-            color: #004080;
-            letter-spacing: 0.5px;
-        }
-
-        .section-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            color: #003366;
-            text-transform: uppercase;
-        }
-
-        .card-text {
-            font-size: 0.95rem;
-            color: #555;
-            line-height: 1.5;
-        }
-
-        .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), /* dark overlay */
-            url('assets/background.png') no-repeat center center;
-            background-size: cover;
-            height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
-        }
-        .hero h1 {
-            font-size: 3rem;
-            font-weight: bold;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
-        }
-        .hero p {
-            font-size: 1.25rem;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
-        }
-        .card-img-top {
-            height: 250px;
-            width: 100%;
-            object-fit: cover;
-        }
-
-        footer {
-            background-color: #002244;
-            color: #fff;
-            padding: 40px 0;
-        }
-        footer a {
-            color: #ffd700;
-            text-decoration: none;
-        }
-        footer a:hover {
-            text-decoration: underline;
-        }
-    </style>
-
+    <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
 <!-- Navbar -->
@@ -229,68 +152,299 @@
 
 
 <!-- Profile Section -->
-<section class="py-5 bg-light" id="profile">
+<section id="profile" class="modern-profile">
     <div class="container">
         <h2 class="text-center mb-4 section-title">OUR PROFILE</h2>
-        <p class="lead text-center">With over 20 years in the maritime industry, we specialize in providing world-class shipping solutions. Our commitment is to safety, sustainability, and customer satisfaction.</p>
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-7">
+                <span class="mp-eyebrow reveal"><i class="bi bi-compass"></i> Our Company Profile</span>
+                <h2 class="mp-title reveal">ShipFast Pvt Ltd — Setting a higher standard in maritime services</h2>
+                <p class="mp-sub reveal">
+                    Founded in 2018 in Colombo, Sri Lanka, <strong>ShipFast Pvt Ltd</strong> delivers swift, responsive, and cost-effective
+                    ship agency and maritime services for cargo, cruise, tanker, and bulk vessels calling Sri Lankan waters.
+                    We combine proven project management practices with a global supplier network to ensure seamless coordination,
+                    reduced turnaround times, and measurable savings — <em>24/7/365</em>.
+                </p>
+
+                <div class="divider reveal"></div>
+
+                <ul class="mp-list list-unstyled mt-3 reveal">
+                    <li><i class="bi bi-check-circle-fill"></i>End-to-end agency support: port formalities, husbandry, and logistics</li>
+                    <li><i class="bi bi-check-circle-fill"></i>Round-the-clock ship supply & spares logistics with rapid response</li>
+                    <li><i class="bi bi-check-circle-fill"></i>Trusted, long-term partnerships focused on reliability and value</li>
+                </ul>
+
+                <!-- Chips -->
+                <div class="d-flex flex-wrap gap-2 mt-3 reveal">
+                    <span class="chip"><i class="bi bi-passport"></i>Port Clearance</span>
+                    <span class="chip"><i class="bi bi-people"></i>Crew Services</span>
+                    <span class="chip"><i class="bi bi-box-seam"></i>Ship Spares</span>
+                    <span class="chip"><i class="bi bi-droplet-half"></i>Marine Lubricants</span>
+                    <span class="chip"><i class="bi bi-fuel-pump"></i>Bunkering</span>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="mp-card glass reveal">
+                    <div class="d-grid gap-2">
+                        <div class="stat">
+                            <i class="bi bi-clock-history fs-4"></i>
+                            <div>
+                                <div class="num" data-count="24">0</div>
+                                <div class="label">Hours · Always On</div>
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <i class="bi bi-globe2 fs-4"></i>
+                            <div>
+                                <div class="num" data-count="2018">0</div>
+                                <div class="label">Established</div>
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <i class="bi bi-ship fs-4"></i>
+                            <div>
+                                <div class="num" data-count="350">0</div>
+                                <div class="label">+ Port Calls Supported*</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <h6 class="fw-bold mb-2">What We Offer</h6>
+                    <div class="row g-2">
+                        <div class="col-12 d-flex align-items-center gap-2">
+                            <i class="bi bi-life-preserver"></i> Ship agency & husbandry for all vessel types
+                        </div>
+                        <div class="col-12 d-flex align-items-center gap-2">
+                            <i class="bi bi-box"></i> Clearing & forwarding of ship spares and stores
+                        </div>
+                        <div class="col-12 d-flex align-items-center gap-2">
+                            <i class="bi bi-people"></i> Crew transfers, immigration & travel coordination
+                        </div>
+                        <div class="col-12 d-flex align-items-center gap-2">
+                            <i class="bi bi-droplet"></i> Fresh water, provisions, lube oils & medical attendance
+                        </div>
+                        <div class="col-12 d-flex align-items-center gap-2">
+                            <i class="bi bi-recycle"></i> Garbage, slops & sludge removal
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
 </section>
+
+<section class="py-5 bg-light" id="ports">
+    <div class="container">
+        <h2 class="text-center mb-5 section-title">Sri Lanka Ports</h2>
+        <div class="row g-4">
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow h-100 port-card">
+                    <img src="assets/colombo-port.png" class="card-img-top" alt="Port of Colombo">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Port of Colombo</h5>
+                        <p class="card-text">Sri Lanka's largest and busiest port, a major hub for international shipping and trade.</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow h-100 port-card">
+                    <img src="assets/galle-port.png" class="card-img-top" alt="Port of Galle">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Port of Galle</h5>
+                        <p class="card-text">A historic harbor known for tourism and cargo handling, blending history with modern operations.</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow h-100 port-card">
+                    <img src="assets/trinco-port.png" class="card-img-top" alt="Port of Trincomalee">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Port of Trincomalee</h5>
+                        <p class="card-text">One of the world's largest natural harbors, vital for both commercial shipping and naval operations.</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow h-100 port-card">
+                    <img src="assets/hambanthota-port.jpg" class="card-img-top" alt="Port of Hambantota">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Port of Hambantota</h5>
+                        <p class="card-text">A modern deep-water port focused on container and bulk cargo, supporting southern Sri Lanka’s economy.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
 
 <!-- Contact Section -->
 <section class="py-5" id="contact">
     <div class="container">
-        <h2 class="text-center mb-4 section-title">CONTACT US</h2>
+        <h2 class="text-center mb-5 section-title">Request A Quotation</h2>
         <div class="row justify-content-center">
-            <div class="col-md-6">
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label">Name</label>
-                        <input type="text" class="form-control" placeholder="Your Name">
+            <div class="col-lg-8">
+
+                <form class="quotation-form">
+                    <div class="row g-3">
+
+                        <!-- Company Name -->
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="companyName" placeholder="Company Name" required>
+                                <label for="companyName">Company Name</label>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="email" class="form-control" id="email" placeholder="Email" required>
+                                <label for="email">Email</label>
+                            </div>
+                        </div>
+
+                        <!-- Select Harbour -->
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <select class="form-select" id="harbour" required>
+                                    <option selected disabled value=""></option>
+                                    <option value="colombo">Colombo</option>
+                                    <option value="galle">Galle</option>
+                                    <option value="trincomalee">Trincomalee</option>
+                                    <option value="hambantota">Hambantota</option>
+                                </select>
+                                <label for="harbour">Select Port</label>
+                            </div>
+                        </div>
+
+                        <!-- Select Position -->
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <select class="form-select" id="position" required>
+                                    <option selected disabled value=""></option>
+                                    <option value="captain">OPL(Off Port Limit)</option>
+                                    <option value="crew">Anchorage</option>
+                                    <option value="agent">Alongside Berth</option>
+                                </select>
+                                <label for="position">Select Position</label>
+                            </div>
+                        </div>
+
+                        <!-- Select Service -->
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <select class="form-select" id="service" required>
+                                    <option selected disabled value=""></option>
+                                    <option value="ship_agency">Ship Agency/ Husbandry Services</option>
+                                    <option value="provision_supply">Provision Supply</option>
+                                    <option value="crew_service">Crew Services</option>
+                                    <option value="ship_stores">Supply of Ship Stores</option>
+                                    <option value="ship_spares">Clearing and Forwarding of Ship Spares / Haulage of Spares</option>
+                                    <option value="underwater">Underwater Services (Hull Inspection and Cleaning)</option>
+                                    <option value="cargo_tanks">Cargo Tanks Cleaning</option>
+                                    <option value="marine_lubricants">Marine Lubricants</option>
+                                    <option value="bunkering">Bunkering</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <label for="service">Select Service</label>
+                            </div>
+                        </div>
+
+                        <!-- Message -->
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <textarea class="form-control" placeholder="Message" id="message" style="height: 120px;" required></textarea>
+                                <label for="message">Message</label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary btn-lg mt-3">Submit Request</button>
+                        </div>
+
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" placeholder="you@example.com">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Message</label>
-                        <textarea class="form-control" rows="4" placeholder="Your message"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Send Message</button>
                 </form>
+
             </div>
         </div>
     </div>
 </section>
 
 <!-- Footer -->
-<footer>
+<footer class="footer text-light pt-5 pb-4">
     <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <h5>About SeaTrans</h5>
-                <p>We are a trusted maritime shipping company providing secure and timely logistics solutions worldwide.</p>
+        <div class="row gy-4">
+
+            <!-- Company Info -->
+            <div class="col-lg-4 col-md-6">
+                <h5 class="fw-bold mb-3">ShipFast Pvt Ltd</h5>
+                <p class="small">
+                    Your trusted shipping agency partner in Sri Lanka, providing efficient and reliable maritime services to global clients.
+                </p>
             </div>
-            <div class="col-md-4">
-                <h5>Quick Links</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#services">Services</a></li>
-                    <li><a href="#profile">Our Profile</a></li>
-                    <li><a href="#contact">Contact</a></li>
+
+            <!-- Contact Info -->
+            <div class="col-lg-4 col-md-6">
+                <h5 class="fw-bold mb-3">Contact Us</h5>
+                <ul class="list-unstyled small">
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i>No. 123, Marine Drive, Colombo, Sri Lanka</li>
+                    <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i>+94 11 234 5678</li>
+                    <li class="mb-2"><i class="bi bi-headset me-2"></i>+94 77 123 4567</li>
+                    <li class="mb-2"><i class="bi bi-envelope-fill me-2"></i>info@shipfast.com</li>
                 </ul>
             </div>
-            <div class="col-md-4">
-                <h5>Contact</h5>
-                <p>Email: info@seatrans.com<br>Phone: +1 234 567 890</p>
+
+            <!-- Quick Links -->
+            <div class="col-lg-4 col-md-12">
+                <h5 class="fw-bold mb-3">Quick Links</h5>
+                <ul class="list-unstyled small">
+                    <li><a href="#home" class="footer-link"><i class="bi bi-chevron-right me-2"></i>Home</a></li>
+                    <li><a href="#about" class="footer-link"><i class="bi bi-chevron-right me-2"></i>About Us</a></li>
+                    <li><a href="#services" class="footer-link"><i class="bi bi-chevron-right me-2"></i>Services</a></li>
+                    <li><a href="#ports" class="footer-link"><i class="bi bi-chevron-right me-2"></i>Ports</a></li>
+                    <li><a href="#contact" class="footer-link"><i class="bi bi-chevron-right me-2"></i>Contact</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <hr class="my-4 border-light">
+
+        <div class="row align-items-center">
+            <!-- Copyright -->
+            <div class="col-md-6 text-center text-md-start small">
+                © <span id="year"></span> ShipFast Pvt Ltd. All Rights Reserved.
+            </div>
+
+            <!-- Social Links -->
+            <div class="col-md-6 text-center text-md-end">
+                <div class="d-flex justify-content-center justify-content-md-end gap-3">
+                    <a href="#" class="social-link"><i class="bi bi-whatsapp"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                </div>
             </div>
         </div>
-        <hr class="border-light">
-        <p class="text-center mb-0">&copy; 2025 SeaTrans Shipping Services. All Rights Reserved.</p>
     </div>
 </footer>
 
 <script src="../lib/jquery-3.7.1.min.js"></script>
-<script src="../js/main.js"></script>
+<script src="js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
