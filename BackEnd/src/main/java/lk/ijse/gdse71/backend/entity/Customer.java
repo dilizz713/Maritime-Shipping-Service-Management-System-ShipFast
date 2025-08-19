@@ -22,4 +22,8 @@ public class Customer {
 
     @Enumerated(EnumType.STRING)
     private CustomerType type;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
