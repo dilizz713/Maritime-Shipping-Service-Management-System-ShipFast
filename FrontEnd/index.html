@@ -6,13 +6,221 @@
     <title>Shipping Company | Sign In / Sign Up</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        #ship-logo{
+            border-radius: 50%;
 
+        }
+        .navbar {
+            background: linear-gradient(90deg, #004080, #0077b6);
+        }
+        .navbar-brand, .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+        }
+        .nav-link:hover {
+            color: #ffd700 !important;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), /* dark overlay */
+            url('assets/background.png') no-repeat center center;
+            background-size: cover;
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+        }
+        .hero p {
+            font-size: 1.25rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+        }
+
+        footer {
+            background-color: #002244;
+            color: #fff;
+            padding: 40px 0;
+        }
+        footer a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 
 </head>
 <body>
-<div class="container p-5">
-    hi
-</div>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="assets/ship%20logo.png" alt="ShipFast Logo" height="50" class="me-2" id="ship-logo">
+            <span class="fw-bold fs-4">ShipFast</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon bg-light rounded"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="#profile">Our Profile</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero" id="home">
+    <div class="container">
+        <h1>Reliable Maritime Shipping Solutions</h1>
+        <p>Connecting ports. Delivering trust. Sailing with excellence.</p>
+        <a href="#services" class="btn btn-warning btn-lg mt-3">Explore Services</a>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="py-5" id="services">
+    <div class="container">
+        <h2 class="text-center mb-4">Our Services</h2>
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card shadow h-100 text-center">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&h=300" class="card-img-top" alt="Global Shipping">
+                    <div class="card-body">
+                        <h5 class="card-title mt-2">Global Shipping</h5>
+                        <p class="card-text">Efficient sea freight services connecting major ports worldwide.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow h-100 text-center">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&h=300" class="card-img-top" alt="Global Shipping">
+                    <div class="card-body">
+                        <h5 class="card-title mt-2">Global Shipping</h5>
+                        <p class="card-text">Efficient sea freight services connecting major ports worldwide.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow h-100 text-center">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&h=300" class="card-img-top" alt="Global Shipping">
+                    <div class="card-body">
+                        <h5 class="card-title mt-2">Global Shipping</h5>
+                        <p class="card-text">Efficient sea freight services connecting major ports worldwide.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow h-100 text-center">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&h=300" class="card-img-top" alt="Global Shipping">
+                    <div class="card-body">
+                        <h5 class="card-title mt-2">Global Shipping</h5>
+                        <p class="card-text">Efficient sea freight services connecting major ports worldwide.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow h-100 text-center">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&h=300" class="card-img-top" alt="Global Shipping">
+                    <div class="card-body">
+                        <h5 class="card-title mt-2">Global Shipping</h5>
+                        <p class="card-text">Efficient sea freight services connecting major ports worldwide.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow h-100 text-center">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&h=300" class="card-img-top" alt="Global Shipping">
+                    <div class="card-body">
+                        <h5 class="card-title mt-2">Global Shipping</h5>
+                        <p class="card-text">Efficient sea freight services connecting major ports worldwide.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- Profile Section -->
+<section class="py-5 bg-light" id="profile">
+    <div class="container">
+        <h2 class="text-center mb-4">Our Profile</h2>
+        <p class="lead text-center">With over 20 years in the maritime industry, we specialize in providing world-class shipping solutions. Our commitment is to safety, sustainability, and customer satisfaction.</p>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="py-5" id="contact">
+    <div class="container">
+        <h2 class="text-center mb-4">Contact Us</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" placeholder="Your Name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" placeholder="you@example.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" rows="4" placeholder="Your message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>About SeaTrans</h5>
+                <p>We are a trusted maritime shipping company providing secure and timely logistics solutions worldwide.</p>
+            </div>
+            <div class="col-md-4">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#profile">Our Profile</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5>Contact</h5>
+                <p>Email: info@seatrans.com<br>Phone: +1 234 567 890</p>
+            </div>
+        </div>
+        <hr class="border-light">
+        <p class="text-center mb-0">&copy; 2025 SeaTrans Shipping Services. All Rights Reserved.</p>
+    </div>
+</footer>
+
 <script src="../lib/jquery-3.7.1.min.js"></script>
 <script src="../js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
