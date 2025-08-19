@@ -28,7 +28,19 @@ $(document).ready(function () {
                 window.location.href = "../index.html";
             },
             error: function (xhr) {
-                let msg = xhr.responseJSON ? xhr.responseJSON.message : "Login failed";
+                let msg = "Login failed. Please try again.";
+
+                if (xhr.status === 404) {
+                    msg = "User not found. Please signup first.";
+
+                    $("#signin-form")[0].reset();
+
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                } else if (xhr.status === 500) {
+                    msg = "Server error, please try later.";
+                }
+
                 alert(msg);
             }
         });
@@ -53,7 +65,15 @@ $(document).ready(function () {
                 $("#show-signin").click();
             },
             error: function (xhr) {
-                let msg = xhr.responseJSON ? xhr.responseJSON.message : "Signup failed";
+
+                let msg = "Signup failed. Please try again.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                } else if (xhr.status === 409) {
+                    msg = "This user already exists!";
+                } else if (xhr.status === 500) {
+                    msg = "Server error, please try later.";
+                }
                 alert(msg);
             }
         });
