@@ -298,8 +298,31 @@
     transform: translateY(-3px);
 }
 
+.navbar .btn {
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
 
+.navbar .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
 
+.navbar .btn i {
+    transition: transform 0.3s ease;
+}
+
+.navbar .btn:hover i {
+    transform: rotate(10deg) scale(1.1);
+}
+.signin-btn{
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 0 10px;
+
+}
 
 
 
