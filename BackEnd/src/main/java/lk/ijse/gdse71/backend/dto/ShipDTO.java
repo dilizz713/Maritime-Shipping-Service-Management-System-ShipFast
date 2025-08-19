@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ShipDTO {
+    private Long id;
     private String name;
     private Double capacity;
     private String location;   //country

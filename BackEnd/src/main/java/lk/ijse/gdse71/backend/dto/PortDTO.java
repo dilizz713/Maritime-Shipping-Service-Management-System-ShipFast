@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class PortDTO {
+    private Long id;
     private String portName;
     private String location;
 }

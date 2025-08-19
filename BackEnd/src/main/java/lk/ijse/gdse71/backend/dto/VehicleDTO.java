@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VehicleDTO {
+    private Long id;
     private String vehicleType;
     private Double capacity;
     private Boolean availability;
