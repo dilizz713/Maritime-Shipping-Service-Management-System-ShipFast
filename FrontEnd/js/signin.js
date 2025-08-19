@@ -24,8 +24,17 @@ $(document).ready(function () {
             data: JSON.stringify({ username, password }),
             xhrFields: { withCredentials: true },
             success: function (res) {
-                alert(`Welcome ${res.data.userName} (${res.data.role})`);
-                window.location.href = "../index.html";
+                const role = res.data.role;
+                alert(`Welcome ${res.data.userName} (${role})`);
+
+                if (role === "ADMIN" || role === "EMPLOYEE") {
+                    window.location.href = "../html/dashboard.html";
+                } else if (role === "CUSTOMER") {
+                    window.location.href = "../index.html";
+                } else {
+                    alert("Unauthorized role! Access denied.");
+                    $("#signin-form")[0].reset();
+                }
             },
             error: function (xhr) {
                 let msg = "Login failed. Please try again.";
