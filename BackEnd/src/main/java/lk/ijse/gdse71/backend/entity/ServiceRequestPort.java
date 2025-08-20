@@ -6,21 +6,26 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Date;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class Port {
+public class ServiceRequestPort {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String portName;
-    private String location;
+    private String specialInstructions;
+    private Date scheduleDate;
 
-    @OneToMany(mappedBy = "port", cascade = CascadeType.ALL)
-    private List<ServiceRequestPort> serviceRequestPorts;
+    @ManyToOne
+    @JoinColumn(name = "port_id")
+    private Port port;
+
+    @ManyToOne
+    @JoinColumn(name = "request_id")
+    private ServiceRequest serviceRequest;
 }
