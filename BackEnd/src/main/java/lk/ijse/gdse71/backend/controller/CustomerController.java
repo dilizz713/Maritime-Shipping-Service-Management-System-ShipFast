@@ -4,6 +4,7 @@ import lk.ijse.gdse71.backend.dto.CustomerDTO;
 import lk.ijse.gdse71.backend.service.CustomerService;
 import lk.ijse.gdse71.backend.util.APIResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @RequestMapping("api/v1/customer")
 @RequiredArgsConstructor
 @CrossOrigin
+@Slf4j
 public class CustomerController {
     private final CustomerService customerService;
 

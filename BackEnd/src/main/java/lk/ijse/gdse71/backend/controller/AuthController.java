@@ -9,6 +9,7 @@ import lk.ijse.gdse71.backend.repo.UserRepository;
 import lk.ijse.gdse71.backend.service.AuthService;
 import lk.ijse.gdse71.backend.util.APIResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @CrossOrigin
+@Slf4j
 public class AuthController {
     private final AuthService authService;
 
