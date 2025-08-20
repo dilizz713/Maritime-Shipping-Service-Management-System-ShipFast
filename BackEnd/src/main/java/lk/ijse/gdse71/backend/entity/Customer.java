@@ -16,14 +16,16 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String companyName;
+    private String contactPerson;
+    private String address;
     private String mobileNumber;
     private String email;
 
     @Enumerated(EnumType.STRING)
-    private CustomerType type;
+    private CustomerType customerType;
 
-    @OneToOne
+   /* @OneToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user;*/
 }

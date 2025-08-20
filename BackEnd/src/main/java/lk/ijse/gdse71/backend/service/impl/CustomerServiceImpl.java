@@ -23,7 +23,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void save(CustomerDTO customerDTO) {
-        Customer customer = customerRepository.findByEmail(customerDTO.getEmail());
+        Customer customer = customerRepository.findByEmailAndCompanyName(customerDTO.getEmail() , customerDTO.getCompanyName());
         if(customer == null) {
             customerRepository.save(modelMapper.map(customerDTO, Customer.class));
         }else {
@@ -36,10 +36,12 @@ public class CustomerServiceImpl implements CustomerService {
         Optional<Customer> customer = customerRepository.findById(customerDTO.getId());
         if(customer.isPresent()) {
             Customer existingCustomer = customer.get();
-            existingCustomer.setName(customerDTO.getName());
+            existingCustomer.setCompanyName(customerDTO.getCompanyName());
+            existingCustomer.setContactPerson(customerDTO.getContactPerson());
+            existingCustomer.setAddress(customerDTO.getAddress());
             existingCustomer.setMobileNumber(customerDTO.getMobileNumber());
             existingCustomer.setEmail(customerDTO.getEmail());
-            existingCustomer.setType(CustomerType.valueOf(customerDTO.getCustomerType()));
+            existingCustomer.setCustomerType(CustomerType.valueOf(customerDTO.getCustomerType()));
 
             customerRepository.save(existingCustomer);
         }else{
