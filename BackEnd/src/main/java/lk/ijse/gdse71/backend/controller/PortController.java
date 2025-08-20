@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/port")
 @RequiredArgsConstructor
@@ -20,5 +22,11 @@ public class PortController {
     public ResponseEntity<APIResponse> savePort(@RequestBody PortDTO portDTO) {
         portService.save(portDTO);
         return ResponseEntity.ok(new APIResponse(201 , "Port Saved Successfully", true));
+    }
+
+    @GetMapping("/getAllPorts")
+    public ResponseEntity<APIResponse> getAllPorts() {
+        List<PortDTO> portDTOS = portService.getAllPorts();
+        return ResponseEntity.ok(new APIResponse(200,"Ports retrieved successfully", portDTOS));
     }
 }

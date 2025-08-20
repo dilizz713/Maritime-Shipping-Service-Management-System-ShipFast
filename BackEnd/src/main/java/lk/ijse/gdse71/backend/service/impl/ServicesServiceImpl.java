@@ -1,13 +1,18 @@
 package lk.ijse.gdse71.backend.service.impl;
 
+import lk.ijse.gdse71.backend.dto.PortDTO;
 import lk.ijse.gdse71.backend.dto.ServiceDTO;
 import lk.ijse.gdse71.backend.entity.Services;
 import lk.ijse.gdse71.backend.exception.ResourceAlreadyExists;
+import lk.ijse.gdse71.backend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.backend.repo.ServiceRepository;
 import lk.ijse.gdse71.backend.service.ServicesService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,5 +28,14 @@ public class ServicesServiceImpl implements ServicesService {
        }else {
            throw new ResourceAlreadyExists("Service is already exists");
        }
+    }
+
+    @Override
+    public List<ServiceDTO> getAllServices() {
+        List<Services> services = serviceRepository.findAll();
+        if(services.isEmpty()) {
+            throw new ResourceNotFoundException("No services found");
+        }
+        return modelMapper.map(services, new TypeToken<List<ServiceDTO>>(){}.getType());
     }
 }

@@ -21,7 +21,7 @@ public class Services {
     private String serviceName;
     private String description;
 
-    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "services")
     private List<ServiceRequest> serviceRequests;
 
 }

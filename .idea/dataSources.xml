@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="ShipFast@localhost" uuid="bd537d47-0af9-4a30-ab7a-53d38f748f18">
+    <data-source source="LOCAL" name="shipfast@localhost" uuid="77060cad-847b-4af6-853d-94927e828977">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/ShipFast</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/shipfast</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />

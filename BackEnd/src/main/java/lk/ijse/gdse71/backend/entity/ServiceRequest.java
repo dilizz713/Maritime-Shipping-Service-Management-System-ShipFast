@@ -26,10 +26,15 @@ public class ServiceRequest {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @ManyToOne
-    @JoinColumn(name = "service_id")
-    private Services service;
+    @ManyToMany
+    @JoinTable(
+            name = "service_request_services",
+            joinColumns = @JoinColumn(name = "service_request_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private List<Services> services;
 
-    @OneToMany(mappedBy = "serviceRequest", cascade = CascadeType.ALL)
-    private List<ServiceRequestPort> serviceRequestPorts;
+    @ManyToOne
+    @JoinColumn(name = "port_id")
+    private Port port;
 }

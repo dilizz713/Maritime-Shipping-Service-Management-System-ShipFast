@@ -22,5 +22,5 @@ public class Port {
     private String location;
 
     @OneToMany(mappedBy = "port", cascade = CascadeType.ALL)
-    private List<ServiceRequestPort> serviceRequestPorts;
+    private List<ServiceRequest> serviceRequest;
 }

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/service")
 @CrossOrigin
@@ -20,5 +22,11 @@ public class ServiceController {
     public ResponseEntity<APIResponse> addService(@RequestBody ServiceDTO serviceDTO) {
         servicesService.save(serviceDTO);
         return ResponseEntity.ok(new APIResponse(201 , "Service saved successfully", true));
+    }
+
+    @GetMapping("/getAllServices")
+    public ResponseEntity<APIResponse> getAllServices() {
+        List<ServiceDTO> serviceDTOS = servicesService.getAllServices();
+        return ResponseEntity.ok(new APIResponse(200,"All services retrieved successfully", serviceDTOS));
     }
 }
