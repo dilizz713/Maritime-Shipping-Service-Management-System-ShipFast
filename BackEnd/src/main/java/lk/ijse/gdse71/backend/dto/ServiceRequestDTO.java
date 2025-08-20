@@ -13,9 +13,10 @@ import java.util.List;
 @Data
 public class ServiceRequestDTO {
     private Long id;
+    private String shipName;
     private Date requestingDate;
     private Long customerId;
-    private List<Long> serviceId;
+    private List<Long> serviceIds;
     private Long portId;
     private String description;
 

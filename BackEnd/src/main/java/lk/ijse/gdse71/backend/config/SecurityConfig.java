@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/customer/**").permitAll()
                         .requestMatchers("/api/v1/port/**").permitAll()
                         .requestMatchers("/api/v1/service/**").permitAll()
+                        .requestMatchers("/api/v1/requestServices/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

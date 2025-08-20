@@ -48,7 +48,7 @@
                                 <!-- Ship Name -->
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control" id="shipName" placeholder="Ship Name" required>
+                                        <input type="text" class="form-control" id="shipName" placeholder="Ship Name">
                                         <label for="shipName">Ship Name</label>
                                     </div>
                                 </div>
@@ -67,7 +67,6 @@
                                     <select class="form-select" id="serviceIds" multiple required>
                                         <!-- Multiple services -->
                                     </select>
-                                    <small class="text-muted">Hold Ctrl (Windows) / Command (Mac) to select multiple</small>
                                 </div>
 
                                 <!-- Description -->
@@ -111,24 +110,24 @@
     });
 
     function loadCustomers() {
-        $.get(`${API_BASE}/customers`, function (data) {
-            data.forEach(c => {
+        $.get("http://localhost:8080/api/v1/customer/getAllCustomers", function (data) {
+            data.data.forEach(c => {
                 $("#customerId").append(`<option value="${c.id}">${c.companyName}</option>`);
             });
         });
     }
 
     function loadPorts() {
-        $.get(`${API_BASE}/ports`, function (data) {
-            data.forEach(p => {
+        $.get("http://localhost:8080/api/v1/port/getAllPorts", function (data) {
+            data.data.forEach(p => {
                 $("#portId").append(`<option value="${p.id}">${p.portName}</option>`);
             });
         });
     }
 
     function loadServices() {
-        $.get(`${API_BASE}/services`, function (data) {
-            data.forEach(s => {
+        $.get("http://localhost:8080/api/v1/service/getAllServices", function (data) {
+            data.data.forEach(s => {
                 $("#serviceIds").append(`<option value="${s.id}">${s.serviceName}</option>`);
             });
         });
@@ -146,7 +145,7 @@
         };
 
         $.ajax({
-            url: `${API_BASE}/requestServices`,
+            url: "http://localhost:8080/api/v1/requestServices/saveRequest",
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(request),

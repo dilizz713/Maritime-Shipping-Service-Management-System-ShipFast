@@ -40,7 +40,7 @@ public class RequestServicesServiceImpl implements RequestServicesService {
         serviceRequest.setCustomer(customer);
 
         // ---- Services ----
-        List<Services> services = servicesRepository.findAllById(dto.getServiceId());
+        List<Services> services = servicesRepository.findAllById(dto.getServiceIds());
         serviceRequest.setServices(services);
 
         // ---- Port  ----

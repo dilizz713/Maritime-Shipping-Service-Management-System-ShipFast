@@ -19,6 +19,7 @@ public class ServiceRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String shipName;
     private Date requestingDate;
     private String description;
 

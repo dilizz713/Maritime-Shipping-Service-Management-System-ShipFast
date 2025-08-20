@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @AllArgsConstructor
 @Slf4j
-public class RequestServices {
+public class RequestServicesController {
     private final RequestServicesService requestServicesService;
 
     @PostMapping("/saveRequest")
