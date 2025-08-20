@@ -1,10 +1,12 @@
 package lk.ijse.gdse71.backend.controller;
 
+import lk.ijse.gdse71.backend.dto.ServiceDTO;
+import lk.ijse.gdse71.backend.service.ServicesService;
+import lk.ijse.gdse71.backend.util.APIResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/service")
@@ -12,5 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class ServiceController {
+    private final ServicesService servicesService;
 
+    @PostMapping("/saveService")
+    public ResponseEntity<APIResponse> addService(@RequestBody ServiceDTO serviceDTO) {
+        servicesService.save(serviceDTO);
+        return ResponseEntity.ok(new APIResponse(201 , "Service saved successfully", true));
+    }
 }

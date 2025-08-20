@@ -28,7 +28,7 @@ public class ServiceRequest {
 
     @ManyToOne
     @JoinColumn(name = "service_id")
-    private Service service;
+    private Services service;
 
     @OneToMany(mappedBy = "serviceRequest", cascade = CascadeType.ALL)
     private List<ServiceRequestPort> serviceRequestPorts;

@@ -13,14 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Builder
-public class Service {
+public class Services {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private ServiceType serviceType;
-
+    private String serviceName;
     private String description;
 
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
