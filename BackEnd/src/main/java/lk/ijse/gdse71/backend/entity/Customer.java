@@ -27,9 +27,9 @@ public class Customer {
     @Enumerated(EnumType.STRING)
     private CustomerType customerType;
 
-   /* @OneToOne
+    @OneToOne
     @JoinColumn(name = "user_id")
-    private User user;*/
+    private User user;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<ServiceRequest> serviceRequests;

@@ -323,12 +323,20 @@
     margin: 0 10px;
 
 }
-
+#userNav{
+    margin: 0 10px;
+    width: 100px;
+}
 
 
 
 @media (max-width: 767px) {
     .port-card img {
         height: 150px;
+    }
+
+    #userNav{
+        margin: 10px 0;
+
     }
 }

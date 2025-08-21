@@ -26,15 +26,17 @@
                 <li class="nav-item"><a class="nav-link" href="#services">SERVICES</a></li>
                 <li class="nav-item"><a class="nav-link" href="#profile">OUR PROFILE</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contact">CONTACT US</a></li>
-                <li class="nav-item"><a class="nav-link signin-btn" href="html/signin.html">SIGNIN/SIGNUP</a></li>
+                <li class="nav-item"><a class="nav-link signin-btn" id="signinNav" href="html/signin.html">SIGNIN/SIGNUP</a></li>
 
-                <li class="nav-item ms-2">
+                <li class="nav-item ms-2" id="userNav" style="display: none">
                     <a href="html/customer-dashboard.html" class="btn btn-primary btn-sm px-3 d-flex align-items-center gap-2">
                         <i class="bi bi-person-circle fs-5"></i> myShip
                     </a>
+                    <span id="navbarUsername" class="text-white fw-bold d-none"></span>
                 </li>
 
             </ul>
+            <button class="btn btn-outline-light" style="display: none" id="logout-btn" onclick="logoutUser()"> <i class="bi bi-box-arrow-right fs-5 me-1"></i>Logout</button>
         </div>
     </div>
 </nav>
@@ -433,7 +435,7 @@
         <hr class="my-4 border-light">
 
         <div class="row align-items-center">
-            <!-- Copyright -->
+
             <div class="col-md-6 text-center text-md-start small">
                 © <span id="year"></span> ShipFast Pvt Ltd. All Rights Reserved.
             </div>
@@ -450,6 +452,22 @@
         </div>
     </div>
 </footer>
+
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+    <div id="signinToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="bi bi-person-circle me-2"></i>
+            <strong class="me-auto">Reminder</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Please sign in to access all features!
+            <a href="html/signin.html" class="btn btn-sm btn-primary ms-2">Sign In</a>
+        </div>
+    </div>
+</div>
+
+
 
 <script src="lib/jquery-3.7.1.min.js"></script>
 <script src="js/main.js"></script>
