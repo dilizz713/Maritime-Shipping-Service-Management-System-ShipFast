@@ -19,5 +19,6 @@ public class ServiceRequestDTO {
     private List<Long> serviceIds;
     private Long portId;
     private String description;
+    private String status;
 
 }

@@ -2,10 +2,7 @@ package lk.ijse.gdse71.backend.service.impl;
 
 
 import lk.ijse.gdse71.backend.dto.ServiceRequestDTO;
-import lk.ijse.gdse71.backend.entity.Customer;
-import lk.ijse.gdse71.backend.entity.Port;
-import lk.ijse.gdse71.backend.entity.ServiceRequest;
-import lk.ijse.gdse71.backend.entity.Services;
+import lk.ijse.gdse71.backend.entity.*;
 import lk.ijse.gdse71.backend.repo.CustomerRepository;
 import lk.ijse.gdse71.backend.repo.PortRepository;
 import lk.ijse.gdse71.backend.repo.RequestServiceRepository;
@@ -33,6 +30,9 @@ public class RequestServicesServiceImpl implements RequestServicesService {
 
         serviceRequest.setRequestingDate(new Date());
         serviceRequest.setDescription(dto.getDescription());
+        serviceRequest.setShipName(dto.getShipName());
+
+        serviceRequest.setStatus(RequestStatus.PENDING);
 
         // ---- Customer ----
         Customer customer = customerRepository.findById(dto.getCustomerId())

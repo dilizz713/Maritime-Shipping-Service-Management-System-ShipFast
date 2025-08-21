@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.backend.controller;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lk.ijse.gdse71.backend.dto.AuthDTO;
@@ -47,6 +48,17 @@ public class AuthController {
                 "User logged in successfully",
                 new AuthResponseDTO(null , authResponseDTO.getUserName(),authResponseDTO.getRole())
         ));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("jwt", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return ResponseEntity.ok("Logged out successfully");
     }
 
 

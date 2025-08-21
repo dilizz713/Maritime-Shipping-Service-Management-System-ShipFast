@@ -73,15 +73,41 @@ $(document).ready(function () {
 });
 
 // Logout function
-function logoutUser() {
-    const confirmLogout = confirm("Are you sure you want to logout?");
-    if (confirmLogout) {
+/*function logoutUser() {
+    if (confirm("Are you sure you want to log out?")) {
+        // Clear localStorage
+        localStorage.removeItem("token");
         localStorage.removeItem("username");
         localStorage.removeItem("role");
+        localStorage.clear();
+
+        // Clear cookies (if any)
+        document.cookie.split(";").forEach(function(c) {
+            document.cookie = c.replace(/^ +/, "")
+                .replace(/=.*!/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+
+        // Redirect
         window.location.href = "index.html";
     }
-}
+}*/
 
+function logoutUser() {
+    if (confirm("Are you sure you want to log out?")) {
+        $.ajax({
+            url: "http://localhost:8080/api/v1/auth/logout",
+            type: "POST",
+            xhrFields: {withCredentials: true},
+            success: function () {
+                localStorage.clear();
+                window.location.href = "index.html";
+            },
+            error: function () {
+                alert("Logout failed. Please try again.");
+            }
+        });
+    }
+}
 
 
 

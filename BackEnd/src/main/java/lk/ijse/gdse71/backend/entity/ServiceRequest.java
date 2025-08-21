@@ -23,6 +23,9 @@ public class ServiceRequest {
     private Date requestingDate;
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    private RequestStatus status;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
