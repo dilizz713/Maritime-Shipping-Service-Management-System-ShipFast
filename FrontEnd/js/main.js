@@ -73,25 +73,6 @@ $(document).ready(function () {
 });
 
 // Logout function
-/*function logoutUser() {
-    if (confirm("Are you sure you want to log out?")) {
-        // Clear localStorage
-        localStorage.removeItem("token");
-        localStorage.removeItem("username");
-        localStorage.removeItem("role");
-        localStorage.clear();
-
-        // Clear cookies (if any)
-        document.cookie.split(";").forEach(function(c) {
-            document.cookie = c.replace(/^ +/, "")
-                .replace(/=.*!/, "=;expires=" + new Date().toUTCString() + ";path=/");
-        });
-
-        // Redirect
-        window.location.href = "index.html";
-    }
-}*/
-
 function logoutUser() {
     if (confirm("Are you sure you want to log out?")) {
         $.ajax({
