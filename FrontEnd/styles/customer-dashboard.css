@@ -58,6 +58,10 @@ body {
     border-radius: 5px;
     border: 1px solid white;
 }
+#setting-btn{
+    margin-right: 20px;
+}
 #setting-btn:hover , #home-btn:hover {
     background-color: #084298;
+
 }
