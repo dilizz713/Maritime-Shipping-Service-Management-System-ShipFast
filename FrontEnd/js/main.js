@@ -25,7 +25,7 @@ $(document).ready(function () {
         }, 5000); // 5-second delay
     }
 
-    // -------------------- Reveal Elements on Scroll --------------------
+
     const $reveals = $('.reveal');
 
     const io = new IntersectionObserver(entries => {

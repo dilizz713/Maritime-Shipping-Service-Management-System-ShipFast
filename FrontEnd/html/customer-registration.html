@@ -161,6 +161,12 @@
 
 <script>
 
+    $(document).ready(function () {
+        const username = localStorage.getItem("username") || "Name";
+        $("#profileName").text(username);
+    });
+
+
     // Save Customer
     $("#customerForm").on("submit", function (e) {
         e.preventDefault();
