@@ -38,6 +38,7 @@ $(document).ready(function () {
 
 
 
+
                 if (role === "ADMIN" || role === "EMPLOYEE") {
                     window.location.href = "../html/admin-dashboard.html";
                 } else if (role === "CUSTOMER") {

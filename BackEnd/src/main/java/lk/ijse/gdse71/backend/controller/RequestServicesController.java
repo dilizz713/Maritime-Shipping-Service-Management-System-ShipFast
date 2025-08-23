@@ -1,6 +1,10 @@
 package lk.ijse.gdse71.backend.controller;
 
 import lk.ijse.gdse71.backend.dto.ServiceRequestDTO;
+import lk.ijse.gdse71.backend.entity.Customer;
+import lk.ijse.gdse71.backend.exception.ResourceNotFoundException;
+import lk.ijse.gdse71.backend.repo.CustomerRepository;
+import lk.ijse.gdse71.backend.service.CustomerService;
 import lk.ijse.gdse71.backend.service.RequestServicesService;
 import lk.ijse.gdse71.backend.util.APIResponse;
 import lombok.AllArgsConstructor;
@@ -17,6 +21,7 @@ import java.util.List;
 @Slf4j
 public class RequestServicesController {
     private final RequestServicesService requestServicesService;
+    private final CustomerRepository customerRepository;
 
     @PostMapping("/saveRequest")
     public ResponseEntity<APIResponse> saveRequest(@RequestBody ServiceRequestDTO serviceRequestDTO) {
@@ -30,11 +35,25 @@ public class RequestServicesController {
         return ResponseEntity.ok(new APIResponse(200,"Request updated successfully",true));
     }
 
-    @GetMapping("/getAllRequestsByCustomer/{customerId}")
+   /* @GetMapping("/getAllRequestsByCustomer/{customerId}")
     public ResponseEntity<APIResponse> getAllRequestsByCustomer(@PathVariable Long customerId) {
         List<ServiceRequestDTO> serviceRequestDTOS = requestServicesService.getAllRequestsByCustomer(customerId);
         return ResponseEntity.ok(
                 new APIResponse(200, "Requests for customer " + customerId + " retrieved successfully", serviceRequestDTOS)
+        );
+    }*/
+
+    @GetMapping("/getAllRequestsByUser/{userId}")
+    public ResponseEntity<APIResponse> getRequestsByUser(@PathVariable Long userId) {
+
+        Customer customer = customerRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found for userId: " + userId));
+
+
+        List<ServiceRequestDTO> requests = requestServicesService.getAllRequestsByCustomer(customer.getId());
+
+        return ResponseEntity.ok(
+                new APIResponse(200, "Requests retrieved successfully", requests)
         );
     }
 

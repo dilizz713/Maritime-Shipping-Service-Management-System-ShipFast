@@ -21,4 +21,8 @@ public class ServiceRequestDTO {
     private String description;
     private String status;
 
+    private String portName;
+    private List<String> serviceNames;
+
+
 }

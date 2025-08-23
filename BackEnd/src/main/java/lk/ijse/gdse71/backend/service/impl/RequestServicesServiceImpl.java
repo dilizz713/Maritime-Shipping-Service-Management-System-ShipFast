@@ -1,6 +1,8 @@
 package lk.ijse.gdse71.backend.service.impl;
 
 
+import lk.ijse.gdse71.backend.dto.PortDTO;
+import lk.ijse.gdse71.backend.dto.ServiceDTO;
 import lk.ijse.gdse71.backend.dto.ServiceRequestDTO;
 import lk.ijse.gdse71.backend.entity.*;
 import lk.ijse.gdse71.backend.exception.ResourceNotFoundException;
@@ -13,10 +15,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -93,7 +92,8 @@ public class RequestServicesServiceImpl implements RequestServicesService {
         requestServicesRepository.save(existingRequest);
     }
 
-    @Override
+
+   /* @Override
     public List<ServiceRequestDTO> getAllRequestsByCustomer(Long customerId) {
         List<ServiceRequest> requests = requestServicesRepository.findByCustomerId(customerId);
 
@@ -117,7 +117,34 @@ public class RequestServicesServiceImpl implements RequestServicesService {
 
             return dto;
         }).toList();
+    }*/
+
+    @Override
+    public List<ServiceRequestDTO> getAllRequestsByCustomer(Long customerId) {
+        List<ServiceRequest> requests = requestServicesRepository.findByCustomerId(customerId);
+
+        return requests.stream().map(req -> {
+            ServiceRequestDTO dto = new ServiceRequestDTO();
+            dto.setId(req.getId());
+            dto.setShipName(req.getShipName());
+            dto.setRequestingDate(req.getRequestingDate());
+            dto.setCustomerId(req.getCustomer().getId());
+            dto.setDescription(req.getDescription());
+            dto.setStatus(req.getStatus().name());
+            dto.setPortId(req.getPort() != null ? req.getPort().getId() : null);
+            dto.setPortName(req.getPort() != null ? req.getPort().getPortName() : "N/A");
+            dto.setServiceIds(req.getServices() != null
+                    ? req.getServices().stream().map(Services::getId).collect(Collectors.toList())
+                    : List.of());
+            dto.setServiceNames(req.getServices() != null
+                    ? req.getServices().stream().map(Services::getServiceName).collect(Collectors.toList())
+                    : List.of());
+            return dto;
+        }).collect(Collectors.toList());
     }
+
+
+
 
 
 }
