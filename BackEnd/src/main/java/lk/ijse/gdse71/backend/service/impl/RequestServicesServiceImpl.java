@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,5 +54,44 @@ public class RequestServicesServiceImpl implements RequestServicesService {
 
         requestServicesRepository.save(serviceRequest);
     }
+
+    @Override
+    public void updateRequest(ServiceRequestDTO dto) {
+        ServiceRequest existingRequest = requestServicesRepository.findById(dto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Service request not found"));
+
+        if (dto.getShipName() != null) {
+            existingRequest.setShipName(dto.getShipName());
+        }
+        if (dto.getDescription() != null) {
+            existingRequest.setDescription(dto.getDescription());
+        }
+
+        // ---- Update Customer ----
+        if (dto.getCustomerId() != null) {
+            Customer customer = customerRepository.findById(dto.getCustomerId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+            existingRequest.setCustomer(customer);
+        }
+
+        // ---- Update Services ----
+        if (dto.getServiceIds() != null && !dto.getServiceIds().isEmpty()) {
+            List<Services> services = servicesRepository.findAllById(dto.getServiceIds());
+            if (services.isEmpty()) {
+                throw new ResourceNotFoundException("No valid services found for provided IDs");
+            }
+            existingRequest.setServices(services);
+        }
+
+        // ---- Update Port ----
+        if (dto.getPortId() != null) {
+            Port port = portRepository.findById(dto.getPortId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Port not found"));
+            existingRequest.setPort(port);
+        }
+
+        requestServicesRepository.save(existingRequest);
+    }
+
 
 }

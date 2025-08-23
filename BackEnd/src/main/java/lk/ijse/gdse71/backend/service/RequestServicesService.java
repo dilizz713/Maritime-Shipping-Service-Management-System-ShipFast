@@ -7,4 +7,6 @@ import java.util.List;
 public interface RequestServicesService {
     void saveRequest(ServiceRequestDTO serviceRequestDTO);
 
+    void updateRequest(ServiceRequestDTO serviceRequestDTO);
+
 }

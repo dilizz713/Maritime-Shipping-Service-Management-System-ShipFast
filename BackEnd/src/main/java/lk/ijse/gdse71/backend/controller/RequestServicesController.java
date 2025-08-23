@@ -24,5 +24,13 @@ public class RequestServicesController {
         return ResponseEntity.ok(new APIResponse(201,"Request saved successfully",true));
     }
 
+    @PutMapping("/updateRequest")
+    public ResponseEntity<APIResponse> updateRequest(@RequestBody ServiceRequestDTO serviceRequestDTO) {
+        requestServicesService.updateRequest(serviceRequestDTO);
+        return ResponseEntity.ok(new APIResponse(200,"Request updated successfully",true));
+    }
+
+
+
 
 }
