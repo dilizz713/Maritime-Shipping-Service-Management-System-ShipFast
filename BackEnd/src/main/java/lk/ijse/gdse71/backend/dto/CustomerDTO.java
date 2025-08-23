@@ -34,4 +34,6 @@ public class CustomerDTO {
 
     @NotNull(message = "Customer type is required")
     private String customerType;
+
+    private Long userId;
 }

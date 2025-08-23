@@ -46,7 +46,7 @@ public class AuthController {
         return ResponseEntity.ok(new APIResponse(
                 200,
                 "User logged in successfully",
-                new AuthResponseDTO(null , authResponseDTO.getUserName(),authResponseDTO.getRole())
+                new AuthResponseDTO(null , authResponseDTO.getUserName(),authResponseDTO.getRole() , authResponseDTO.getUserId())
         ));
     }
 
@@ -60,6 +60,5 @@ public class AuthController {
         response.addCookie(cookie);
         return ResponseEntity.ok("Logged out successfully");
     }
-
 
 }

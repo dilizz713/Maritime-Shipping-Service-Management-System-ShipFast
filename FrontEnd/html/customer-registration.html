@@ -173,13 +173,16 @@
     $("#customerForm").on("submit", function (e) {
         e.preventDefault();
 
+        const userId = localStorage.getItem("userId");
+
         let customerData = {
             companyName: $("#companyName").val(),
             contactPerson: $("#contactPerson").val(),
             address: $("#address").val(),
             mobileNumber: $("#phone").val(),
             email: $("#email").val(),
-            customerType: $("#customerType").val()
+            customerType: $("#customerType").val(),
+            userId: userId
         };
 
         $.ajax({

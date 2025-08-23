@@ -28,11 +28,14 @@ $(document).ready(function () {
             success: function (res) {
                 const role = res.data.role;
                 const userName = res.data.userName;
+                const userId = res.data.userId;
 
                 alert(`Welcome ${userName} (${role})`);
 
 
                 localStorage.setItem("username", userName);
+                localStorage.setItem("userId", userId);
+
 
 
                 if (role === "ADMIN" || role === "EMPLOYEE") {

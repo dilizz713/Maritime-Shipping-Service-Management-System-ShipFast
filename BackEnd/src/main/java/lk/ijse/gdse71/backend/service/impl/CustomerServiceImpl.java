@@ -3,9 +3,11 @@ package lk.ijse.gdse71.backend.service.impl;
 import lk.ijse.gdse71.backend.dto.CustomerDTO;
 import lk.ijse.gdse71.backend.entity.Customer;
 import lk.ijse.gdse71.backend.entity.CustomerType;
+import lk.ijse.gdse71.backend.entity.User;
 import lk.ijse.gdse71.backend.exception.ResourceAlreadyExists;
 import lk.ijse.gdse71.backend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.backend.repo.CustomerRepository;
+import lk.ijse.gdse71.backend.repo.UserRepository;
 import lk.ijse.gdse71.backend.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -20,13 +22,23 @@ import java.util.Optional;
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final ModelMapper modelMapper;
+    private final UserRepository userRepository;
 
     @Override
     public void save(CustomerDTO customerDTO) {
-        Customer customer = customerRepository.findByEmailAndCompanyName(customerDTO.getEmail() , customerDTO.getCompanyName());
-        if(customer == null) {
-            customerRepository.save(modelMapper.map(customerDTO, Customer.class));
-        }else {
+        Customer customer = customerRepository.findByEmailAndCompanyName(customerDTO.getEmail(), customerDTO.getCompanyName());
+
+        if (customer == null) {
+            Customer newCustomer = modelMapper.map(customerDTO, Customer.class);
+
+            if (customerDTO.getUserId() != null) {
+                User user = userRepository.findById(customerDTO.getUserId())
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                newCustomer.setUser(user);
+            }
+
+            customerRepository.save(newCustomer);
+        } else {
             throw new ResourceAlreadyExists("Already Exists");
         }
     }
