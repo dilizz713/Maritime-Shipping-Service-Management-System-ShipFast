@@ -101,8 +101,6 @@
 
         const $requestTableBody = $("#requestTableBody");
         let requests = [];
-        let allPorts = [];
-        let allServices = [];
 
         // Load all requests
         function loadRequests() {
@@ -110,7 +108,7 @@
                 url: `http://localhost:8080/api/v1/requestServices/getAllRequestsByUser/${userId}`,
                 type: "GET",
                 success: function (res) {
-                    requests = res.data || [];
+                    requests = Array.isArray(res.data) ? res.data : res || [];
                     renderRequests();
                 },
                 error: function () {
@@ -124,6 +122,7 @@
                 $requestTableBody.html('<tr><td colspan="7" class="text-center text-muted">No requests found.</td></tr>');
                 return;
             }
+
             let rows = "";
             requests.forEach((req, index) => {
                 const serviceNames = req.serviceNames?.join(", ") || "No Services";
@@ -138,58 +137,65 @@
                     <td>${req.description || ""}</td>
                     <td>${req.status}</td>
                     <td>
-                        <i class="bi bi-pencil-square btn-edit me-2"
-                           data-id="${req.id}" title="Edit"></i>
-                        <i class="bi bi-trash btn-delete text-danger"
-                           data-id="${req.id}" title="Delete"></i>
+                        <i class="bi bi-pencil-square btn-edit me-2" data-id="${req.id}" title="Edit"></i>
+                        <i class="bi bi-trash btn-delete text-danger" data-id="${req.id}" title="Delete"></i>
                     </td>
                 </tr>
             `;
             });
+
             $requestTableBody.html(rows);
         }
 
         // Load Ports and Services for dropdowns
-        function loadPortsAndServices(callback) {
-            $.when(
-                $.get("http://localhost:8080/api/v1/port/getAllPorts", function (res) {
-                    allPorts = res.data || [];
-                }),
-                $.get("http://localhost:8080/api/v1/service/getAllServices", function (res) {
-                    allServices = res.data || [];
-                })
-            ).done(function () {
+        function loadPorts(callback) {
+            $.get("http://localhost:8080/api/v1/port/getAllPorts", function (res) {
+                const ports = Array.isArray(res) ? res : res.data; // adjust depending on backend
+                if (!Array.isArray(ports)) {
+                    alert("Invalid ports response from server");
+                    return;
+                }
                 const $editPort = $("#editPort");
-                const $editServices = $("#editServices");
                 $editPort.empty();
-                $editServices.empty();
-
-                allPorts.forEach(port => $editPort.append(`<option value="${port.id}">${port.name}</option>`));
-                allServices.forEach(service => $editServices.append(`<option value="${service.id}">${service.name}</option>`));
-
+                ports.forEach(port => $editPort.append(`<option value="${port.id}">${port.name}</option>`));
                 if (callback) callback();
-            }).fail(function() {
-                alert("Failed to load ports or services.");
-            });
+            }).fail(function() { alert("Failed to load ports."); });
         }
+
+        function loadServices(callback) {
+            $.get("http://localhost:8080/api/v1/service/getAllServices", function (res) {
+                const services = Array.isArray(res) ? res : res.data; // adjust depending on backend
+                if (!Array.isArray(services)) {
+                    alert("Invalid services response from server");
+                    return;
+                }
+                const $editServices = $("#editServices");
+                $editServices.empty();
+                services.forEach(service => $editServices.append(`<option value="${service.id}">${service.name}</option>`));
+                if (callback) callback();
+            }).fail(function() { alert("Failed to load services."); });
+        }
+
+
 
         // Open Edit Modal
         $(document).on("click", ".btn-edit", function () {
+
             const requestId = $(this).data("id");
             const req = requests.find(r => r.id == requestId);
             if (!req) return;
 
-            loadPortsAndServices(function () {
-                $("#editRequestId").val(req.id);
-                $("#editShipName").val(req.shipName);
-                $("#editDescription").val(req.description);
+            // Load dropdowns first, then set values
+            loadPorts(function() {
+                loadServices(function() {
+                    $("#editRequestId").val(req.id);
+                    $("#editShipName").val(req.shipName);
+                    $("#editDescription").val(req.description || "");
+                    $("#editPort").val(req.port?.id || "");
+                    $("#editServices").val(req.services?.map(s => s.id.toString()) || []);
 
-                $("#editPort").val(req.portId);
-
-                // Convert IDs to strings for multi-select
-                $("#editServices").val(req.serviceIds?.map(id => id.toString()) || []);
-
-                new bootstrap.Modal(document.getElementById("editRequestModal")).show();
+                    new bootstrap.Modal(document.getElementById("editRequestModal")).show();
+                });
             });
         });
 
@@ -237,5 +243,6 @@
         loadRequests();
     });
 </script>
+
 </body>
 </html>

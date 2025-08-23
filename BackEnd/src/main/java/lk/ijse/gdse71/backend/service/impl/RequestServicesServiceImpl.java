@@ -54,7 +54,7 @@ public class RequestServicesServiceImpl implements RequestServicesService {
         requestServicesRepository.save(serviceRequest);
     }
 
-  /*  @Override
+    @Override
     public void updateRequest(ServiceRequestDTO dto) {
         ServiceRequest existingRequest = requestServicesRepository.findById(dto.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Service request not found"));
@@ -91,9 +91,8 @@ public class RequestServicesServiceImpl implements RequestServicesService {
 
         requestServicesRepository.save(existingRequest);
     }
-*/
 
-    @Override
+   /* @Override
     public void updateRequest(ServiceRequestDTO dto) {
         ServiceRequest request = requestServicesRepository.findById(dto.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
@@ -113,7 +112,7 @@ public class RequestServicesServiceImpl implements RequestServicesService {
         }
 
         modelMapper.map(requestServicesRepository.save(request), ServiceRequestDTO.class);
-    }
+    }*/
 
 
 

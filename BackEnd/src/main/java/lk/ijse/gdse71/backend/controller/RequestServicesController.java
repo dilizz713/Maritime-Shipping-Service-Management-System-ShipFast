@@ -35,13 +35,11 @@ public class RequestServicesController {
         return ResponseEntity.ok(new APIResponse(200,"Request updated successfully",true));
     }
 
-
     @GetMapping("/getAllRequestsByUser/{userId}")
     public ResponseEntity<APIResponse> getRequestsByUser(@PathVariable Long userId) {
 
         Customer customer = customerRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found for userId: " + userId));
-
 
         List<ServiceRequestDTO> requests = requestServicesService.getAllRequestsByCustomer(customer.getId());
 
@@ -49,7 +47,6 @@ public class RequestServicesController {
                 new APIResponse(200, "Requests retrieved successfully", requests)
         );
     }
-
 
 
 
