@@ -54,7 +54,7 @@ public class RequestServicesServiceImpl implements RequestServicesService {
         requestServicesRepository.save(serviceRequest);
     }
 
-    @Override
+  /*  @Override
     public void updateRequest(ServiceRequestDTO dto) {
         ServiceRequest existingRequest = requestServicesRepository.findById(dto.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Service request not found"));
@@ -91,33 +91,31 @@ public class RequestServicesServiceImpl implements RequestServicesService {
 
         requestServicesRepository.save(existingRequest);
     }
+*/
+
+    @Override
+    public void updateRequest(ServiceRequestDTO dto) {
+        ServiceRequest request = requestServicesRepository.findById(dto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
+
+        request.setShipName(dto.getShipName());
+        request.setDescription(dto.getDescription());
+
+        if(dto.getPortId() != null){
+            Port port = portRepository.findById(dto.getPortId())
+                    .orElseThrow(() -> new RuntimeException("Port not found"));
+            request.setPort(port);
+        }
+
+        if(dto.getServiceIds() != null && !dto.getServiceIds().isEmpty()){
+            List<Services> services = servicesRepository.findAllById(dto.getServiceIds());
+            request.setServices(services);
+        }
+
+        modelMapper.map(requestServicesRepository.save(request), ServiceRequestDTO.class);
+    }
 
 
-   /* @Override
-    public List<ServiceRequestDTO> getAllRequestsByCustomer(Long customerId) {
-        List<ServiceRequest> requests = requestServicesRepository.findByCustomerId(customerId);
-
-        return requests.stream().map(request -> {
-            ServiceRequestDTO dto = new ServiceRequestDTO();
-            dto.setId(request.getId());
-            dto.setShipName(request.getShipName());
-            dto.setRequestingDate(request.getRequestingDate());
-            dto.setCustomerId(request.getCustomer().getId());
-            dto.setPortId(request.getPort().getId());
-            dto.setDescription(request.getDescription());
-            dto.setStatus(request.getStatus().name());
-
-
-            dto.setServiceIds(
-                    request.getServices()
-                            .stream()
-                            .map(Services::getId)
-                            .toList()
-            );
-
-            return dto;
-        }).toList();
-    }*/
 
     @Override
     public List<ServiceRequestDTO> getAllRequestsByCustomer(Long customerId) {

@@ -13,17 +13,9 @@
             font-weight: 600;
             color: #0d3b66;
         }
-        table th, table td {
-            vertical-align: middle;
-        }
-        .btn-edit {
-            color: #0d6efd;
-            cursor: pointer;
-        }
-        .btn-delete {
-            color: #dc3545;
-            cursor: pointer;
-        }
+        table th, table td { vertical-align: middle; }
+        .btn-edit { color: #0d6efd; cursor: pointer; }
+        .btn-delete { color: #dc3545; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -31,16 +23,10 @@
     <div class="container-fluid">
         <a class="navbar-brand" href="#">My Dashboard</a>
         <div class="d-flex align-items-center">
-            <a href="../index.html" class="text-white fs-5 me-3" title="Home" id="home-btn">
+            <a href="../index.html" class="text-white fs-5 me-3" title="Home">
                 <i class="bi bi-house-door"></i>
             </a>
-            <button class="btn btn-sm btn-outline-light" onclick="manageProfile()" title="Settings" id="setting-btn">
-                <i class="bi bi-gear"></i>
-            </button>
             <div class="me-3 text-white fw-bold" id="profileName">Name</div>
-            <div class="profile-icon me-3">
-                <i class="bi bi-person"></i>
-            </div>
         </div>
     </div>
 </nav>
@@ -90,6 +76,14 @@
                         <label class="form-label">Description</label>
                         <textarea class="form-control" id="editDescription" rows="3"></textarea>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Port</label>
+                        <select class="form-select" id="editPort"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Services</label>
+                        <select class="form-select" id="editServices" multiple></select>
+                    </div>
                     <button type="submit" class="btn btn-primary">Update Request</button>
                 </form>
             </div>
@@ -106,89 +100,112 @@
         $("#profileName").text(username);
 
         const $requestTableBody = $("#requestTableBody");
+        let requests = [];
+        let allPorts = [];
+        let allServices = [];
 
-        // Load all requests for this customer
+        // Load all requests
         function loadRequests() {
             $.ajax({
                 url: `http://localhost:8080/api/v1/requestServices/getAllRequestsByUser/${userId}`,
                 type: "GET",
                 success: function (res) {
-                    const requests = res.data;
-
-                    if (!requests || requests.length === 0) {
-                        $requestTableBody.html(
-                            `<tr><td colspan="7" class="text-center text-muted">No requests found.</td></tr>`
-                        );
-                        return;
-                    }
-
-                    let rows = "";
-                    requests.forEach((req, index) => {
-                        const serviceNames = req.serviceNames?.join(", ") || "No Services";
-                        const portName = req.portName || "N/A";
-
-                        rows += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${req.shipName}</td>
-                            <td>${portName}</td>
-                            <td>${serviceNames}</td>
-                            <td>${req.description || ""}</td>
-                            <td>${req.status}</td>
-                            <td>
-                                <i class="bi bi-pencil-square btn-edit me-2"
-                                   data-id="${req.id}"
-                                   data-ship="${req.shipName}"
-                                   data-desc="${req.description || ""}"
-                                   title="Edit"></i>
-                                <i class="bi bi-trash btn-delete text-danger"
-                                   data-id="${req.id}"
-                                   title="Delete"></i>
-                            </td>
-                        </tr>
-                        `;
-                    });
-
-                    $requestTableBody.html(rows);
+                    requests = res.data || [];
+                    renderRequests();
                 },
                 error: function () {
-                    alert("Failed to load service requests. Please try again.");
-                    $requestTableBody.html(
-                        `<tr><td colspan="7" class="text-center text-danger">Error loading data.</td></tr>`
-                    );
+                    $requestTableBody.html('<tr><td colspan="7" class="text-center text-danger">Error loading data.</td></tr>');
                 }
             });
         }
 
-        // Load requests on page load
-        loadRequests();
+        function renderRequests() {
+            if (!requests.length) {
+                $requestTableBody.html('<tr><td colspan="7" class="text-center text-muted">No requests found.</td></tr>');
+                return;
+            }
+            let rows = "";
+            requests.forEach((req, index) => {
+                const serviceNames = req.serviceNames?.join(", ") || "No Services";
+                const portName = req.portName || "N/A";
 
-        // Open edit modal with request data
+                rows += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${req.shipName}</td>
+                    <td>${portName}</td>
+                    <td>${serviceNames}</td>
+                    <td>${req.description || ""}</td>
+                    <td>${req.status}</td>
+                    <td>
+                        <i class="bi bi-pencil-square btn-edit me-2"
+                           data-id="${req.id}" title="Edit"></i>
+                        <i class="bi bi-trash btn-delete text-danger"
+                           data-id="${req.id}" title="Delete"></i>
+                    </td>
+                </tr>
+            `;
+            });
+            $requestTableBody.html(rows);
+        }
+
+        // Load Ports and Services for dropdowns
+        function loadPortsAndServices(callback) {
+            $.when(
+                $.get("http://localhost:8080/api/v1/port/getAllPorts", function (res) {
+                    allPorts = res.data || [];
+                }),
+                $.get("http://localhost:8080/api/v1/service/getAllServices", function (res) {
+                    allServices = res.data || [];
+                })
+            ).done(function () {
+                const $editPort = $("#editPort");
+                const $editServices = $("#editServices");
+                $editPort.empty();
+                $editServices.empty();
+
+                allPorts.forEach(port => $editPort.append(`<option value="${port.id}">${port.name}</option>`));
+                allServices.forEach(service => $editServices.append(`<option value="${service.id}">${service.name}</option>`));
+
+                if (callback) callback();
+            }).fail(function() {
+                alert("Failed to load ports or services.");
+            });
+        }
+
+        // Open Edit Modal
         $(document).on("click", ".btn-edit", function () {
             const requestId = $(this).data("id");
-            const shipName = $(this).data("ship");
-            const description = $(this).data("desc");
+            const req = requests.find(r => r.id == requestId);
+            if (!req) return;
 
-            $("#editRequestId").val(requestId);
-            $("#editShipName").val(shipName);
-            $("#editDescription").val(description);
+            loadPortsAndServices(function () {
+                $("#editRequestId").val(req.id);
+                $("#editShipName").val(req.shipName);
+                $("#editDescription").val(req.description);
 
-            const modal = new bootstrap.Modal(document.getElementById("editRequestModal"));
-            modal.show();
+                $("#editPort").val(req.portId);
+
+                // Convert IDs to strings for multi-select
+                $("#editServices").val(req.serviceIds?.map(id => id.toString()) || []);
+
+                new bootstrap.Modal(document.getElementById("editRequestModal")).show();
+            });
         });
 
-        // Handle update request form
+        // Update Request
         $("#editRequestForm").submit(function (e) {
             e.preventDefault();
-
             const requestData = {
                 id: $("#editRequestId").val(),
                 shipName: $("#editShipName").val(),
-                description: $("#editDescription").val()
+                description: $("#editDescription").val(),
+                portId: $("#editPort").val(),
+                serviceIds: $("#editServices").val()
             };
 
             $.ajax({
-                url: "http://localhost:8080/api/v1/requestServices/update",
+                url: "http://localhost:8080/api/v1/requestServices/updateRequest",
                 type: "PUT",
                 contentType: "application/json",
                 data: JSON.stringify(requestData),
@@ -197,16 +214,13 @@
                     $("#editRequestModal").modal("hide");
                     loadRequests();
                 },
-                error: function () {
-                    alert("Failed to update the request. Please try again.");
-                }
+                error: function () { alert("Failed to update the request."); }
             });
         });
 
-        // Handle delete request
+        // Delete Request
         $(document).on("click", ".btn-delete", function () {
             const requestId = $(this).data("id");
-
             if (!confirm("Are you sure you want to delete this request?")) return;
 
             $.ajax({
@@ -216,14 +230,12 @@
                     alert("Request deleted successfully!");
                     loadRequests();
                 },
-                error: function () {
-                    alert("Failed to delete the request. Please try again.");
-                }
+                error: function () { alert("Failed to delete the request."); }
             });
         });
+
+        loadRequests();
     });
 </script>
-
-
 </body>
 </html>
