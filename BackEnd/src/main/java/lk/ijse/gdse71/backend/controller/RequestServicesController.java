@@ -30,6 +30,14 @@ public class RequestServicesController {
         return ResponseEntity.ok(new APIResponse(200,"Request updated successfully",true));
     }
 
+    @GetMapping("/getAllRequestsByCustomer/{customerId}")
+    public ResponseEntity<APIResponse> getAllRequestsByCustomer(@PathVariable Long customerId) {
+        List<ServiceRequestDTO> serviceRequestDTOS = requestServicesService.getAllRequestsByCustomer(customerId);
+        return ResponseEntity.ok(
+                new APIResponse(200, "Requests for customer " + customerId + " retrieved successfully", serviceRequestDTOS)
+        );
+    }
+
 
 
 

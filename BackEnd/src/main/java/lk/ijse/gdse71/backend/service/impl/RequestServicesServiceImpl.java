@@ -93,5 +93,31 @@ public class RequestServicesServiceImpl implements RequestServicesService {
         requestServicesRepository.save(existingRequest);
     }
 
+    @Override
+    public List<ServiceRequestDTO> getAllRequestsByCustomer(Long customerId) {
+        List<ServiceRequest> requests = requestServicesRepository.findByCustomerId(customerId);
+
+        return requests.stream().map(request -> {
+            ServiceRequestDTO dto = new ServiceRequestDTO();
+            dto.setId(request.getId());
+            dto.setShipName(request.getShipName());
+            dto.setRequestingDate(request.getRequestingDate());
+            dto.setCustomerId(request.getCustomer().getId());
+            dto.setPortId(request.getPort().getId());
+            dto.setDescription(request.getDescription());
+            dto.setStatus(request.getStatus().name());
+
+
+            dto.setServiceIds(
+                    request.getServices()
+                            .stream()
+                            .map(Services::getId)
+                            .toList()
+            );
+
+            return dto;
+        }).toList();
+    }
+
 
 }
