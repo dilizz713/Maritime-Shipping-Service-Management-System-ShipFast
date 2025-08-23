@@ -3,6 +3,7 @@ package lk.ijse.gdse71.backend.service.impl;
 
 import lk.ijse.gdse71.backend.dto.ServiceRequestDTO;
 import lk.ijse.gdse71.backend.entity.*;
+import lk.ijse.gdse71.backend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.backend.repo.CustomerRepository;
 import lk.ijse.gdse71.backend.repo.PortRepository;
 import lk.ijse.gdse71.backend.repo.RequestServiceRepository;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -50,4 +53,5 @@ public class RequestServicesServiceImpl implements RequestServicesService {
 
         requestServicesRepository.save(serviceRequest);
     }
+
 }

@@ -1,12 +1,12 @@
 package lk.ijse.gdse71.backend.dto;
 
-import lk.ijse.gdse71.backend.entity.Services;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor

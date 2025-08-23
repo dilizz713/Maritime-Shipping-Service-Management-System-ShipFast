@@ -39,7 +39,7 @@ $(document).ready(function () {
 
 
                 if (role === "ADMIN" || role === "EMPLOYEE") {
-                    window.location.href = "../html/dashboard.html";
+                    window.location.href = "../html/admin-dashboard.html";
                 } else if (role === "CUSTOMER") {
                     window.location.href = "../index.html";
                 } else {
