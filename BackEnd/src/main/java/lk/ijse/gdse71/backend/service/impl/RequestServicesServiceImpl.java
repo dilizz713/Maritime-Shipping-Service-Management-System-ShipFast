@@ -92,27 +92,7 @@ public class RequestServicesServiceImpl implements RequestServicesService {
         requestServicesRepository.save(existingRequest);
     }
 
-   /* @Override
-    public void updateRequest(ServiceRequestDTO dto) {
-        ServiceRequest request = requestServicesRepository.findById(dto.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
 
-        request.setShipName(dto.getShipName());
-        request.setDescription(dto.getDescription());
-
-        if(dto.getPortId() != null){
-            Port port = portRepository.findById(dto.getPortId())
-                    .orElseThrow(() -> new RuntimeException("Port not found"));
-            request.setPort(port);
-        }
-
-        if(dto.getServiceIds() != null && !dto.getServiceIds().isEmpty()){
-            List<Services> services = servicesRepository.findAllById(dto.getServiceIds());
-            request.setServices(services);
-        }
-
-        modelMapper.map(requestServicesRepository.save(request), ServiceRequestDTO.class);
-    }*/
 
 
 

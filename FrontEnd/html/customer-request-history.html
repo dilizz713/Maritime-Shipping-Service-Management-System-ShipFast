@@ -131,25 +131,33 @@
             requests.forEach((req, index) => {
                 const serviceNames = req.serviceNames?.join(", ") || "No Services";
                 const portName = req.portName || "N/A";
+                const isPending = req.status?.toLowerCase() === "pending";
 
                 rows += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${req.shipName}</td>
-                        <td>${portName}</td>
-                        <td>${serviceNames}</td>
-                        <td>${req.description || ""}</td>
-                        <td>${req.status}</td>
-                        <td>
-                            <i class="bi bi-pencil-square btn-edit me-2" data-id="${req.id}" title="Edit"></i>
-                            <i class="bi bi-trash btn-delete text-danger" data-id="${req.id}" title="Delete"></i>
-                        </td>
-                    </tr>
-                `;
+            <tr>
+                <td>${index + 1}</td>
+                <td>${req.shipName}</td>
+                <td>${portName}</td>
+                <td>${serviceNames}</td>
+                <td>${req.description || ""}</td>
+                <td>${req.status}</td>
+                <td>
+                    ${
+                    isPending
+                        ? `
+                                <i class="bi bi-pencil-square btn-edit me-2" data-id="${req.id}" title="Edit"></i>
+                                <i class="bi bi-trash btn-delete text-danger" data-id="${req.id}" title="Delete"></i>
+                              `
+                        : `<span class="text-muted">Locked</span>`
+                }
+                </td>
+            </tr>
+        `;
             });
 
             $requestTableBody.html(rows);
         }
+
         //load ports
         function loadPorts(callback) {
             $.get("http://localhost:8080/api/v1/port/getAllPorts", function (res) {
@@ -213,8 +221,17 @@
         // ------------------ Update Request ------------------
         $("#editRequestForm").submit(function (e) {
             e.preventDefault();
+
+            const requestId = $("#editRequestId").val();
+            const req = requests.find(r => r.id == requestId);
+
+            if (!req || req.status?.toLowerCase() !== "pending") {
+                alert("You can only update requests with 'PENDING' status.");
+                return;
+            }
+
             const requestData = {
-                id: $("#editRequestId").val(),
+                id: requestId,
                 shipName: $("#editShipName").val(),
                 description: $("#editDescription").val(),
                 portId: $("#editPort").val(),
@@ -240,6 +257,13 @@
         // ------------------ Delete Request ------------------
         $(document).on("click", ".btn-delete", function () {
             const requestId = $(this).data("id");
+            const req = requests.find(r => r.id == requestId);
+
+            if (!req || req.status?.toLowerCase() !== "pending") {
+                alert("You can only delete requests with 'PENDING' status.");
+                return;
+            }
+
             if (!confirm("Are you sure you want to delete this request?")) return;
 
             $.ajax({
@@ -254,6 +278,7 @@
                 }
             });
         });
+
 
         // Initial load
         loadRequests();
