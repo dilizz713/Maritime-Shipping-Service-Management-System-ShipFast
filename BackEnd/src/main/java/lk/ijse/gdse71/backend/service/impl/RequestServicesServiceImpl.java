@@ -120,24 +120,40 @@ public class RequestServicesServiceImpl implements RequestServicesService {
     public List<ServiceRequestDTO> getAllRequestsByCustomer(Long customerId) {
         List<ServiceRequest> requests = requestServicesRepository.findByCustomerId(customerId);
 
-        return requests.stream().map(req -> {
+        return requests.stream().map(request -> {
             ServiceRequestDTO dto = new ServiceRequestDTO();
-            dto.setId(req.getId());
-            dto.setShipName(req.getShipName());
-            dto.setRequestingDate(req.getRequestingDate());
-            dto.setCustomerId(req.getCustomer().getId());
-            dto.setDescription(req.getDescription());
-            dto.setStatus(req.getStatus().name());
-            dto.setPortId(req.getPort() != null ? req.getPort().getId() : null);
-            dto.setPortName(req.getPort() != null ? req.getPort().getPortName() : "N/A");
-            dto.setServiceIds(req.getServices() != null
-                    ? req.getServices().stream().map(Services::getId).collect(Collectors.toList())
-                    : List.of());
-            dto.setServiceNames(req.getServices() != null
-                    ? req.getServices().stream().map(Services::getServiceName).collect(Collectors.toList())
-                    : List.of());
+            dto.setId(request.getId());
+            dto.setShipName(request.getShipName());
+            dto.setDescription(request.getDescription());
+            dto.setStatus(request.getStatus().name());
+            dto.setRequestingDate(request.getRequestingDate());
+
+            // ---- Customer ----
+            dto.setCustomerId(request.getCustomer() != null ? request.getCustomer().getId() : null);
+
+            // ---- Port ----
+            if (request.getPort() != null) {
+                dto.setPortId(request.getPort().getId());
+                dto.setPortName(request.getPort().getPortName());
+            }
+
+            // ---- Services ----
+            if (request.getServices() != null && !request.getServices().isEmpty()) {
+                dto.setServiceIds(
+                        request.getServices().stream()
+                                .map(Services::getId)
+                                .toList()
+                );
+
+                dto.setServiceNames(
+                        request.getServices().stream()
+                                .map(Services::getServiceName)
+                                .toList()
+                );
+            }
+
             return dto;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
 
