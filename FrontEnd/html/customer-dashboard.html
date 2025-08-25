@@ -22,7 +22,7 @@
             </a>
 
             <!-- Settings Button -->
-            <button class="btn btn-sm btn-outline-light" onclick="manageProfile()" title="Settings" id="setting-btn">
+            <button class="btn btn-sm btn-outline-light"  title="Settings" id="setting-btn">
                 <i class="bi bi-gear"></i>
             </button>
 
@@ -35,6 +35,35 @@
         </div>
     </div>
 </nav>
+
+<!-- Settings Sidebar -->
+<div id="settingsSidebar" class="settings-sidebar bg-light border-end shadow"
+     style="width: 250px; height: 100vh; position: fixed; top: 0; right: -250px; transition: 0.3s; z-index: 1050;">
+    <div class="p-4">
+        <h4 class="mb-4">Settings</h4>
+        <ul class="list-unstyled">
+            <li class="mb-3">
+                <button class="btn btn-outline-primary w-100 text-start" id="btnAccountSecurity">
+                    <i class="bi bi-shield-lock me-2"></i> Account Security
+                </button>
+            </li>
+            <li class="mb-3">
+                <button class="btn btn-outline-primary w-100 text-start" id="btnProfileSettings">
+                    <i class="bi bi-person-circle me-2"></i> Profile Settings
+                </button>
+            </li>
+            <li class="mt-5">
+                <button class="btn btn-outline-danger w-100 text-start" id="btnDeleteAccount">
+                    <i class="bi bi-trash me-2"></i> Close Account
+                </button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div id="sidebarOverlay"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:1049;">
+</div>
 
 <!-- Info Message -->
 <div class="container">
@@ -51,7 +80,7 @@
 
 <!-- Dashboard Content -->
 <div class="container dashboard-cards">
-    <div class="row g-4">
+    <div class="row g-4 justify-content-center">
         <!-- Request New Service -->
         <div class="col-md-3">
             <div class="card text-center p-4" onclick="requestNewService()">
@@ -70,15 +99,6 @@
             </div>
         </div>
 
-        <!-- Manage Profile -->
-        <div class="col-md-3">
-            <div class="card text-center p-4" onclick="manageProfile()">
-                <i class="bi bi-person-gear card-icon"></i>
-                <h5 class="card-title">Manage Profile</h5>
-                <p class="text-muted">Update your account settings</p>
-            </div>
-        </div>
-
         <!-- Register -->
         <div class="col-md-3">
             <div class="card text-center p-4" onclick="goToRegister()">
@@ -90,12 +110,40 @@
     </div>
 </div>
 
+
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
     $(document).ready(function () {
         const username = localStorage.getItem("username") || "Name";
         $("#profileName").text(username);
+
+        // Toggle sidebar
+        $("#setting-btn").click(function () {
+            $("#settingsSidebar").css("right", "0");
+            $("#sidebarOverlay").show();
+        });
+
+        // Close sidebar when overlay is clicked
+        $("#sidebarOverlay").click(function () {
+            $("#settingsSidebar").css("right", "-250px");
+            $(this).hide();
+        });
+
+        // Button actions
+        $("#btnAccountSecurity").click(function () {
+            window.location.href = "#";
+        });
+
+        $("#btnProfileSettings").click(function () {
+            window.location.href = "#";
+        });
+
+        $("#btnDeleteAccount").click(function () {
+            if (confirm("Are you sure you want to permanently delete your account?")) {
+                alert("Your account deletion request has been submitted.");
+            }
+        });
     });
 
     function requestNewService() {
@@ -106,9 +154,6 @@
         window.location.href = "customer-request-history.html";
     }
 
-    function manageProfile() {
-        window.location.href = "profile_settings.html";
-    }
 
     function goToRegister() {
         window.location.href = "customer-registration.html";
