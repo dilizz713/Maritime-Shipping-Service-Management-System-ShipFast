@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Security</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/customer-dashboard.css" />
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+    .card {
+      border-radius: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    .toggle-section {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">My Dashboard</a>
+    <div class="d-flex align-items-center">
+
+      <!-- Home -->
+      <a href="../index.html" class="text-white fs-5 me-3" title="Home" id="home-btn">
+        <i class="bi bi-house-door"></i>
+      </a>
+
+      <!-- Username -->
+      <div class="me-3 text-white fw-bold" id="profileName">Name</div>
+      <!-- Profile Icon -->
+      <div class="profile-icon me-3">
+        <i class="bi bi-person"></i>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <!-- Account Details -->
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="bi bi-person-lock me-2"></i>Account Security</h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-1"><strong>Name:</strong> <span id="viewName"></span></p>
+          <p class="mb-1"><strong>Username:</strong> <span id="viewUsername"></span></p>
+          <button class="btn btn-outline-primary w-100" id="btnShowPasswordForm">
+            <i class="bi bi-key me-1"></i> Change Password
+          </button>
+        </div>
+      </div>
+
+      <!-- Change Password Form -->
+      <div class="card toggle-section" id="passwordSection">
+        <div class="card-header bg-secondary text-white">
+          <h6 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Update Password</h6>
+        </div>
+        <div class="card-body">
+          <form id="passwordForm">
+            <div class="mb-3">
+              <label for="newPassword" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="newPassword" required>
+            </div>
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="confirmPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-save me-1"></i> Update Password
+            </button>
+            <button type="button" class="btn btn-outline-secondary w-100 mt-2" id="btnCancel">
+              <i class="bi bi-x-circle me-1"></i> Cancel
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+  $(document).ready(function () {
+
+    const username = localStorage.getItem("username") || "Name";
+    const userId = localStorage.getItem("userId");
+    $("#profileName").text(username);
+
+    $("#viewUsername").text(localStorage.getItem("username") || "john_doe");
+    $("#viewEmail").text(localStorage.getItem("email") || "john@example.com");
+    $("#viewDate").text(localStorage.getItem("registeredOn") || "2024-06-14");
+
+
+    $("#btnShowPasswordForm").click(function () {
+      $("#passwordSection").slideDown();
+      $(this).hide();
+    });
+
+
+    $("#btnCancel").click(function () {
+      $("#passwordSection").slideUp();
+      $("#btnShowPasswordForm").show();
+    });
+
+
+    $("#passwordForm").submit(function (e) {
+      e.preventDefault();
+
+      const newPass = $("#newPassword").val();
+      const confirmPass = $("#confirmPassword").val();
+
+      if (newPass !== confirmPass) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      $.ajax({
+        url: "",
+        method: "",
+        data: JSON.stringify({ password: newPass }),
+        contentType: "application/json",
+        success: function () {
+          alert("Password updated successfully!");
+          $("#passwordSection").slideUp();
+          $("#btnShowPasswordForm").show();
+          $("#passwordForm")[0].reset();
+        },
+        error: function () {
+          alert("Error updating password. Please try again.");
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>
