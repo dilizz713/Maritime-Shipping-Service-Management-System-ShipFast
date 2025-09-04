@@ -14,4 +14,6 @@ public interface AuthService {
 
 
     List<SignupDTO> getAllUsers();
+
+    void updateRole(Long userId, String role);
 }

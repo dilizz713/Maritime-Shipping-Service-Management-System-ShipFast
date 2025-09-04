@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignupDTO {
+    private Long id;
     @NotNull(message = "Name is required")
     private String name;
 

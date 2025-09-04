@@ -37,3 +37,121 @@
 2025-09-05T00:02:56.419+05:30  INFO 60276 --- [BackEnd] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
 2025-09-05T00:02:56.420+05:30  INFO 60276 --- [BackEnd] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2025-09-05T00:02:56.421+05:30  INFO 60276 --- [BackEnd] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-09-05T00:18:22.837+05:30  INFO 60276 --- [BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-09-05T00:18:22.876+05:30  INFO 60276 --- [BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-09-05T00:18:22.913+05:30  INFO 60276 --- [BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-09-05T00:18:22.943+05:30  INFO 60276 --- [BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-09-05T00:18:22.984+05:30  INFO 60276 --- [BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-09-05T00:18:32.007+05:30  INFO 61096 --- [BackEnd] [main] l.i.gdse71.backend.BackEndApplication    : Starting BackEndApplication using Java 21.0.5 with PID 61096 (C:\Users\Dilini\OneDrive\Documents\IJSE Doc\AAD\Course Work\Maritime Shipping Service Management System\BackEnd\target\classes started by Dilini in C:\Users\Dilini\OneDrive\Documents\IJSE Doc\AAD\Course Work\Maritime Shipping Service Management System)
+2025-09-05T00:18:32.011+05:30  INFO 61096 --- [BackEnd] [main] l.i.gdse71.backend.BackEndApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-09-05T00:18:34.418+05:30  INFO 61096 --- [BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-09-05T00:18:34.533+05:30  INFO 61096 --- [BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 101 ms. Found 5 JPA repository interfaces.
+2025-09-05T00:18:35.384+05:30  INFO 61096 --- [BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-09-05T00:18:35.404+05:30  INFO 61096 --- [BackEnd] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-09-05T00:18:35.404+05:30  INFO 61096 --- [BackEnd] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-09-05T00:18:35.482+05:30  INFO 61096 --- [BackEnd] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-09-05T00:18:35.482+05:30  INFO 61096 --- [BackEnd] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3317 ms
+2025-09-05T00:18:35.695+05:30  INFO 61096 --- [BackEnd] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-09-05T00:18:35.796+05:30  INFO 61096 --- [BackEnd] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-09-05T00:18:35.848+05:30  INFO 61096 --- [BackEnd] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-09-05T00:18:36.218+05:30  INFO 61096 --- [BackEnd] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-09-05T00:18:36.248+05:30  INFO 61096 --- [BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-09-05T00:18:36.686+05:30  INFO 61096 --- [BackEnd] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6408be5
+2025-09-05T00:18:36.687+05:30  INFO 61096 --- [BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-09-05T00:18:36.777+05:30  WARN 61096 --- [BackEnd] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-09-05T00:18:36.794+05:30  INFO 61096 --- [BackEnd] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 9.1
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-09-05T00:18:38.115+05:30  INFO 61096 --- [BackEnd] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-09-05T00:18:38.282+05:30  INFO 61096 --- [BackEnd] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-09-05T00:18:39.140+05:30  WARN 61096 --- [BackEnd] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-09-05T00:18:39.195+05:30  INFO 61096 --- [BackEnd] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2025-09-05T00:18:40.208+05:30  INFO 61096 --- [BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-09-05T00:18:40.220+05:30  INFO 61096 --- [BackEnd] [main] l.i.gdse71.backend.BackEndApplication    : Started BackEndApplication in 9.072 seconds (process running for 10.422)
+2025-09-05T00:18:44.921+05:30  INFO 61096 --- [BackEnd] [http-nio-8080-exec-3] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-09-05T00:18:44.921+05:30  INFO 61096 --- [BackEnd] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-09-05T00:18:44.923+05:30  INFO 61096 --- [BackEnd] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-09-05T00:28:05.437+05:30  WARN 61096 --- [BackEnd] [HikariPool-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m58s459ms349µs).
+2025-09-05T00:44:46.638+05:30  INFO 61096 --- [BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-09-05T00:44:46.670+05:30  INFO 61096 --- [BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-09-05T00:44:46.707+05:30  INFO 61096 --- [BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-09-05T00:44:46.740+05:30  INFO 61096 --- [BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-09-05T00:44:46.757+05:30  INFO 61096 --- [BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-09-05T00:44:54.476+05:30  INFO 61848 --- [BackEnd] [main] l.i.gdse71.backend.BackEndApplication    : Starting BackEndApplication using Java 21.0.5 with PID 61848 (C:\Users\Dilini\OneDrive\Documents\IJSE Doc\AAD\Course Work\Maritime Shipping Service Management System\BackEnd\target\classes started by Dilini in C:\Users\Dilini\OneDrive\Documents\IJSE Doc\AAD\Course Work\Maritime Shipping Service Management System)
+2025-09-05T00:44:54.479+05:30  INFO 61848 --- [BackEnd] [main] l.i.gdse71.backend.BackEndApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-09-05T00:44:55.659+05:30  INFO 61848 --- [BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-09-05T00:44:55.770+05:30  INFO 61848 --- [BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 96 ms. Found 5 JPA repository interfaces.
+2025-09-05T00:44:56.396+05:30  INFO 61848 --- [BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-09-05T00:44:56.410+05:30  INFO 61848 --- [BackEnd] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-09-05T00:44:56.410+05:30  INFO 61848 --- [BackEnd] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-09-05T00:44:56.463+05:30  INFO 61848 --- [BackEnd] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-09-05T00:44:56.463+05:30  INFO 61848 --- [BackEnd] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1925 ms
+2025-09-05T00:44:56.620+05:30  INFO 61848 --- [BackEnd] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-09-05T00:44:56.729+05:30  INFO 61848 --- [BackEnd] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-09-05T00:44:56.767+05:30  INFO 61848 --- [BackEnd] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-09-05T00:44:57.072+05:30  INFO 61848 --- [BackEnd] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-09-05T00:44:57.108+05:30  INFO 61848 --- [BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-09-05T00:44:57.537+05:30  INFO 61848 --- [BackEnd] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1626bddf
+2025-09-05T00:44:57.539+05:30  INFO 61848 --- [BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-09-05T00:44:57.631+05:30  WARN 61848 --- [BackEnd] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-09-05T00:44:57.656+05:30  INFO 61848 --- [BackEnd] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 9.1
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-09-05T00:44:58.821+05:30  INFO 61848 --- [BackEnd] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-09-05T00:44:58.987+05:30  INFO 61848 --- [BackEnd] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-09-05T00:44:59.611+05:30  WARN 61848 --- [BackEnd] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-09-05T00:44:59.657+05:30  INFO 61848 --- [BackEnd] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2025-09-05T00:45:00.519+05:30  INFO 61848 --- [BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-09-05T00:45:00.530+05:30  INFO 61848 --- [BackEnd] [main] l.i.gdse71.backend.BackEndApplication    : Started BackEndApplication in 6.653 seconds (process running for 7.524)
+2025-09-05T00:47:24.204+05:30  INFO 61848 --- [BackEnd] [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-09-05T00:47:24.208+05:30  INFO 61848 --- [BackEnd] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-09-05T00:47:24.218+05:30  INFO 61848 --- [BackEnd] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 10 ms
+2025-09-05T01:09:31.950+05:30  INFO 61848 --- [BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-09-05T01:09:32.013+05:30  INFO 61848 --- [BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-09-05T01:09:32.105+05:30  INFO 61848 --- [BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-09-05T01:09:32.175+05:30  INFO 61848 --- [BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-09-05T01:09:32.209+05:30  INFO 61848 --- [BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-09-05T01:11:12.804+05:30  INFO 61160 --- [BackEnd] [main] l.i.gdse71.backend.BackEndApplication    : Starting BackEndApplication using Java 21.0.5 with PID 61160 (C:\Users\Dilini\OneDrive\Documents\IJSE Doc\AAD\Course Work\Maritime Shipping Service Management System\BackEnd\target\classes started by Dilini in C:\Users\Dilini\OneDrive\Documents\IJSE Doc\AAD\Course Work\Maritime Shipping Service Management System)
+2025-09-05T01:11:12.807+05:30  INFO 61160 --- [BackEnd] [main] l.i.gdse71.backend.BackEndApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-09-05T01:11:13.920+05:30  INFO 61160 --- [BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-09-05T01:11:14.013+05:30  INFO 61160 --- [BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 82 ms. Found 5 JPA repository interfaces.
+2025-09-05T01:11:14.584+05:30  INFO 61160 --- [BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-09-05T01:11:14.597+05:30  INFO 61160 --- [BackEnd] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-09-05T01:11:14.597+05:30  INFO 61160 --- [BackEnd] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-09-05T01:11:14.660+05:30  INFO 61160 --- [BackEnd] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-09-05T01:11:14.660+05:30  INFO 61160 --- [BackEnd] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1802 ms
+2025-09-05T01:11:14.819+05:30  INFO 61160 --- [BackEnd] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-09-05T01:11:14.902+05:30  INFO 61160 --- [BackEnd] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-09-05T01:11:14.940+05:30  INFO 61160 --- [BackEnd] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-09-05T01:11:15.264+05:30  INFO 61160 --- [BackEnd] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-09-05T01:11:15.301+05:30  INFO 61160 --- [BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-09-05T01:11:15.759+05:30  INFO 61160 --- [BackEnd] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7ef60c02
+2025-09-05T01:11:15.761+05:30  INFO 61160 --- [BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-09-05T01:11:15.858+05:30  WARN 61160 --- [BackEnd] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-09-05T01:11:15.881+05:30  INFO 61160 --- [BackEnd] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 9.1
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-09-05T01:11:17.278+05:30  INFO 61160 --- [BackEnd] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-09-05T01:11:17.434+05:30  INFO 61160 --- [BackEnd] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-09-05T01:11:18.143+05:30  WARN 61160 --- [BackEnd] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-09-05T01:11:18.188+05:30  INFO 61160 --- [BackEnd] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2025-09-05T01:11:19.108+05:30  INFO 61160 --- [BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-09-05T01:11:19.118+05:30  INFO 61160 --- [BackEnd] [main] l.i.gdse71.backend.BackEndApplication    : Started BackEndApplication in 6.878 seconds (process running for 8.133)
+2025-09-05T01:11:32.555+05:30  INFO 61160 --- [BackEnd] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-09-05T01:11:32.556+05:30  INFO 61160 --- [BackEnd] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-09-05T01:11:32.560+05:30  INFO 61160 --- [BackEnd] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms

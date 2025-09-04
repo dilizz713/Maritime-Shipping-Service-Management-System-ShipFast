@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lk.ijse.gdse71.backend.dto.AuthDTO;
 import lk.ijse.gdse71.backend.dto.AuthResponseDTO;
 import lk.ijse.gdse71.backend.dto.SignupDTO;
+import lk.ijse.gdse71.backend.dto.UpdateRoleDTO;
 import lk.ijse.gdse71.backend.service.AuthService;
 import lk.ijse.gdse71.backend.util.APIResponse;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +68,13 @@ public class AuthController {
         List<SignupDTO> userDTOS = authService.getAllUsers();
         return ResponseEntity.ok(new APIResponse(200,"User list retrieved successfully", userDTOS));
     }
+
+    @PutMapping("/updateRole")
+    public ResponseEntity<APIResponse> updateRole(@RequestBody UpdateRoleDTO updateRoleDTO){
+        authService.updateRole(updateRoleDTO.getUserId() , updateRoleDTO.getRole());
+        return ResponseEntity.ok(new APIResponse(200,"User Role Updated Successfully", updateRoleDTO));
+    }
+
 
 
 

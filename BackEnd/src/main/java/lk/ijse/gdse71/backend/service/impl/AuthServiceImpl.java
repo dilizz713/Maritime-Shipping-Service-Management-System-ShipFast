@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -59,7 +60,30 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public List<SignupDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(u -> new SignupDTO(
+                        u.getId(),
+                        u.getName(),
+                        u.getUsername(),
+                        null,        // hide password
+                        u.getRole().name()
+                ))
+                .collect(Collectors.toList());
 
+    }
+
+    @Override
+    public void updateRole(Long userId, String role) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+
+        try{
+            Role newRole = Role.valueOf(role.toUpperCase());
+            user.setRole(newRole);
+            userRepository.save(user);
+        }catch (IllegalArgumentException e){
+            throw new IllegalArgumentException("Invalid role value. Allowed: ADMIN, EMPLOYEE, CUSTOMER");
+        }
     }
 
 
