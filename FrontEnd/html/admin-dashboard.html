@@ -102,7 +102,6 @@
 
     <!-- Main content -->
     <div class="flex-grow-1">
-        <!-- Navbar -->
         <nav class="navbar navbar-expand-lg px-3">
             <div class="container-fluid justify-content-end">
                 <div class="dropdown">
@@ -120,8 +119,23 @@
         </nav>
 
         <div class="content">
-            <h2>Welcome to Shipping Company Admin Dashboard</h2>
+            <h2>Welcome to Ship-Fast Admin Dashboard</h2>
             <p>Select an option from the sidebar to get started.</p>
+
+            <!-- MarineTraffic Map  -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-map me-2"></i> Live Ship Tracking
+                </div>
+                <div class="card-body" style="height:400px;">
+                    <iframe
+                            src="https://www.marinetraffic.com/en/ais/embed/zoom:3/centery:20/centerx:0/maptype:1/shownames:false/mmsi:0/shipid:0/fleet:/fleet_id:/vtypes:/showmenu:false/remember:false"
+                            width="100%"
+                            height="100%"
+                            style="border:0; border-radius:8px;">
+                    </iframe>
+                </div>
+            </div>
         </div>
     </div>
 </div>
