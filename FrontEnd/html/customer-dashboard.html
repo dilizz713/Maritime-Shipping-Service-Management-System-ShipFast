@@ -54,7 +54,7 @@
             </li>
             <li class="mt-5">
                 <button class="btn btn-outline-danger w-100 text-start" id="btnDeleteAccount">
-                    <i class="bi bi-trash me-2"></i> Close Account
+                    <i class="bi bi-trash me-2"></i> Delete Account
                 </button>
             </li>
         </ul>
@@ -118,19 +118,19 @@
         const username = localStorage.getItem("username") || "Name";
         $("#profileName").text(username);
 
-        // Toggle sidebar
+
         $("#setting-btn").click(function () {
             $("#settingsSidebar").css("right", "0");
             $("#sidebarOverlay").show();
         });
 
-        // Close sidebar when overlay is clicked
+
         $("#sidebarOverlay").click(function () {
             $("#settingsSidebar").css("right", "-250px");
             $(this).hide();
         });
 
-        // Button actions
+
         $("#btnAccountSecurity").click(function () {
             window.location.href = "#";
         });
