@@ -18,4 +18,6 @@ public class SignupDTO {
     @NotNull(message = "Password is required")
     private String password;
 
+    private String role;
+
 }

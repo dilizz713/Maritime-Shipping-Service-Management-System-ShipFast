@@ -15,6 +15,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 @AllArgsConstructor
@@ -53,4 +55,12 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtUtil.generateToken(authDTO.username);
         return new AuthResponseDTO(token , user.getUsername() , user.getRole().name() , user.getId());
     }
+
+    @Override
+    public List<SignupDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+
+    }
+
+
 }

@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import lk.ijse.gdse71.backend.dto.AuthDTO;
 import lk.ijse.gdse71.backend.dto.AuthResponseDTO;
 import lk.ijse.gdse71.backend.dto.SignupDTO;
-import lk.ijse.gdse71.backend.repo.UserRepository;
 import lk.ijse.gdse71.backend.service.AuthService;
 import lk.ijse.gdse71.backend.util.APIResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -60,6 +61,14 @@ public class AuthController {
         response.addCookie(cookie);
         return ResponseEntity.ok("Logged out successfully");
     }
+
+    @GetMapping("/getAllUsers")
+    public ResponseEntity<APIResponse> getAllUsers() {
+        List<SignupDTO> userDTOS = authService.getAllUsers();
+        return ResponseEntity.ok(new APIResponse(200,"User list retrieved successfully", userDTOS));
+    }
+
+
 
 
 
