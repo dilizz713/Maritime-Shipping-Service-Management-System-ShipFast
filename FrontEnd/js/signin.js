@@ -32,12 +32,10 @@ $(document).ready(function () {
 
                 alert(`Welcome ${userName} (${role})`);
 
-
+                // Store in localStorage
                 localStorage.setItem("username", userName);
                 localStorage.setItem("userId", userId);
-
-
-
+                localStorage.setItem("role", role);  // <-- add this line
 
                 if (role === "ADMIN" || role === "EMPLOYEE") {
                     window.location.href = "../html/admin-dashboard.html";
