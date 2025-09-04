@@ -1,33 +1,51 @@
 
 $(document).ready(function () {
     const username = localStorage.getItem("username");
+    const role = localStorage.getItem("role"); // get role
 
     if (username) {
-        // User is signed in
+        // Show username & common signed-in UI
         $("#navbarUsername").text(username);
-        $("#userNav").show();
         $("#signinNav").hide();
         $("#logout-btn").show();
 
+        if (role === "CUSTOMER") {
+            // Customers see myShip
+            $("#userNav").show();
+        } else if (role === "ADMIN" || role === "EMPLOYEE") {
+            // Hide myShip
+            $("#userNav").hide();
+
+            // Add ShipFast System button if not already present
+            if ($("#systemNav").length === 0) {
+                $(".navbar-nav").append(`
+                    <li class="nav-item ms-2" id="systemNav">
+                        <a href="html/admin-dashboard.html" class="btn btn-shipfast px-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-speedometer2 fs-5"></i> System
+                        </a>
+                    </li>
+                `);
+            }
+
+        }
     } else {
-        // User not signed in
+        // Not signed in
         $("#userNav").hide();
         $("#signinNav").show();
-
-
+        $("#logout-btn").hide();
     }
 
-    if (!localStorage.getItem("username")) {
+    // Show reminder toast if not signed in
+    if (!username) {
         setTimeout(function() {
             var toastEl = $('#signinToast');
             var toast = new bootstrap.Toast(toastEl);
             toast.show();
-        }, 5000); // 5-second delay
+        }, 5000);
     }
 
-
+    // Other animations...
     const $reveals = $('.reveal');
-
     const io = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -41,7 +59,7 @@ $(document).ready(function () {
         io.observe(this);
     });
 
-    // -------------------- Animate Count --------------------
+    // Animated counters
     function animateCount($el, end, duration = 1200) {
         const start = 0;
         const startTime = performance.now();
@@ -66,13 +84,11 @@ $(document).ready(function () {
         observer.observe(this);
     });
 
-
     $('#year').text(new Date().getFullYear());
-
-
 });
 
-// Logout function
+
+// Logout
 function logoutUser() {
     if (confirm("Are you sure you want to log out?")) {
         $.ajax({
