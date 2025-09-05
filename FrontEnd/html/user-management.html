@@ -67,12 +67,49 @@
             <div class="company-name">Ship Fast</div>
         </div>
         <ul class="nav flex-column">
+            <!-- Dashboard -->
             <li class="nav-item mb-2">
-                <a href="admin-dashboard.html" class="nav-link active"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+                <a href="#" class="nav-link active"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
             </li>
+            <!-- Customer -->
             <li class="nav-item mb-2">
                 <a href="customer-management.html" class="nav-link"><i class="bi bi-people me-2"></i>Customer</a>
             </li>
+            <!-- Services -->
+            <li class="nav-item mb-2">
+                <a href="service-management.html" class="nav-link">
+                    <i class="bi bi-gear me-2"></i>Services
+                </a>
+            </li>
+
+            <!-- Inventory -->
+            <li class="nav-item mb-2">
+                <a href="inventory-management.html" class="nav-link">
+                    <i class="bi bi-box-seam me-2"></i>Inventory
+                </a>
+            </li>
+
+            <!-- Employee -->
+            <li class="nav-item mb-2">
+                <a class="nav-link" data-bs-toggle="collapse" href="#employeeMenu" role="button" aria-expanded="false" aria-controls="employeeMenu">
+                    <i class="bi bi-person-badge me-2"></i>Employee
+                </a>
+            </li>
+
+            <!-- Vehicle -->
+            <li class="nav-item mb-2">
+                <a class="nav-link" data-bs-toggle="collapse" href="#vehicleMenu" role="button" aria-expanded="false" aria-controls="vehicleMenu">
+                    <i class="bi bi-truck me-2"></i>Vehicle
+                </a>
+            </li>
+
+            <!-- Request Services -->
+            <li class="nav-item mb-2">
+                <a href="request-services.html" class="nav-link">
+                    <i class="bi bi-card-checklist me-2"></i>Request Services
+                </a>
+            </li>
+
             <li class="nav-item mb-2">
                 <a class="nav-link" data-bs-toggle="collapse" href="#jobMenu" role="button" aria-expanded="false" aria-controls="jobMenu">
                     <i class="bi bi-briefcase me-2"></i>Job
@@ -85,22 +122,10 @@
                     </ul>
                 </div>
             </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link" data-bs-toggle="collapse" href="#inventoryMenu" role="button" aria-expanded="false" aria-controls="inventoryMenu">
-                    <i class="bi bi-box-seam me-2"></i>Inventory
-                </a>
-                <div class="collapse ps-4" id="inventoryMenu">
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a href="#" class="nav-link">Vendor</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link">Product</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link">Inventory Management</a></li>
-                    </ul>
-                </div>
-            </li>
-            <li class="nav-item mb-2">
+            <li class="nav-item mb-2 costing-btn">
                 <a href="#" class="nav-link"><i class="bi bi-cash-coin me-2"></i>Costing</a>
             </li>
-            <li class="nav-item mb-2">
+            <li class="nav-item mb-2 user-btn">
                 <a href="user-management.html" class="nav-link"><i class="bi bi-person-circle me-2"></i>User</a>
             </li>
         </ul>
