@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/port/**").permitAll()
                         .requestMatchers("/api/v1/service/**").permitAll()
                         .requestMatchers("/api/v1/requestServices/**").permitAll()
+                        .requestMatchers("/api/v1/vehicles/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

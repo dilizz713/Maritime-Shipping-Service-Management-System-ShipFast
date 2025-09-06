@@ -6,22 +6,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.time.Instant;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class Vehicle {
+public class VehicleLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String plateNumber;
-    private String type;
-    private String model;
+    private Double latitude;
+    private Double longitude;
+    private Double speed;
+    private Instant timestamp;
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vehicle_id" , nullable = false)
+    private Vehicle vehicle;
 
 }
