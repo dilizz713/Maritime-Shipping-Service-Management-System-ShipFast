@@ -239,6 +239,152 @@
     </div>
 </div>
 
+<script src="../lib/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const BASE_URL = "http://localhost:8080/api/v1/service";
+
+    $(document).ready(function () {
+
+        loadServices();
+
+        // Save or Update
+        $("#serviceForm").on("submit", function (e) {
+            e.preventDefault();
+
+            const id = $("#serviceId").val();
+            const serviceData = {
+                id: id ? Number(id) : null,
+                serviceName: $("#serviceName").val(),
+                description: $("#serviceDescription").val()
+            };
+
+            if (id) {
+                // Update service
+                $.ajax({
+                    url: `${BASE_URL}/updateService`,
+                    method: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify(serviceData),
+                    success: function (res) {
+                        alert(res.message || "Service updated successfully!");
+                        $("#serviceModal").modal("hide");
+                        loadServices();
+                        resetForm();
+                    },
+                    error: function (err) {
+                        alert(err.responseJSON?.message || "Error updating service!");
+                    }
+                });
+            } else {
+                // Add service
+                $.ajax({
+                    url: `${BASE_URL}/saveService`,
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(serviceData),
+                    success: function (res) {
+                        alert(res.message || "Service added successfully!");
+                        $("#serviceModal").modal("hide");
+                        loadServices();
+                        resetForm();
+                    },
+                    error: function (err) {
+                        alert(err.responseJSON?.message || "Error adding service!");
+                    }
+                });
+            }
+        });
+
+        // Edit service
+        $(document).on("click", ".btn-edit", function () {
+            const id = $(this).data("id");
+            const name = $(this).data("name");
+            const description = $(this).data("description");
+
+            $("#serviceId").val(id);
+            $("#serviceName").val(name);
+            $("#serviceDescription").val(description);
+
+            $("#serviceModalLabel").text("Update Service");
+            const modal = new bootstrap.Modal(document.getElementById("serviceModal"));
+            modal.show();
+        });
+
+        // Delete service
+        $(document).on("click", ".btn-delete", function () {
+            const id = $(this).data("id");
+            if (confirm("Are you sure you want to delete this service?")) {
+                $.ajax({
+                    url: `${BASE_URL}/deleteService/${id}`,
+                    method: "DELETE",
+                    success: function (res) {
+                        alert(res.message || "Service deleted successfully!");
+                        loadServices();
+                    },
+                    error: function (err) {
+                        alert(err.responseJSON?.message || "Error deleting service!");
+                    }
+                });
+            }
+        });
+
+        $('#serviceModal').on('hidden.bs.modal', function () {
+            resetForm();
+        });
+
+    });
+
+    // Load all services
+    function loadServices() {
+        $.ajax({
+            url: `${BASE_URL}/getAllServices`,
+            method: "GET",
+            success: function (res) {
+                const services = res.data || [];
+                const tbody = $("#serviceTable");
+                tbody.empty();
+
+                if (services.length === 0) {
+                    tbody.append(`<tr><td colspan="4">No services found</td></tr>`);
+                    return;
+                }
+
+                services.forEach((service, index) => {
+                    tbody.append(`
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${service.serviceName}</td>
+                        <td>${service.description}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning btn-edit"
+                                data-id="${service.id}"
+                                data-name="${service.serviceName}"
+                                data-description="${service.description}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger btn-delete" data-id="${service.id}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+                });
+            },
+            error: function (err) {
+                console.error(err);
+                alert(err.responseJSON?.message || "Error loading services!");
+            }
+        });
+    }
+
+    // Reset form
+    function resetForm() {
+        $("#serviceForm")[0].reset();
+        $("#serviceId").val("");
+        $("#serviceModalLabel").text("Add Service");
+    }
+
+</script>
 </body>
 </html>

@@ -29,4 +29,17 @@ public class ServiceController {
         List<ServiceDTO> serviceDTOS = servicesService.getAllServices();
         return ResponseEntity.ok(new APIResponse(200,"All services retrieved successfully", serviceDTOS));
     }
+
+    @PutMapping("/updateService")
+    public ResponseEntity<APIResponse> updateService(@RequestBody ServiceDTO serviceDTO) {
+        servicesService.update(serviceDTO);
+        return ResponseEntity.ok(new APIResponse(200, "Service updated successfully", true));
+    }
+
+    @DeleteMapping("/deleteService/{id}")
+    public ResponseEntity<APIResponse> deleteService(@PathVariable Long id) {
+        servicesService.delete(id);
+        return ResponseEntity.ok(new APIResponse(200, "Service deleted successfully", true));
+
+    }
 }

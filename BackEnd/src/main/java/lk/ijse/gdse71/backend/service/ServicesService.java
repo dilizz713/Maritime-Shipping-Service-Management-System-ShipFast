@@ -8,4 +8,8 @@ public interface ServicesService {
     void save(ServiceDTO serviceDTO);
 
     List<ServiceDTO> getAllServices();
+
+    void update(ServiceDTO serviceDTO);
+
+    void delete(Long id);
 }
