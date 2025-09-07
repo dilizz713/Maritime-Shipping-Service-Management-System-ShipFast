@@ -1,5 +1,7 @@
 package lk.ijse.gdse71.backend.controller;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lk.ijse.gdse71.backend.dto.ServiceRequestDTO;
 import lk.ijse.gdse71.backend.entity.Customer;
 import lk.ijse.gdse71.backend.exception.ResourceNotFoundException;
@@ -10,6 +12,8 @@ import lk.ijse.gdse71.backend.util.APIResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +27,8 @@ public class RequestServicesController {
     private final RequestServicesService requestServicesService;
     private final CustomerRepository customerRepository;
 
+    private final JavaMailSender mailSender;
+
     @PostMapping("/saveRequest")
     public ResponseEntity<APIResponse> saveRequest(@RequestBody ServiceRequestDTO serviceRequestDTO) {
         requestServicesService.saveRequest(serviceRequestDTO);
@@ -34,6 +40,8 @@ public class RequestServicesController {
         requestServicesService.updateRequest(serviceRequestDTO);
         return ResponseEntity.ok(new APIResponse(200,"Request updated successfully",true));
     }
+
+
 
     @GetMapping("/getAllRequestsByUser/{userId}")
     public ResponseEntity<APIResponse> getRequestsByUser(@PathVariable Long userId) {
@@ -47,6 +55,8 @@ public class RequestServicesController {
                 new APIResponse(200, "Requests retrieved successfully", requests)
         );
     }
+
+
 
 
 
