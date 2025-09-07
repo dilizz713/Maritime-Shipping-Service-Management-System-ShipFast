@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.backend.service;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import lk.ijse.gdse71.backend.dto.VehicleDTO;
 import lk.ijse.gdse71.backend.dto.VehicleLocationDTO;
 import lk.ijse.gdse71.backend.entity.Vehicle;
@@ -12,11 +13,13 @@ import java.util.Optional;
 public interface VehicleService {
     Vehicle addVehicle(VehicleDTO dto);
 
-    VehicleLocation saveLocation(VehicleLocationDTO dto);
-
-    Optional<VehicleLocation> getLatestLocation(Long id);
-
-    List<VehicleLocation> getHistory(Long id, Instant parse, Instant parse1);
-
     List<Vehicle> getAllVehicles();
+
+    void saveLocation(VehicleLocation location);
+
+    Optional<VehicleLocation> getLatestLocation(Long vehicleId);
+
+    List<VehicleLocation> getRecentLocations(Long vehicleId);
+
+    Optional<Vehicle> getVehicleById(Long vehicleId);
 }

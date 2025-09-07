@@ -20,7 +20,7 @@ import java.util.Optional;
 public class VehicleServiceImpl implements VehicleService {
     private final VehicleRepository vehicleRepo;
     private final VehicleLocationRepository locationRepo;
-    private final ModelMapper modelMapper;
+
 
     @Override
     public Vehicle addVehicle(VehicleDTO dto) {
@@ -32,20 +32,16 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleRepo.save(v);
     }
 
+
+
     @Override
-    public VehicleLocation saveLocation(VehicleLocationDTO dto) {
-        Vehicle vehicle = vehicleRepo.findById(dto.getVehicleId())
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+    public List<Vehicle> getAllVehicles() {
+        return vehicleRepo.findAll();
+    }
 
-        VehicleLocation loc = VehicleLocation.builder()
-                .vehicle(vehicle)
-                .latitude(dto.getLatitude())
-                .longitude(dto.getLongitude())
-                .speed(dto.getSpeed())
-                .timestamp(Instant.parse(dto.getTimestamp()))
-                .build();
-
-        return locationRepo.save(loc);
+    @Override
+    public void saveLocation(VehicleLocation location) {
+        locationRepo.save(location);
     }
 
     @Override
@@ -54,14 +50,12 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public List<VehicleLocation> getHistory(Long id, Instant from, Instant to) {
-        Vehicle vehicle = vehicleRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
-        return locationRepo.findByVehicleAndTimestampBetween(vehicle, from, to);
+    public List<VehicleLocation> getRecentLocations(Long vehicleId) {
+        return locationRepo.findTop10ByVehicleIdOrderByTimestampDesc(vehicleId);
     }
 
     @Override
-    public List<Vehicle> getAllVehicles() {
-        return vehicleRepo.findAll();
+    public Optional<Vehicle> getVehicleById(Long vehicleId) {
+        return vehicleRepo.findById(vehicleId);
     }
 }

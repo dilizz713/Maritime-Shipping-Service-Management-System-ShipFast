@@ -14,8 +14,10 @@ import java.util.Optional;
 @Repository
 public interface VehicleLocationRepository extends JpaRepository<VehicleLocation,Long> {
 
-    @Query("SELECT vl FROM VehicleLocation vl WHERE vl.vehicle.id = :vehicleId ORDER BY vl.timestamp DESC LIMIT 1")
+    @Query("SELECT v FROM VehicleLocation v WHERE v.vehicle.id = :vehicleId ORDER BY v.timestamp DESC")
+    List<VehicleLocation> findTop10ByVehicleIdOrderByTimestampDesc(Long vehicleId);
+
+    @Query("SELECT v FROM VehicleLocation v WHERE v.vehicle.id = :vehicleId ORDER BY v.timestamp DESC LIMIT 1")
     Optional<VehicleLocation> findLatestByVehicleId(Long vehicleId);
 
-    List<VehicleLocation> findByVehicleAndTimestampBetween(Vehicle vehicle, Instant from, Instant to);
 }

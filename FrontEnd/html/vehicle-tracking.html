@@ -51,18 +51,18 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
-    const BASE_URL = "http://localhost:8080/api/v1/vehicles"; // Backend API
+    const BASE_URL = "http://localhost:8080/api/v1/vehicles";
     let map, marker;
 
     // Initialize Leaflet map
     function initMap() {
-        map = L.map('map').setView([6.9271, 79.8612], 13); // Default to Colombo
+        map = L.map('map').setView([6.9271, 79.8612], 13); // Default Colombo view
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
     }
 
-    // Load vehicles into dropdown
+    // Load vehicle list
     function loadVehicles() {
         $.ajax({
             url: BASE_URL + "/getAllVehicles",
@@ -71,57 +71,57 @@
                 const select = $("#vehicleSelect");
                 select.empty();
 
-                if (res.length === 0) return;
-
                 res.forEach(v => {
                     select.append(`<option value="${v.id}">${v.vehicleName} (${v.plateNumber})</option>`);
                 });
 
-                // Load first vehicle location by default
-                loadVehicleLocation(res[0].id);
+                if(res.length > 0) {
+                    loadLatestLocation(res[0].id);
+                }
             },
             error: function() {
-                alert("Failed to load vehicles");
+                alert("❌ Failed to load vehicles.");
             }
         });
     }
 
     // Load latest vehicle location
-    function loadVehicleLocation(vehicleId) {
+    function loadLatestLocation(vehicleId) {
         $.ajax({
-            url: `${BASE_URL}/${vehicleId}/location/latest`, // Correct endpoint
+            url: BASE_URL + `/${vehicleId}/latest`,
             method: "GET",
             success: function(res) {
-                if (!res) return; // no location yet
+                if(res.status !== 200 || !res.data) {
+                    console.warn("No location found");
+                    return;
+                }
 
-                const latlng = [res.latitude, res.longitude];
+                const loc = res.data; // VehicleLocation object
+                const latest = [loc.latitude, loc.longitude];
 
-                // Remove previous marker
-                if (marker) map.removeLayer(marker);
+                if(marker) map.removeLayer(marker);
 
-                // Add new marker
-                marker = L.marker(latlng).addTo(map)
+                marker = L.marker(latest).addTo(map)
                     .bindPopup(`
-                        Vehicle ID: ${vehicleId}<br>
-                        Speed: ${res.speed} km/h<br>
-                        Time: ${new Date(res.timestamp).toLocaleString()}
+                        <b>${loc.vehicle?.plateNumber || "Vehicle " + vehicleId}</b><br>
+                        Speed: ${loc.speed} km/h<br>
+                        Time: ${new Date(loc.timestamp).toLocaleString()}
                     `)
                     .openPopup();
 
-                // Center map
-                map.setView(latlng, 14);
+                map.setView(latest, 14);
             },
             error: function() {
-                console.error("Failed to load vehicle location");
+                console.error("❌ Failed to load vehicle location.");
             }
         });
     }
 
-    // Refresh location every 5 seconds
+    // Refresh every 5 seconds
     function startLiveTracking() {
         setInterval(function() {
             const vehicleId = $("#vehicleSelect").val();
-            if(vehicleId) loadVehicleLocation(vehicleId);
+            if(vehicleId) loadLatestLocation(vehicleId);
         }, 5000);
     }
 
@@ -130,12 +130,10 @@
         loadVehicles();
         startLiveTracking();
 
-        // Update marker when selecting a different vehicle
         $("#vehicleSelect").change(function() {
-            loadVehicleLocation($(this).val());
+            loadLatestLocation($(this).val());
         });
     });
 </script>
-
 </body>
 </html>
