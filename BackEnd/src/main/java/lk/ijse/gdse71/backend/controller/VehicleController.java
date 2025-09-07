@@ -1,17 +1,17 @@
 package lk.ijse.gdse71.backend.controller;
 
 import lk.ijse.gdse71.backend.dto.VehicleDTO;
-import lk.ijse.gdse71.backend.dto.VehicleLocationDTO;
-import lk.ijse.gdse71.backend.entity.Vehicle;
-import lk.ijse.gdse71.backend.entity.VehicleLocation;
 import lk.ijse.gdse71.backend.service.VehicleService;
 import lk.ijse.gdse71.backend.util.APIResponse;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -22,46 +22,64 @@ import java.util.List;
 public class VehicleController {
     private final VehicleService vehicleService;
 
-    @GetMapping("getAllVehicles")
-    public List<Vehicle> getAllVehicles() {
-        return vehicleService.getAllVehicles();
+    @PostMapping("/add")
+    public ResponseEntity<APIResponse> addVehicle(
+            @RequestParam String name,
+            @RequestParam String numberPlate,
+            @RequestParam String type,
+            @RequestParam String model,
+            @RequestParam String status,
+            @RequestParam(required = false) MultipartFile image) {
+
+        VehicleDTO dto = new VehicleDTO();
+        dto.setName(name);
+        dto.setNumberPlate(numberPlate);
+        dto.setType(type);
+        dto.setModel(model);
+        dto.setStatus(status);
+
+        vehicleService.addVehicle(dto, image);
+        return ResponseEntity.ok(new APIResponse(201, "Vehicle added successfully", true));
     }
 
-    @PostMapping
-    public Vehicle addVehicle(@RequestBody VehicleDTO dto) {
-        return vehicleService.addVehicle(dto);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<APIResponse> updateVehicle(
+            @PathVariable Long id,
+            @RequestParam String name,
+            @RequestParam String numberPlate,
+            @RequestParam String type,
+            @RequestParam String model,
+            @RequestParam String status,
+            @RequestParam(required = false) MultipartFile image) {
+
+        // Create DTO with updated fields
+        VehicleDTO dto = new VehicleDTO();
+        dto.setName(name);
+        dto.setNumberPlate(numberPlate);
+        dto.setType(type);
+        dto.setModel(model);
+        dto.setStatus(status);
+
+        // Call service to update vehicle
+        vehicleService.updateVehicle(id, dto, image);
+
+        return ResponseEntity.ok(new APIResponse(200, "Vehicle updated successfully", true));
     }
 
-    @PostMapping("/location")
-    public ResponseEntity<APIResponse> addLocation(@RequestBody VehicleLocationDTO dto) {
-        Vehicle vehicle = vehicleService.getVehicleById(dto.getVehicleId())
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
-
-        VehicleLocation location = new VehicleLocation();
-        location.setVehicle(vehicle);
-        location.setLatitude(dto.getLatitude());
-        location.setLongitude(dto.getLongitude());
-        location.setSpeed(dto.getSpeed());
-        location.setTimestamp(Instant.parse(dto.getTimestamp()));
-
-        vehicleService.saveLocation(location);
-
-        return ResponseEntity.ok(new APIResponse(200, "Location saved", location));
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<APIResponse> deleteVehicle(@PathVariable Long id) {
+        vehicleService.deleteVehicle(id);
+        return ResponseEntity.ok(new APIResponse(201 , "Vehicle deleted successfully" , true));
     }
 
-    @GetMapping("/{vehicleId}/latest")
-    public ResponseEntity<?> getLatestLocation(@PathVariable Long vehicleId) {
-        return vehicleService.getLatestLocation(vehicleId)
-                .map(loc -> ResponseEntity.ok(new APIResponse(200,"Latest location", loc)))
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/{id}")
+    public ResponseEntity<APIResponse> getVehicleById(@PathVariable Long id) {
+        return ResponseEntity.ok(new APIResponse(200 , "Vehicle retrieved successfully", vehicleService.getVehicleById(id)));
     }
 
-
-
-    @GetMapping("/{vehicleId}/recent")
-    public ResponseEntity<APIResponse> getRecentLocations(@PathVariable Long vehicleId) {
-        List<VehicleLocation> locations = vehicleService.getRecentLocations(vehicleId);
-        return ResponseEntity.ok(new APIResponse(200 , "Recent locations", locations));
+    @GetMapping("/all")
+    public ResponseEntity<APIResponse> getAllVehicles() {
+        List<VehicleDTO> vehicles = vehicleService.getAllVehicles();
+        return ResponseEntity.ok(new APIResponse(200, "Vehicles retrieved successfully", vehicles));
     }
-
 }
