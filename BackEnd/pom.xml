@@ -91,6 +91,11 @@
 
         <!--http://localhost:8080/swagger-ui/index.html-->
 
+        <!--mails-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
