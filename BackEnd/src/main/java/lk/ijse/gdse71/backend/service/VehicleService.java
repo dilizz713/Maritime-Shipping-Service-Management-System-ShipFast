@@ -5,21 +5,21 @@ import lk.ijse.gdse71.backend.dto.VehicleDTO;
 import lk.ijse.gdse71.backend.dto.VehicleLocationDTO;
 import lk.ijse.gdse71.backend.entity.Vehicle;
 import lk.ijse.gdse71.backend.entity.VehicleLocation;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 public interface VehicleService {
-    Vehicle addVehicle(VehicleDTO dto);
 
-    List<Vehicle> getAllVehicles();
+    void updateVehicle(Long id, VehicleDTO vehicleDTO , MultipartFile file);
 
-    void saveLocation(VehicleLocation location);
+    void deleteVehicle(Long id);
 
-    Optional<VehicleLocation> getLatestLocation(Long vehicleId);
+    Object getVehicleById(Long id);
 
-    List<VehicleLocation> getRecentLocations(Long vehicleId);
+    List<VehicleDTO> getAllVehicles();
 
-    Optional<Vehicle> getVehicleById(Long vehicleId);
+    void addVehicle(VehicleDTO dto, MultipartFile image);
 }

@@ -18,9 +18,18 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String plateNumber;
+    private String name;
+
+    @Column(name = "number_plate", unique = true)
+    private String numberPlate;
+
     private String type;
+
     private String model;
+
+    private String status;
+
+    private String image;
 
 
 

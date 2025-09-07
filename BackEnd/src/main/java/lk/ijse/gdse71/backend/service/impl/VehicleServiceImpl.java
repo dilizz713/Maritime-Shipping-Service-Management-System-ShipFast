@@ -1,61 +1,107 @@
 package lk.ijse.gdse71.backend.service.impl;
-
+import lk.ijse.gdse71.backend.dto.CustomerDTO;
 import lk.ijse.gdse71.backend.dto.VehicleDTO;
-import lk.ijse.gdse71.backend.dto.VehicleLocationDTO;
+import lk.ijse.gdse71.backend.entity.Customer;
 import lk.ijse.gdse71.backend.entity.Vehicle;
-import lk.ijse.gdse71.backend.entity.VehicleLocation;
+import lk.ijse.gdse71.backend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.backend.repo.VehicleLocationRepository;
 import lk.ijse.gdse71.backend.repo.VehicleRepository;
 import lk.ijse.gdse71.backend.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.Instant;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class VehicleServiceImpl implements VehicleService {
-    private final VehicleRepository vehicleRepo;
-    private final VehicleLocationRepository locationRepo;
+    private final String uploadDir = "uploads/";
+    private final ModelMapper mapper;
 
+    @Autowired
+    private final VehicleRepository vehicleRepository;
 
-    @Override
-    public Vehicle addVehicle(VehicleDTO dto) {
-        Vehicle v = Vehicle.builder()
-                .plateNumber(dto.getPlateNumber())
-                .type(dto.getType())
-                .model(dto.getModel())
-                .build();
-        return vehicleRepo.save(v);
-    }
-
-
-
-    @Override
-    public List<Vehicle> getAllVehicles() {
-        return vehicleRepo.findAll();
-    }
-
-    @Override
-    public void saveLocation(VehicleLocation location) {
-        locationRepo.save(location);
+    private String saveFile(MultipartFile file) {
+        try {
+            String filename = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+            File dir = new File(uploadDir);
+            if (!dir.exists()) dir.mkdirs();
+            Files.copy(file.getInputStream(), Paths.get(uploadDir + filename));
+            return uploadDir + filename;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public Optional<VehicleLocation> getLatestLocation(Long vehicleId) {
-        return locationRepo.findLatestByVehicleId(vehicleId);
+    public void updateVehicle(Long id, VehicleDTO vehicleDTO, MultipartFile file) {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+        vehicle.setName(vehicleDTO.getName());
+        vehicle.setNumberPlate(vehicleDTO.getNumberPlate());
+        vehicle.setType(vehicleDTO.getType());
+        vehicle.setModel(vehicleDTO.getModel());
+        vehicle.setStatus(vehicleDTO.getStatus());
+
+        if (file != null && !file.isEmpty()) {
+            vehicle.setImage(saveFile(file));
+        }
+
+        vehicleRepository.save(vehicle);
     }
 
     @Override
-    public List<VehicleLocation> getRecentLocations(Long vehicleId) {
-        return locationRepo.findTop10ByVehicleIdOrderByTimestampDesc(vehicleId);
+    public void deleteVehicle(Long id) {
+        vehicleRepository.deleteById(id);
     }
 
     @Override
-    public Optional<Vehicle> getVehicleById(Long vehicleId) {
-        return vehicleRepo.findById(vehicleId);
+    public Object getVehicleById(Long id) {
+        return vehicleRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<VehicleDTO> getAllVehicles() {
+        List<Vehicle> vehicles = vehicleRepository.findAll();
+        return vehicles.stream().map(v -> {
+            VehicleDTO dto = new VehicleDTO();
+            dto.setId(v.getId());
+            dto.setName(v.getName());
+            dto.setNumberPlate(v.getNumberPlate());
+            dto.setType(v.getType());
+            dto.setModel(v.getModel());
+            dto.setStatus(v.getStatus());
+            dto.setImage(v.getImage()); // String path
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public void addVehicle(VehicleDTO vehicleDTO, MultipartFile file) {
+        Vehicle vehicle = new Vehicle();
+        vehicle.setName(vehicleDTO.getName());
+        vehicle.setNumberPlate(vehicleDTO.getNumberPlate());
+        vehicle.setType(vehicleDTO.getType());
+        vehicle.setModel(vehicleDTO.getModel());
+        vehicle.setStatus(vehicleDTO.getStatus());
+
+        if (file != null && !file.isEmpty()) {
+            vehicle.setImage(saveFile(file));
+        }
+
+        vehicleRepository.save(vehicle);
     }
 }
