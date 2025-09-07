@@ -4,19 +4,15 @@ $(document).ready(function () {
     const role = localStorage.getItem("role"); // get role
 
     if (username) {
-        // Show username & common signed-in UI
         $("#navbarUsername").text(username);
         $("#signinNav").hide();
         $("#logout-btn").show();
 
         if (role === "CUSTOMER") {
-            // Customers see myShip
             $("#userNav").show();
         } else if (role === "ADMIN" || role === "EMPLOYEE") {
-            // Hide myShip
             $("#userNav").hide();
 
-            // Add ShipFast System button if not already present
             if ($("#systemNav").length === 0) {
                 $(".navbar-nav").append(`
                     <li class="nav-item ms-2" id="systemNav">
@@ -29,13 +25,12 @@ $(document).ready(function () {
 
         }
     } else {
-        // Not signed in
         $("#userNav").hide();
         $("#signinNav").show();
         $("#logout-btn").hide();
     }
 
-    // Show reminder toast if not signed in
+
     if (!username) {
         setTimeout(function() {
             var toastEl = $('#signinToast');
@@ -44,7 +39,7 @@ $(document).ready(function () {
         }, 5000);
     }
 
-    // Other animations...
+
     const $reveals = $('.reveal');
     const io = new IntersectionObserver(entries => {
         entries.forEach(entry => {
@@ -85,6 +80,53 @@ $(document).ready(function () {
     });
 
     $('#year').text(new Date().getFullYear());
+
+    // Quotation
+    $(".quotation-form").on("submit", function (e) {
+        e.preventDefault();
+
+        const requestData = {
+            companyName: $("#companyName").val(),
+            email: $("#email").val(),
+            harbour: $("#harbour").val(),
+            position: $("#position").val(),
+            service: $("#service").val(),
+            message: $("#message").val()
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/api/v1/quotation/request",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(requestData),
+            success: function (res) {
+                showToast("success", res.message);
+                $(".quotation-form")[0].reset();
+            },
+            error: function (xhr) {
+                const errMsg = xhr.responseJSON?.message || "Failed to send request. Try again later.";
+                showToast("danger", errMsg);
+            }
+        });
+    });
+
+// Helper function to show Bootstrap Toast
+    function showToast(type, message) {
+        const toastHTML = `
+        <div class="toast align-items-center text-bg-${type} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+        const $toastContainer = $("#toastContainer");
+        if ($toastContainer.length === 0) {
+            $("body").append('<div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>');
+        }
+        $("#toastContainer").append(toastHTML);
+        setTimeout(() => $(".toast").first().remove(), 5000); // auto hide after 5s
+    }
 });
 
 
