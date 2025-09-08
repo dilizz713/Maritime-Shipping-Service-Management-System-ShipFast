@@ -59,12 +59,28 @@
 
 <div class="container py-4">
     <h3 class="text-center mb-4">Meeting Room</h3>
+
+    <!-- Pre-join settings -->
     <div class="row mb-3">
         <div class="col-md-8">
             <input type="text" id="meetingCode" class="form-control mb-2" placeholder="Enter Meeting Code">
         </div>
         <div class="col-md-4">
             <button id="joinBtn" class="btn btn-primary w-100">Join Meeting</button>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="videoOn" checked>
+                <label class="form-check-label" for="videoOn">Video On</label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="audioOn" checked>
+                <label class="form-check-label" for="audioOn">Audio On</label>
+            </div>
         </div>
     </div>
 
@@ -103,12 +119,14 @@
 
             const $controls = $("<div>", {class:"video-controls"});
             const $btnVideo = $("<i>", {
-                class: stream && stream.getVideoTracks()[0].enabled ? "bi bi-camera-video-fill" : "bi bi-camera-video-off-fill text-danger",
+                class: stream && stream.getVideoTracks()[0] && stream.getVideoTracks()[0].enabled
+                    ? "bi bi-camera-video-fill" : "bi bi-camera-video-off-fill text-danger",
                 title:"Toggle Video",
                 click: ()=> toggleVideo(id, $btnVideo, $video, $nameLabel, stream)
             });
             const $btnAudio = $("<i>", {
-                class: stream && stream.getAudioTracks()[0].enabled ? "bi bi-mic-fill" : "bi bi-mic-mute-fill text-danger",
+                class: stream && stream.getAudioTracks()[0] && stream.getAudioTracks()[0].enabled
+                    ? "bi bi-mic-fill" : "bi bi-mic-mute-fill text-danger",
                 title:"Toggle Audio",
                 click: ()=> toggleAudio(id, $btnAudio, stream)
             });
@@ -123,19 +141,25 @@
         }
 
         function updateVideoVisibility(id, stream, $video, $nameLabel){
-            if(stream && stream.getVideoTracks()[0].enabled){
+            if(stream && stream.getVideoTracks()[0] && stream.getVideoTracks()[0].enabled){
                 $video.show();
                 $nameLabel.hide();
             } else {
                 $video.hide();
-                // Show a "Camera Off" label instead of just hiding the video
                 $nameLabel.text(id + " (Camera Off)").show();
             }
         }
 
         async function initMedia(){
             try {
-                localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+                const videoEnabled = $("#videoOn").is(":checked");
+                const audioEnabled = $("#audioOn").is(":checked");
+
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: videoEnabled,
+                    audio: audioEnabled
+                });
+
                 addVideoCard(username, localStream, true);
             } catch(err){
                 alert("Error accessing camera/microphone: "+err);
@@ -144,30 +168,24 @@
 
         function toggleVideo(id, $btn, $video, $nameLabel, stream){
             if(id !== username || !stream) return;
-
             const videoTrack = stream.getVideoTracks()[0];
 
             if(videoTrack && videoTrack.enabled){
-                // Turn OFF camera: stop track and remove from stream
                 videoTrack.stop();
                 stream.removeTrack(videoTrack);
                 $btn.attr("class", "bi bi-camera-video-off-fill text-danger");
                 $video.hide();
                 $nameLabel.text(id + " (Camera Off)").show();
             } else {
-                // Turn ON camera: get new track
                 navigator.mediaDevices.getUserMedia({video:true, audio:false})
                     .then(newStream => {
                         const newTrack = newStream.getVideoTracks()[0];
-
-                        // Add new track to local stream
                         stream.addTrack(newTrack);
                         $video[0].srcObject = stream;
                         $btn.attr("class", "bi bi-camera-video-fill");
                         $video.show();
                         $nameLabel.hide();
 
-                        // Replace track in all peer connections
                         Object.values(peers).forEach(pc => {
                             const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
                             if(sender) sender.replaceTrack(newTrack);
@@ -177,13 +195,13 @@
             }
         }
 
-
-
         function toggleAudio(id, $btn, stream){
             if(id === username && stream){
                 const track = stream.getAudioTracks()[0];
-                track.enabled = !track.enabled;
-                $btn.attr("class", track.enabled ? "bi bi-mic-fill" : "bi bi-mic-mute-fill text-danger");
+                if(track){
+                    track.enabled = !track.enabled;
+                    $btn.attr("class", track.enabled ? "bi bi-mic-fill" : "bi bi-mic-mute-fill text-danger");
+                }
             }
         }
 
