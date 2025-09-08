@@ -6,6 +6,7 @@
     <title>Meeting Room</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <style>
         body { background: #f8f9fa; font-family: 'Poppins', sans-serif; }
         #video-container {
@@ -24,7 +25,7 @@
             color: white;
             font-weight: bold;
             font-size: 1.2rem;
-            aspect-ratio: 4/3; /* Maintains video aspect ratio */
+            aspect-ratio: 4/3;
         }
         .video-card video {
             width: 100%;
@@ -83,197 +84,189 @@
 </div>
 
 <script>
-    let localStream;
-    let peers = {};
-    let ws;
-    const username = "Employee_" + Math.floor(Math.random()*1000);
-    let meetingCode = "";
+    $(document).ready(function(){
+        let localStream;
+        let peers = {};
+        let ws;
+        const username = "Employee_" + Math.floor(Math.random()*1000);
+        let meetingCode = "";
 
-    function addVideoCard(id, stream=null, muted=false){
-        if(document.getElementById(id)) return;
+        function addVideoCard(id, stream=null, muted=false){
+            if($("#" + id).length) return;
 
-        const container = document.createElement("div");
-        container.className = "video-card";
-        container.id = id;
+            const $container = $("<div>", {class:"video-card", id:id});
+            const $video = $("<video>", {autoplay:true, playsinline:true, muted:muted});
+            if(stream) $video[0].srcObject = stream;
+            $video.click(()=> $video[0].requestFullscreen());
 
-        const video = document.createElement("video");
-        if(stream) video.srcObject = stream;
-        video.autoplay = true;
-        video.playsInline = true;
-        video.muted = muted;
-        video.onclick = () => video.requestFullscreen();
+            const $nameLabel = $("<div>", {class:"video-name", text:id});
 
-        const nameLabel = document.createElement("div");
-        nameLabel.className = "video-name";
-        nameLabel.innerText = id;
+            const $controls = $("<div>", {class:"video-controls"});
+            const $btnVideo = $("<i>", {
+                class: stream && stream.getVideoTracks()[0].enabled ? "bi bi-camera-video-fill" : "bi bi-camera-video-off-fill text-danger",
+                title:"Toggle Video",
+                click: ()=> toggleVideo(id, $btnVideo, $video, $nameLabel, stream)
+            });
+            const $btnAudio = $("<i>", {
+                class: stream && stream.getAudioTracks()[0].enabled ? "bi bi-mic-fill" : "bi bi-mic-mute-fill text-danger",
+                title:"Toggle Audio",
+                click: ()=> toggleAudio(id, $btnAudio, stream)
+            });
+            const $btnFull = $("<i>", {class:"bi bi-arrows-fullscreen", title:"Fullscreen", click: ()=> $container[0].requestFullscreen()});
+            const $btnLeave = $("<i>", {class:"bi bi-telephone-x-fill text-danger", title:"Leave Meeting", click: ()=> leaveMeeting(id)});
 
-        const controls = document.createElement("div");
-        controls.className = "video-controls";
+            $controls.append($btnVideo, $btnAudio, $btnFull, $btnLeave);
+            $container.append($video, $nameLabel, $controls);
+            $("#video-container").append($container);
 
-        const btnVideo = document.createElement("i");
-        btnVideo.className = stream && stream.getVideoTracks()[0].enabled ? "bi bi-camera-video-fill" : "bi bi-camera-video-off-fill text-danger";
-        btnVideo.title = "Toggle Video";
-        btnVideo.onclick = () => toggleVideo(id, btnVideo, video, nameLabel, stream);
-
-        const btnAudio = document.createElement("i");
-        btnAudio.className = stream && stream.getAudioTracks()[0].enabled ? "bi bi-mic-fill" : "bi bi-mic-mute-fill text-danger";
-        btnAudio.title = "Toggle Audio";
-        btnAudio.onclick = () => toggleAudio(id, btnAudio, stream);
-
-        const btnFull = document.createElement("i");
-        btnFull.className = "bi bi-arrows-fullscreen";
-        btnFull.title = "Fullscreen";
-        btnFull.onclick = () => container.requestFullscreen();
-
-        const btnLeave = document.createElement("i");
-        btnLeave.className = "bi bi-telephone-x-fill text-danger";
-        btnLeave.title = "Leave Meeting";
-        btnLeave.onclick = () => leaveMeeting(id);
-
-        controls.appendChild(btnVideo);
-        controls.appendChild(btnAudio);
-        controls.appendChild(btnFull);
-        controls.appendChild(btnLeave);
-
-        container.appendChild(video);
-        container.appendChild(nameLabel);
-        container.appendChild(controls);
-        document.getElementById("video-container").appendChild(container);
-
-        updateVideoVisibility(id, stream, video, nameLabel);
-    }
-
-    // Show name if video off
-    function updateVideoVisibility(id, stream, video, nameLabel){
-        if(stream && stream.getVideoTracks()[0].enabled){
-            video.style.display = "block";
-            nameLabel.style.display = "none";
-        } else {
-            video.style.display = "none";
-            nameLabel.style.display = "block";
+            updateVideoVisibility(id, stream, $video, $nameLabel);
         }
-    }
 
-    // Init local media
-    async function initMedia(){
-        try {
-            localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
-            addVideoCard(username, localStream, true);
-        } catch(err){
-            alert("Error accessing camera/microphone: "+err);
-        }
-    }
-
-    // Toggle video
-    function toggleVideo(id, btn, video, nameLabel, stream){
-        if(id === username && stream){
-            const track = stream.getVideoTracks()[0];
-            track.enabled = !track.enabled;
-            btn.className = track.enabled ? "bi bi-camera-video-fill" : "bi bi-camera-video-off-fill text-danger";
-            updateVideoVisibility(id, stream, video, nameLabel);
-        }
-    }
-
-    // Toggle audio
-    function toggleAudio(id, btn, stream){
-        if(id === username && stream){
-            const track = stream.getAudioTracks()[0];
-            track.enabled = !track.enabled;
-            btn.className = track.enabled ? "bi bi-mic-fill" : "bi bi-mic-mute-fill text-danger";
-        }
-    }
-
-    // Leave meeting
-    function leaveMeeting(id){
-        if(id === username){
-            if(ws) ws.send(JSON.stringify({type:"leave", meetingCode, fromId:username}));
-            Object.values(peers).forEach(pc => pc.close());
-            peers = {};
-            document.getElementById("video-container").innerHTML = "";
-            if(localStream) localStream.getTracks().forEach(t => t.stop());
-            localStream = null;
-            alert("You have left the meeting.");
-        } else {
-            const card = document.getElementById(id);
-            card?.remove();
-            if(peers[id]) peers[id].close();
-            delete peers[id];
-        }
-    }
-
-    // Chat
-    function addChatMessage(name, msg){
-        const p = document.createElement("p");
-        p.innerHTML = `<b>${name}:</b> ${msg}`;
-        const chatBox = document.getElementById("chat-box");
-        chatBox.appendChild(p);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    // Join meeting
-    document.getElementById("joinBtn").addEventListener("click", async ()=>{
-        meetingCode = document.getElementById("meetingCode").value.trim();
-        if(!meetingCode) return alert("Enter meeting code");
-
-        ws = new WebSocket("ws://localhost:8080/ws/signaling");
-        ws.onopen = ()=> ws.send(JSON.stringify({type:"join", meetingCode, fromId:username}));
-
-        ws.onmessage = async (msg)=>{
-            const data = JSON.parse(msg.data);
-            const from = data.fromId;
-            const type = data.type;
-
-            if(type==="offer" && from!==username){
-                const pc = createPeerConnection(from);
-                await pc.setRemoteDescription(new RTCSessionDescription(data.payload));
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                ws.send(JSON.stringify({type:"answer", meetingCode, fromId:username, toId:from, payload:answer}));
-            } else if(type==="answer" && data.toId===username){
-                await peers[from].setRemoteDescription(new RTCSessionDescription(data.payload));
-            } else if(type==="ice" && from!==username){
-                await peers[from].addIceCandidate(data.payload);
-            } else if(type==="chat"){
-                addChatMessage(data.employeeName||from, data.message);
+        function updateVideoVisibility(id, stream, $video, $nameLabel){
+            if(stream && stream.getVideoTracks()[0].enabled){
+                $video.show();
+                $nameLabel.hide();
+            } else {
+                $video.hide();
+                // Show a "Camera Off" label instead of just hiding the video
+                $nameLabel.text(id + " (Camera Off)").show();
             }
-        };
-
-        await initMedia();
-    });
-
-    // Peer connection
-    function createPeerConnection(peerId){
-        const pc = new RTCPeerConnection();
-        peers[peerId] = pc;
-        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-        pc.onicecandidate = e=>{
-            if(e.candidate){
-                ws.send(JSON.stringify({type:"ice", meetingCode, fromId:username, toId:peerId, payload:e.candidate}));
-            }
-        };
-
-        pc.ontrack = e=>{
-            addVideoCard(peerId, e.streams[0]);
-        };
-
-        pc.onnegotiationneeded = async ()=>{
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
-            ws.send(JSON.stringify({type:"offer", meetingCode, fromId:username, payload:offer}));
-        };
-
-        return pc;
-    }
-
-    // Send chat
-    document.getElementById("sendChat").addEventListener("click", ()=>{
-        const msg = document.getElementById("chatInput").value.trim();
-        if(msg && ws){
-            ws.send(JSON.stringify({type:"chat", meetingCode, fromId:username, employeeName:username, message:msg}));
-            addChatMessage("Me", msg);
-            document.getElementById("chatInput").value = "";
         }
+
+        async function initMedia(){
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+                addVideoCard(username, localStream, true);
+            } catch(err){
+                alert("Error accessing camera/microphone: "+err);
+            }
+        }
+
+        function toggleVideo(id, $btn, $video, $nameLabel, stream){
+            if(id !== username || !stream) return;
+
+            const videoTrack = stream.getVideoTracks()[0];
+
+            if(videoTrack && videoTrack.enabled){
+                // Turn OFF camera: stop track and remove from stream
+                videoTrack.stop();
+                stream.removeTrack(videoTrack);
+                $btn.attr("class", "bi bi-camera-video-off-fill text-danger");
+                $video.hide();
+                $nameLabel.text(id + " (Camera Off)").show();
+            } else {
+                // Turn ON camera: get new track
+                navigator.mediaDevices.getUserMedia({video:true, audio:false})
+                    .then(newStream => {
+                        const newTrack = newStream.getVideoTracks()[0];
+
+                        // Add new track to local stream
+                        stream.addTrack(newTrack);
+                        $video[0].srcObject = stream;
+                        $btn.attr("class", "bi bi-camera-video-fill");
+                        $video.show();
+                        $nameLabel.hide();
+
+                        // Replace track in all peer connections
+                        Object.values(peers).forEach(pc => {
+                            const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
+                            if(sender) sender.replaceTrack(newTrack);
+                        });
+                    })
+                    .catch(err => alert("Cannot access camera: " + err));
+            }
+        }
+
+
+
+        function toggleAudio(id, $btn, stream){
+            if(id === username && stream){
+                const track = stream.getAudioTracks()[0];
+                track.enabled = !track.enabled;
+                $btn.attr("class", track.enabled ? "bi bi-mic-fill" : "bi bi-mic-mute-fill text-danger");
+            }
+        }
+
+        function leaveMeeting(id){
+            if(id === username){
+                if(ws) ws.send(JSON.stringify({type:"leave", meetingCode, fromId:username}));
+                Object.values(peers).forEach(pc => pc.close());
+                peers = {};
+                $("#video-container").empty();
+                if(localStream) localStream.getTracks().forEach(t => t.stop());
+                localStream = null;
+                alert("You have left the meeting.");
+            } else {
+                $("#" + id).remove();
+                if(peers[id]) peers[id].close();
+                delete peers[id];
+            }
+        }
+
+        function addChatMessage(name, msg){
+            $("#chat-box").append(`<p><b>${name}:</b> ${msg}</p>`).scrollTop($("#chat-box")[0].scrollHeight);
+        }
+
+        $("#joinBtn").click(async function(){
+            meetingCode = $("#meetingCode").val().trim();
+            if(!meetingCode) return alert("Enter meeting code");
+
+            ws = new WebSocket("ws://localhost:8080/ws/signaling");
+            ws.onopen = ()=> ws.send(JSON.stringify({type:"join", meetingCode, fromId:username}));
+
+            ws.onmessage = async (msg)=>{
+                const data = JSON.parse(msg.data);
+                const from = data.fromId;
+                const type = data.type;
+
+                if(type==="offer" && from!==username){
+                    const pc = createPeerConnection(from);
+                    await pc.setRemoteDescription(new RTCSessionDescription(data.payload));
+                    const answer = await pc.createAnswer();
+                    await pc.setLocalDescription(answer);
+                    ws.send(JSON.stringify({type:"answer", meetingCode, fromId:username, toId:from, payload:answer}));
+                } else if(type==="answer" && data.toId===username){
+                    await peers[from].setRemoteDescription(new RTCSessionDescription(data.payload));
+                } else if(type==="ice" && from!==username){
+                    await peers[from].addIceCandidate(data.payload);
+                } else if(type==="chat"){
+                    addChatMessage(data.employeeName||from, data.message);
+                }
+            };
+
+            await initMedia();
+        });
+
+        function createPeerConnection(peerId){
+            const pc = new RTCPeerConnection();
+            peers[peerId] = pc;
+            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+            pc.onicecandidate = e=>{
+                if(e.candidate){
+                    ws.send(JSON.stringify({type:"ice", meetingCode, fromId:username, toId:peerId, payload:e.candidate}));
+                }
+            };
+
+            pc.ontrack = e=> addVideoCard(peerId, e.streams[0]);
+
+            pc.onnegotiationneeded = async ()=>{
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                ws.send(JSON.stringify({type:"offer", meetingCode, fromId:username, payload:offer}));
+            };
+
+            return pc;
+        }
+
+        $("#sendChat").click(function(){
+            const msg = $("#chatInput").val().trim();
+            if(msg && ws){
+                ws.send(JSON.stringify({type:"chat", meetingCode, fromId:username, employeeName:username, message:msg}));
+                addChatMessage("Me", msg);
+                $("#chatInput").val("");
+            }
+        });
     });
 </script>
 </body>
