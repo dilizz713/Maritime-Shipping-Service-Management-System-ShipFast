@@ -1,0 +1,245 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Join Meeting</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #videos { display:flex; gap:10px; flex-wrap:wrap; }
+        video { width: 320px; height: 240px; background:#000; }
+        #chatArea { height: 300px; overflow:auto; border:1px solid #ddd; padding:8px; }
+    </style>
+</head>
+<body class="p-3">
+<div class="container">
+    <h3>Meeting: <span id="meetingCode"></span></h3>
+    <div class="mb-2">You: <strong id="myName"></strong></div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div id="videos">
+                <div>
+                    <h6>Local</h6>
+                    <video id="localVideo" autoplay muted playsinline></video>
+                </div>
+                <div id="remoteContainer"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h6>Controls</h6>
+            <button id="btnToggleVideo" class="btn btn-sm btn-outline-primary">Toggle Video</button>
+            <button id="btnToggleAudio" class="btn btn-sm btn-outline-primary">Toggle Audio</button>
+            <hr>
+            <h6>Chat</h6>
+            <div id="chatArea"></div>
+            <div class="input-group mt-2">
+                <input id="chatInput" class="form-control" placeholder="Type message">
+                <button id="sendChat" class="btn btn-primary">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Utility to read query params
+    function getQuery() {
+        const q = {};
+        location.search.substring(1).split("&").forEach(pair => {
+            if(!pair) return;
+            const parts = pair.split("=");
+            q[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1] || "");
+        });
+        return q;
+    }
+
+    const params = getQuery();
+    const meetingCode = params.code;
+    const employeeId = params.employeeId;
+
+    document.getElementById('meetingCode').innerText = meetingCode || 'N/A';
+
+    // state
+    const wsUrl = (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws/signaling";
+    let ws;
+    let localStream;
+    const pcs = {}; // peerId -> RTCPeerConnection
+    const dataChannels = {}; // peerId -> dataChannel
+    const remoteVideos = {}; // peerId -> video element
+    let myId = Math.random().toString(36).substring(2,9); // simple client id
+    let myName = "Guest";
+
+    // get employee details to set name
+    if (employeeId) {
+        fetch(`http://localhost:8080/api/v1/meetings/employee/${employeeId}`)
+            .then(r => r.json()).then(j => {
+            if (j.data && j.data.name) {
+                myName = j.data.name;
+                document.getElementById('myName').innerText = myName;
+            }
+        }).catch(()=>{});
+    }
+
+    async function start() {
+        // get local media
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
+            document.getElementById('localVideo').srcObject = localStream;
+        } catch (e) {
+            alert("Cannot access camera/microphone: " + e.message);
+            return;
+        }
+
+        // open websocket
+        ws = new WebSocket(wsUrl);
+        ws.onopen = () => {
+            // join meeting
+            ws.send(JSON.stringify({
+                type: "join",
+                meetingCode: meetingCode,
+                fromId: myId,
+                name: myName
+            }));
+        };
+        ws.onmessage = async (evt) => {
+            const msg = JSON.parse(evt.data);
+            const type = msg.type;
+            const from = msg.fromId;
+
+            if (type === "join") {
+                // new participant joined - if not me, create an offer to them
+                if (from === myId) return;
+                await preparePeerConnection(from, true);
+            } else if (type === "offer") {
+                if (from === myId) return;
+                await handleOffer(from, msg.payload);
+            } else if (type === "answer") {
+                if (from === myId) return;
+                await pcs[from]?.setRemoteDescription(new RTCSessionDescription(msg.payload));
+            } else if (type === "ice") {
+                if (from === myId) return;
+                try { await pcs[from]?.addIceCandidate(msg.payload); } catch(e){ console.warn(e); }
+            } else if (type === "leave") {
+                removePeer(from);
+            } else if (type === "chat") {
+                appendChat(msg.name || "Unknown", msg.text);
+            }
+        };
+    }
+
+    async function preparePeerConnection(peerId, isInitiator) {
+        if (pcs[peerId]) return;
+        const pc = new RTCPeerConnection({
+            iceServers: [
+                { urls: "stun:stun.l.google.com:19302" } // add TURN in production
+            ]
+        });
+
+        // add local tracks
+        localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+        // create remote video element
+        const remoteVideo = document.createElement('video');
+        remoteVideo.autoplay = true; remoteVideo.playsinline = true;
+        remoteVideos[peerId] = remoteVideo;
+        document.getElementById('remoteContainer').appendChild(remoteVideo);
+
+        // ontrack
+        pc.ontrack = (ev) => {
+            remoteVideo.srcObject = ev.streams[0];
+        };
+
+        // ICE candidates -> send to peer via signaling
+        pc.onicecandidate = (ev) => {
+            if (ev.candidate) {
+                ws.send(JSON.stringify({ type: "ice", meetingCode, fromId: myId, toId: peerId, payload: ev.candidate }));
+            }
+        };
+
+        // data channel for chat (initiator creates)
+        if (isInitiator) {
+            const dc = pc.createDataChannel("chat");
+            setupDataChannel(peerId, dc);
+        } else {
+            pc.ondatachannel = (ev) => { setupDataChannel(peerId, ev.channel); };
+        }
+
+        pcs[peerId] = pc;
+
+        if (isInitiator) {
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            ws.send(JSON.stringify({ type: "offer", meetingCode, fromId: myId, toId: peerId, payload: offer }));
+        }
+    }
+
+    async function handleOffer(peerId, offer) {
+        await preparePeerConnection(peerId, false);
+        const pc = pcs[peerId];
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        ws.send(JSON.stringify({ type: "answer", meetingCode, fromId: myId, toId: peerId, payload: answer }));
+    }
+
+    function setupDataChannel(peerId, channel) {
+        dataChannels[peerId] = channel;
+        channel.onopen = () => { console.log("Data channel open", peerId); };
+        channel.onmessage = (ev) => {
+            const d = JSON.parse(ev.data);
+            appendChat(d.name, d.text);
+        };
+    }
+
+    function appendChat(name, text) {
+        const area = document.getElementById('chatArea');
+        const el = document.createElement('div');
+        el.innerHTML = `<strong>${escapeHtml(name)}:</strong> ${escapeHtml(text)}`;
+        area.appendChild(el);
+        area.scrollTop = area.scrollHeight;
+    }
+
+    document.getElementById('sendChat').addEventListener('click', function(){
+        const text = document.getElementById('chatInput').value;
+        if (!text) return;
+        // send via data channels to peers
+        const payload = JSON.stringify({ name: myName, text });
+        Object.values(dataChannels).forEach(dc => {
+            if (dc.readyState === "open") dc.send(payload);
+        });
+        // also send via signaling to allow server relay fallback
+        ws.send(JSON.stringify({ type:"chat", meetingCode, fromId: myId, name: myName, text }));
+        appendChat("Me", text);
+        document.getElementById('chatInput').value = "";
+    });
+
+    function removePeer(peerId) {
+        // close pc and remove video
+        if (pcs[peerId]) {
+            pcs[peerId].close();
+            delete pcs[peerId];
+        }
+        if (dataChannels[peerId]) delete dataChannels[peerId];
+        if (remoteVideos[peerId]) {
+            remoteVideos[peerId].remove();
+            delete remoteVideos[peerId];
+        }
+    }
+
+    // toggle controls
+    document.getElementById('btnToggleVideo').addEventListener('click', () => {
+        const vTrack = localStream.getVideoTracks()[0];
+        if (vTrack) vTrack.enabled = !vTrack.enabled;
+    });
+    document.getElementById('btnToggleAudio').addEventListener('click', () => {
+        const aTrack = localStream.getAudioTracks()[0];
+        if (aTrack) aTrack.enabled = !aTrack.enabled;
+    });
+
+    // simple sanitization
+    function escapeHtml(s){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+    // start
+    start();
+</script>
+</body>
+</html>
