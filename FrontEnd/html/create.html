@@ -39,7 +39,7 @@
             success: function(res){
                 const meeting = res.data;
                 $("#result").html(`<div class="alert alert-success">Meeting created. Code: <strong>${meeting.code}</strong><br>
-            <a class="btn btn-sm btn-primary mt-2" href="join.html?code=${meeting.code}&employeeId=${dto.createdByEmployeeId}">Open Meeting</a>
+            <a class="btn btn-sm btn-primary mt-2" href="meeting.html?code=${meeting.code}&employeeId=${dto.createdByEmployeeId}">Open Meeting</a>
         </div>`);
             },
             error: function(err){

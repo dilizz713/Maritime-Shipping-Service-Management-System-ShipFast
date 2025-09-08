@@ -2,6 +2,7 @@ package lk.ijse.gdse71.backend.ws;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
@@ -10,20 +11,13 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Very simple WebSocket handler that routes messages between participants in the same meeting code.
- * Message format (JSON):
- * { type: "join" | "offer" | "answer" | "ice" | "leave" | "chat", meetingCode: "ABC123", fromId: "123", payload: {...} }
- */
 @Component
 @Slf4j
 public class SignalingWebSocketHandler extends TextWebSocketHandler {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    // meetingCode -> set of sessions
     private final Map<String, Set<WebSocketSession>> rooms = new ConcurrentHashMap<>();
-    // sessionId -> meetingCode
     private final Map<String, String> sessionMeeting = new ConcurrentHashMap<>();
 
     @Override
@@ -41,21 +35,26 @@ public class SignalingWebSocketHandler extends TextWebSocketHandler {
         JsonNode node = mapper.readTree(message.getPayload());
         String type = node.get("type").asText();
         String meetingCode = node.get("meetingCode").asText();
-        // attach session attributes like employeeId,name (optional)
+
+        // Attach employee info from session attributes
+        if(session.getAttributes().get("employeeName") != null) {
+            ((ObjectNode) node).put("employeeName", (String) session.getAttributes().get("employeeName"));
+        }
+
         if ("join".equals(type)) {
             rooms.computeIfAbsent(meetingCode, k -> ConcurrentHashMap.newKeySet()).add(session);
             sessionMeeting.put(session.getId(), meetingCode);
-            // broadcast new participant
-            broadcastToRoom(meetingCode, message.getPayload(), session);
+            broadcastToRoom(meetingCode, node.toString(), session);
             return;
         }
+
         if ("leave".equals(type)) {
             removeFromRoom(session);
-            broadcastToRoom(meetingCode, message.getPayload(), session);
+            broadcastToRoom(meetingCode, node.toString(), session);
             return;
         }
-        // For offer/answer/ice/chat -> forward to all other sessions in same meeting
-        broadcastToRoom(meetingCode, message.getPayload(), session);
+
+        broadcastToRoom(meetingCode, node.toString(), session);
     }
 
     private void broadcastToRoom(String meetingCode, String payload, WebSocketSession origin) {
