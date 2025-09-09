@@ -587,3 +587,13 @@ Caused by: org.springframework.data.mapping.PropertyReferenceException: No prope
 2025-09-09T15:56:12.017+05:30  INFO 60512 --- [BackEnd] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
 2025-09-09T15:56:12.128+05:30  INFO 60512 --- [BackEnd] [http-nio-8080-exec-3] l.i.g.backend.controller.BankController  : Saving bank: null
 2025-09-09T15:57:13.855+05:30  INFO 60512 --- [BackEnd] [http-nio-8080-exec-5] l.i.g.backend.controller.BankController  : Updating bank id=1
+2025-09-09T15:58:56.715+05:30  INFO 60512 --- [BackEnd] [http-nio-8080-exec-8] l.i.g.backend.controller.BankController  : Fetching all banks
+2025-09-09T17:49:04.234+05:30  WARN 60512 --- [BackEnd] [HikariPool-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h29m31s125ms248µs600ns).
+2025-09-09T18:01:53.681+05:30  WARN 60512 --- [BackEnd] [HikariPool-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=7m49s361ms578µs600ns).
+2025-09-09T18:05:07.952+05:30  INFO 60512 --- [BackEnd] [http-nio-8080-exec-9] l.i.g.b.c.BankAccountController          : Saving bank account details for vendorId=1
+2025-09-09T18:05:42.112+05:30  INFO 60512 --- [BackEnd] [http-nio-8080-exec-1] l.i.g.b.c.BankAccountController          : Fetching all bank accounts
+2025-09-09T18:26:47.430+05:30  INFO 60512 --- [BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-09-09T18:26:47.460+05:30  INFO 60512 --- [BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-09-09T18:26:47.501+05:30  INFO 60512 --- [BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-09-09T18:26:47.534+05:30  INFO 60512 --- [BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-09-09T18:26:47.551+05:30  INFO 60512 --- [BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
