@@ -18,7 +18,10 @@ public class Product {
 
     private String code;
     private String name;
+
+    @Enumerated(EnumType.STRING)
     private ProductType productType;
+
     private Integer quantity;
     private Double unitPrice;
 
