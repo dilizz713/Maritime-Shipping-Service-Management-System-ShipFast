@@ -11,5 +11,6 @@ public interface BankAccountService {
 
     void delete(Long id);
 
-    List<BankAccountDTO> getAllVendors();
+
+    List<BankAccountDTO> getAllAccounts();
 }

@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BankAccountDTO {
     private Long id;
-    private String bank;
     private String accountNumber;
     private String branch;
-    private String swiftCode;
     private String currency;
+
     private Long vendorId;
+    private Long bankId;
 }
