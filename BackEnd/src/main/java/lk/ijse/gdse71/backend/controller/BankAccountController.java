@@ -48,4 +48,18 @@ public class BankAccountController {
         List<BankAccountDTO> bankAccountDTOs = bankAccountService.getAllAccounts();
         return ResponseEntity.ok(new APIResponse(200, "Bank Accounts retrieved successfully", bankAccountDTOs));
     }
+
+    @GetMapping("/getAccountsByVendor/{vendorId}")
+    public ResponseEntity<APIResponse> getAccountsByVendor(@PathVariable Long vendorId) {
+        log.info("Fetching all bank accounts for vendorId={}", vendorId);
+        List<BankAccountDTO> accounts = bankAccountService.getAccountsByVendor(vendorId);
+        return ResponseEntity.ok(new APIResponse(200, "Bank Accounts retrieved successfully", accounts));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<APIResponse> getBankAccount(@PathVariable Long id) {
+        log.info("Fetching bank account with id={}", id);
+        BankAccountDTO account = bankAccountService.getBankAccountById(id);
+        return ResponseEntity.ok(new APIResponse(200, "Bank Account retrieved successfully", account));
+    }
 }

@@ -15,4 +15,6 @@ public class BankAccountDTO {
 
     private Long vendorId;
     private Long bankId;
+    private String bankName;
+
 }

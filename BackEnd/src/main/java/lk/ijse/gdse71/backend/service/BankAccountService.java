@@ -13,4 +13,8 @@ public interface BankAccountService {
 
 
     List<BankAccountDTO> getAllAccounts();
+
+    List<BankAccountDTO> getAccountsByVendor(Long vendorId);
+
+    BankAccountDTO getBankAccountById(Long id);
 }

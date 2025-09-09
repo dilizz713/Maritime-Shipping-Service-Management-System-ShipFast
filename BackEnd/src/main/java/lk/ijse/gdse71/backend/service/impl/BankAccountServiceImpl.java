@@ -50,24 +50,39 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
-    public void update(BankAccountDTO bankAccountDTO) {
-        BankAccount existingAccount = bankAccountRepository.findById(bankAccountDTO.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Bank account not found"));
+    public void update(BankAccountDTO dto) {
+        BankAccount account = bankAccountRepository.findById(dto.getId())
+                .orElseThrow(() -> new RuntimeException("Bank account not found"));
 
-        existingAccount.setAccountNumber(bankAccountDTO.getAccountNumber());
-        existingAccount.setBranch(bankAccountDTO.getBranch());
-        existingAccount.setCurrency(bankAccountDTO.getCurrency());
+        account.setAccountNumber(dto.getAccountNumber());
+        account.setBranch(dto.getBranch());
+        account.setCurrency(dto.getCurrency());
 
-        Vendor vendor = vendorRepository.findById(bankAccountDTO.getVendorId())
-                .orElseThrow(() -> new ResourceNotFoundException("Vendor not found"));
-        existingAccount.setVendor(vendor);
+        // Fetch vendor
+        Vendor vendor = vendorRepository.findById(dto.getVendorId())
+                .orElseThrow(() -> new RuntimeException("Vendor not found"));
+        account.setVendor(vendor);
 
-        Bank bank = bankRepository.findById(bankAccountDTO.getBankId())
-                .orElseThrow(() -> new ResourceNotFoundException("Bank not found"));
-        existingAccount.setBank(bank);
+        // Handle Bank: either by ID or create/find by name
+        Bank bank = null;
+        if (dto.getBankId() != null) {
+            bank = bankRepository.findById(dto.getBankId())
+                    .orElseThrow(() -> new RuntimeException("Bank not found"));
+        } else if (dto.getBankName() != null && !dto.getBankName().isEmpty()) {
+            bank = bankRepository.findByName(dto.getBankName())
+                    .orElseGet(() -> bankRepository.save(Bank.builder()
+                            .name(dto.getBankName())
+                            .swiftCode(null)
+                            .build()));
+        } else {
+            throw new RuntimeException("Bank information is missing");
+        }
 
-        bankAccountRepository.save(existingAccount);
+        account.setBank(bank);
+        bankAccountRepository.save(account);
     }
+
+
 
     @Override
     public void delete(Long id) {
@@ -91,5 +106,30 @@ public class BankAccountServiceImpl implements BankAccountService {
                     return dto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BankAccountDTO> getAccountsByVendor(Long vendorId) {
+        List<BankAccount> accounts = bankAccountRepository.findByVendorId(vendorId);
+        return accounts.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    private BankAccountDTO toDTO(BankAccount account) {
+        return new BankAccountDTO(
+                account.getId(),
+                account.getAccountNumber(),
+                account.getBranch(),
+                account.getCurrency(),
+                account.getVendor().getId(),
+                account.getBank().getId(),
+                account.getBank().getName()
+        );
+    }
+
+    @Override
+    public BankAccountDTO getBankAccountById(Long id) {
+        BankAccount account = bankAccountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bank account not found"));
+        return toDTO(account);
     }
 }
