@@ -1,0 +1,9 @@
+package lk.ijse.gdse71.backend.service;
+
+import lk.ijse.gdse71.backend.dto.UOMDTO;
+
+import java.util.List;
+
+public interface UOMService {
+    List<UOMDTO> getAllUOMs();
+}
