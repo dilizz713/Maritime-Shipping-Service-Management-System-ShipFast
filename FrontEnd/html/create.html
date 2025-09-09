@@ -27,23 +27,46 @@
 <script>
     $("#createForm").on("submit", function(e){
         e.preventDefault();
+
+        const employeeId = Number($("#creatorId").val());
         const dto = {
             topic: $("#topic").val(),
-            createdByEmployeeId: Number($("#creatorId").val())
+            createdByEmployeeId: employeeId
         };
+
         $.ajax({
-            url: "http://localhost:8080/api/v1/meetings/create",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(dto),
+            url: `http://localhost:8080/api/v1/meetings/employee/${employeeId}`,
+            method: "GET",
             success: function(res){
-                const meeting = res.data;
-                $("#result").html(`<div class="alert alert-success">Meeting created. Code: <strong>${meeting.code}</strong><br>
-            <a class="btn btn-sm btn-primary mt-2" href="meeting.html?code=${meeting.code}&employeeId=${dto.createdByEmployeeId}">Open Meeting</a>
-        </div>`);
+                if(!res.data){
+                    alert("❌ Your Employee ID does not exist.");
+                    return;
+                }
+
+
+                $.ajax({
+                    url: "http://localhost:8080/api/v1/meetings/create",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(dto),
+                    success: function(res){
+                        const meeting = res.data;
+                        $("#result").html(
+                            `<div class="alert alert-success">
+                                Meeting created. Code: <strong>${meeting.code}</strong><br>
+                                <a class="btn btn-sm btn-primary mt-2" href="meeting.html?code=${meeting.code}&employeeId=${dto.createdByEmployeeId}">
+                                    Open Meeting
+                                </a>
+                             </div>`
+                        );
+                    },
+                    error: function(err){
+                        $("#result").html('<div class="alert alert-danger">Error creating meeting.</div>');
+                    }
+                });
             },
-            error: function(err){
-                $("#result").html('<div class="alert alert-danger">Error creating meeting.</div>');
+            error: function(){
+                alert("❌ Failed to verify employee. Please try again.");
             }
         });
     });
