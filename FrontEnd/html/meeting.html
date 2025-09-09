@@ -62,8 +62,11 @@
 
     <!-- Pre-join settings -->
     <div class="row mb-3">
-        <div class="col-md-8">
+        <div class="col-md-4">
             <input type="text" id="meetingCode" class="form-control mb-2" placeholder="Enter Meeting Code">
+        </div>
+        <div class="col-md-4">
+            <input type="text" id="userName" class="form-control mb-2" placeholder="Enter Your Name">
         </div>
         <div class="col-md-4">
             <button id="joinBtn" class="btn btn-primary w-100">Join Meeting</button>
@@ -104,21 +107,8 @@
         let localStream;
         let peers = {};
         let ws;
-        let username = "Loading...";   // will be replaced with real name
+        let username = "";
         let meetingCode = "";
-
-        // 🔹 get employeeId from query params
-        const params = new URLSearchParams(window.location.search);
-        const employeeId = params.get("employeeId");
-
-        // 🔹 fetch employee name from backend
-        $.get(`http://localhost:8080/api/v1/meetings/employee/${employeeId}`, function(res){
-            if(res.data){
-                username = res.data.name;
-            } else {
-                username = "Unknown Employee";
-            }
-        });
 
         function addVideoCard(id, stream=null, muted=false){
             if($("#" + id).length) return;
@@ -128,7 +118,7 @@
             if(stream) $video[0].srcObject = stream;
             $video.click(()=> $video[0].requestFullscreen());
 
-            const $nameLabel = $("<div>", {class:"video-name", text:id}); // 🔹 later updated with real name
+            const $nameLabel = $("<div>", {class:"video-name", text:id});
 
             const $controls = $("<div>", {class:"video-controls"});
             const $btnVideo = $("<i>", {
@@ -158,7 +148,6 @@
                 $video.show();
                 $nameLabel.hide();
             } else {
-                // 🔹 show real name instead of just ID
                 $video.hide();
                 $nameLabel.text(id + " (Camera Off)").show();
             }
@@ -174,7 +163,6 @@
                     audio: audioEnabled
                 });
 
-                // 🔹 use real name for own card
                 addVideoCard(username, localStream, true);
             } catch(err){
                 alert("Error accessing camera/microphone: "+err);
@@ -242,7 +230,10 @@
 
         $("#joinBtn").click(async function(){
             meetingCode = $("#meetingCode").val().trim();
+            username = $("#userName").val().trim();
+
             if(!meetingCode) return alert("Enter meeting code");
+            if(!username) return alert("Enter your name");
 
             ws = new WebSocket("ws://localhost:8080/ws/signaling");
             ws.onopen = ()=> ws.send(JSON.stringify({type:"join", meetingCode, fromId:username, employeeName:username}));
