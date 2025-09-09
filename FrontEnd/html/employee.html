@@ -80,6 +80,39 @@
             font-size: 0.7rem;
             font-weight: 600;
         }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-custom {
+            background: linear-gradient(135deg, #0066cc, #00bfff);
+            color: #fff !important;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            color: #fff !important;
+        }
+
+        .table thead {
+            background-color: #003366;
+            color: #fff;
+        }
+
+        .modal-header {
+            background-color: #00509e;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -123,8 +156,9 @@
                 </a>
             </li>
 
+            <!-- Employee -->
             <li class="nav-item mb-2">
-                <a href="employee.html" class="nav-link">
+                <a class="nav-link" data-bs-toggle="collapse" href="#employeeMenu" role="button" aria-expanded="false" aria-controls="employeeMenu">
                     <i class="bi bi-person-badge me-2"></i>Employee
                 </a>
             </li>
@@ -208,46 +242,196 @@
         </nav>
 
         <div class="content">
-            <h2>Welcome to Ship-Fast Admin Dashboard</h2>
-            <p>Select an option from the sidebar to get started.</p>
-
-            <!-- MarineTraffic Map  -->
-            <div class="card border-0 shadow-lg mt-4">
-
-                <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-map fs-5 me-2"></i>
-                        <span class="fw-semibold fs-6">Live Ship Tracking</span>
-                    </div>
-                    <small class="text-white-50">Updated in real-time</small>
+            <h2 class="mb-4">Employee Management</h2>
+            <div class="card p-3">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5>Employees List</h5>
+                    <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#employeeModal">
+                        <i class="bi bi-plus-circle me-2"></i> Add Employee
+                    </button>
                 </div>
-
-                <div class="card-body p-0 position-relative overflow-hidden" style="height: 500px;">
-                    <a href="https://www.marinetraffic.com/en/ais/home/centerx:1.9/centery:51.6/zoom:6" target="_blank" class="d-block h-100 w-100">
-                        <img src="../assets/marine-traffic.png"
-                             alt="Live Ship Tracking"
-                             class="img-fluid h-100 w-100 object-fit-cover"
-                             style="cursor:pointer; transition: transform 0.3s;">
-
-                        <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-50 text-white p-2 text-center fw-medium">
-                            Click to open Full MarineTraffic Live Map
-                        </div>
-                    </a>
-                </div>
+                <table class="table table-striped table-hover" id="employeeTable">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>NIC</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Department</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Employee Modal -->
+<div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="employeeModalLabel">Add Employee</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="employeeForm">
+                    <input type="hidden" id="employeeId">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" id="name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nic" class="form-label">NIC</label>
+                        <input type="text" id="nic" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" id="address" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" id="phone" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="department" class="form-label">Department</label>
+                        <input type="text" id="department" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-custom w-100">Save Employee</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script src="../lib/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/navigation-bar.js"></script>
 <script>
+    const API_URL = "http://localhost:8080/api/v1/employee";
+
     $(document).ready(function() {
         $('#meetingModal .btn').click(function() {
             const action = $(this).text().trim();
             console.log("User selected:", action);
-            $('#meetingModal').modal('hide'); // Close modal after selection
+            $('#meetingModal').modal('hide');
+        });
+
+
+        fetchEmployees();
+
+        function fetchEmployees() {
+            $.get(`${API_URL}/getAllEmployees`, function(response) {
+                if(response.status === 200) {
+                    const tbody = $("#employeeTable tbody");
+                    tbody.empty();
+                    response.data.forEach(emp => {
+                        tbody.append(`
+                        <tr>
+                            <td>${emp.id}</td>
+                            <td>${emp.name}</td>
+                            <td>${emp.nic}</td>
+                            <td>${emp.email}</td>
+                            <td>${emp.phone}</td>
+                            <td>${emp.department}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary edit-btn" data-id="${emp.id}"><i class="bi bi-pencil-square"></i></button>
+                                <button class="btn btn-sm btn-danger delete-btn" data-id="${emp.id}"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    `);
+                    });
+                }
+            });
+        }
+
+        $("#employeeForm").submit(function(e) {
+            e.preventDefault();
+            const id = $("#employeeId").val();
+            const employeeData = {
+                id: id ? parseInt(id) : null,
+                name: $("#name").val(),
+                nic: $("#nic").val(),
+                address: $("#address").val(),
+                email: $("#email").val(),
+                phone: $("#phone").val(),
+                department: $("#department").val()
+            };
+
+            if(id) {
+                $.ajax({
+                    url: `${API_URL}/updateEmployee`,
+                    method: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify(employeeData),
+                    success: function() {
+                        fetchEmployees();
+                        $("#employeeModal").modal('hide');
+                        $("#employeeForm")[0].reset();
+                    }
+                });
+            } else {
+                $.ajax({
+                    url: `${API_URL}/saveEmployee`,
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(employeeData),
+                    success: function() {
+                        fetchEmployees();
+                        $("#employeeModal").modal('hide');
+                        $("#employeeForm")[0].reset();
+                    },
+                    error: function(err) {
+                        alert(err.responseJSON?.message || "Error saving employee");
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.edit-btn', function() {
+            const id = $(this).data('id');
+            $.get(`${API_URL}/getAllEmployees`, function(response) {
+                const emp = response.data.find(e => e.id === id);
+                if(emp) {
+                    $("#employeeId").val(emp.id);
+                    $("#name").val(emp.name);
+                    $("#nic").val(emp.nic);
+                    $("#address").val(emp.address);
+                    $("#email").val(emp.email);
+                    $("#phone").val(emp.phone);
+                    $("#department").val(emp.department);
+                    $("#employeeModalLabel").text("Edit Employee");
+                    $("#employeeModal").modal('show');
+                }
+            });
+        });
+
+        $(document).on('click', '.delete-btn', function() {
+            const id = $(this).data('id');
+            if(confirm("Are you sure you want to delete this employee?")) {
+                $.ajax({
+                    url: `${API_URL}/deleteEmployee/${id}`,
+                    method: "DELETE",
+                    success: function() {
+                        fetchEmployees();
+                    }
+                });
+            }
+        });
+
+        $('#employeeModal').on('hidden.bs.modal', function () {
+            $("#employeeForm")[0].reset();
+            $("#employeeId").val('');
+            $("#employeeModalLabel").text("Add Employee");
         });
     });
 
