@@ -67,9 +67,19 @@
             <div class="company-name">Ship Fast</div>
         </div>
         <ul class="nav flex-column">
+            <!-- Meetings -->
+            <li class="nav-item mb-2">
+                <a href="#" class="nav-link d-flex align-items-center justify-content-between meeting-btn" data-bs-toggle="modal" data-bs-target="#meetingModal">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-camera-video-fill me-2"></i>Meetings
+                    </div>
+                    <span class="badge bg-success rounded-pill">Live</span>
+                </a>
+            </li>
+
             <!-- Dashboard -->
             <li class="nav-item mb-2">
-                <a href="admin-dashboard.html" class="nav-link active"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+                <a href="admin-dashboard.html" class="nav-link "><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
             </li>
             <!-- Customer -->
             <li class="nav-item mb-2">
@@ -89,16 +99,15 @@
                 </a>
             </li>
 
-            <!-- Employee -->
             <li class="nav-item mb-2">
-                <a class="nav-link" data-bs-toggle="collapse" href="#employeeMenu" role="button" aria-expanded="false" aria-controls="employeeMenu">
+                <a href="employee.html" class="nav-link">
                     <i class="bi bi-person-badge me-2"></i>Employee
                 </a>
             </li>
 
             <!-- Vehicle -->
             <li class="nav-item mb-2">
-                <a class="nav-link" data-bs-toggle="collapse" href="#vehicleMenu" role="button" aria-expanded="false" aria-controls="vehicleMenu">
+                <a href="vehicle.html" class="nav-link">
                     <i class="bi bi-truck me-2"></i>Vehicle
                 </a>
             </li>
@@ -131,6 +140,29 @@
                 <a href="user-management.html" class="nav-link"><i class="bi bi-person-circle me-2"></i>User</a>
             </li>
         </ul>
+    </div>
+
+    <!-- Meeting Modal -->
+    <div class="modal fade" id="meetingModal" tabindex="-1" aria-labelledby="meetingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow-lg">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="meetingModalLabel"><i class="bi bi-camera-video-fill me-2"></i>Meetings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="text-muted">Choose an option to get started</p>
+                    <div class="d-grid gap-3 mt-3">
+                        <a href="create.html" class="btn btn-primary btn-lg rounded-pill">
+                            <i class="bi bi-plus-circle me-2"></i> Create New Meeting
+                        </a>
+                        <a href="meeting.html" class="btn btn-outline-primary btn-lg rounded-pill">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Join Meeting
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Main content -->
