@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class BankAccountDTO {
     private Long id;
     private String bank;
-    private Integer accountNumber;
+    private String accountNumber;
     private String branch;
     private String swiftCode;
     private String currency;

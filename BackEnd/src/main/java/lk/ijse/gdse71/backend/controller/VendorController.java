@@ -26,7 +26,7 @@ public class VendorController {
         return  ResponseEntity.ok(new APIResponse(201 , "Vendors saved successfully" , true));
     }
 
-    @PutMapping("/updateEmployee")
+    @PutMapping("/updateVendor")
     public ResponseEntity<APIResponse> updateVendor(@RequestBody VendorDTO vendorDTO) {
         vendorService.update(vendorDTO);
         return ResponseEntity.ok(new APIResponse(200 , "Vendor updated successfully" , true));
