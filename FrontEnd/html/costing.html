@@ -58,6 +58,29 @@
         .content {
             padding: 2rem;
         }
+        .card-body img:hover {
+            transform: scale(1.05);
+        }
+        .meeting-btn {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #0066cc, #00bfff);
+            color: #fff !important;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .meeting-btn:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+            color: #fff !important;
+        }
+
+        /* Badge style */
+        .meeting-btn .badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -174,12 +197,12 @@
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-person-circle me-2"></i>
-                        <span>Admin</span>
+                        <span id="user-info">Loading...</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
                         <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                        <li><a class="dropdown-item" href="#" id="logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                     </ul>
                 </div>
             </div>

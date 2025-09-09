@@ -58,6 +58,29 @@
         .container { margin-top: 30px; }
         .form-section { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0px 2px 5px rgba(0,0,0,0.1); }
         .table-section { margin-top: 20px; }
+        .card-body img:hover {
+            transform: scale(1.05);
+        }
+        .meeting-btn {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #0066cc, #00bfff);
+            color: #fff !important;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .meeting-btn:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+            color: #fff !important;
+        }
+
+        /* Badge style */
+        .meeting-btn .badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -265,6 +288,12 @@
     const BASE_URL = "http://localhost:8080/api/v1/customer";
 
     $(document).ready(function () {
+        $('#meetingModal .btn').click(function() {
+            const action = $(this).text().trim();
+            console.log("User selected:", action);
+            $('#meetingModal').modal('hide'); // Close modal after selection
+        });
+
         loadCustomers();
 
         // Save customer
