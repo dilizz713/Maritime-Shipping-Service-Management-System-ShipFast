@@ -58,7 +58,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/update-qty")
+    @PutMapping("/add-qty")
     public ResponseEntity<APIResponse> updateQuantity(@RequestBody ProductDTO dto) {
         ProductDTO updatedProduct = productService.updateQuantity(dto.getId(), dto.getQuantity());
         APIResponse response = new APIResponse(200, "Product quantity updated successfully", updatedProduct);
