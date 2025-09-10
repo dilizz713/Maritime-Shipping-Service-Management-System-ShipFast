@@ -26,7 +26,7 @@ public class QuotationController {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-            helper.setFrom("dilinichamikasilva@gmail.com");
+            helper.setFrom("EMAIL_USERNAME");
             helper.setTo("dilinichamikasilva@gmail.com");
             helper.setSubject("New Quotation Request from " + dto.getCompanyName());
             helper.setText(
