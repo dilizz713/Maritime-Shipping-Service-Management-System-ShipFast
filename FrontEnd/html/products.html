@@ -513,21 +513,30 @@
         // Open Edit Qty Modal
         $(document).on("click", ".edit-qty-btn", function () {
             const id = $(this).data("id");
-            $.get(`${BASE_URL}/product/${id}`, function(res) {
-                const p = res.data || res;
+            $.get(`${BASE_URL}/product/${id}`, function (res) {
+                const p = res.data;
                 $("#editQtyId").val(p.id);
                 $("#editQtyCode").val(p.code);
-                $("#editQtyValue").val(p.quantity);
+                $("#editQtyValue").val("");
+                $("#currentQty").text(p.quantity);
                 $("#editQtyModal").modal("show");
             });
         });
 
-        $("#editQtyForm").submit(function(e) {
+        // Save Qty (Add to existing)
+        $("#editQtyForm").submit(function (e) {
             e.preventDefault();
+            const id = parseInt($("#editQtyId").val());
+            const addQty = parseInt($("#editQtyValue").val());
+
+            if (isNaN(addQty) || addQty <= 0) {
+                alert("Please enter a valid quantity to add!");
+                return;
+            }
 
             const dto = {
-                id: $("#editQtyId").val(),
-                quantity: parseInt($("#editQtyValue").val())
+                id: id,
+                quantity: addQty
             };
 
             $.ajax({
@@ -535,17 +544,18 @@
                 method: "PUT",
                 contentType: "application/json",
                 data: JSON.stringify(dto),
-                success: function() {
-                    alert("Quantity updated successfully!");
+                success: function (res) {
+                    alert(`Quantity added successfully! New quantity: ${res.data.quantity}`);
                     $("#editQtyModal").modal("hide");
                     loadProducts();
                 },
-                error: function(err) {
-                    console.error(err);
+                error: function (err) {
                     alert("Error updating quantity!");
+                    console.error(err);
                 }
             });
         });
+
 
         // Delete Product
         $(document).on("click", ".delete-btn", function() {

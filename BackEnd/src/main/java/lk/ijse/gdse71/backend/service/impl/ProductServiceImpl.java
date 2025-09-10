@@ -83,10 +83,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO updateQuantity(Long id, Integer quantity) {
+    public ProductDTO updateQuantity(Long id, Integer additionalQty) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
-        product.setQuantity(quantity);
+
+        int updatedQty = (product.getQuantity() != null ? product.getQuantity() : 0) + additionalQty;
+        product.setQuantity(updatedQty);
+
         return toDTO(productRepository.save(product));
     }
 
