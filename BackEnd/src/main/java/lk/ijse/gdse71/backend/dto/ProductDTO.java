@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.backend.dto;
 
+import lk.ijse.gdse71.backend.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,6 @@ public class ProductDTO {
     private Long uomId;
     private String uomName;
     private String uomCode;
+
+
 }

@@ -219,66 +219,166 @@
             </div>
         </nav>
 
-        <div class="container mt-4">
-            <h3>Add Product</h3>
-            <form id="productForm">
-                <div class="mb-2">
-                    <label>Code</label>
-                    <input type="text" id="code" class="form-control" readonly>
+        <div class="container mt-3">
+            <div class="card shadow-sm" style="max-width: 600px;">
+                <div class="card-header bg-primary text-white py-2">
+                    <h6 class="mb-0">Add Product</h6>
                 </div>
+                <div class="card-body p-3">
+                    <form id="productForm" class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Code</label>
+                            <input type="text" id="code" class="form-control form-control-sm" readonly>
+                        </div>
 
-                <div class="mb-2">
-                    <label>Name</label>
-                    <input type="text" id="name" class="form-control" required>
+                        <div class="col-md-6">
+                            <label class="form-label">Name</label>
+                            <input type="text" id="name" class="form-control form-control-sm" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Product Type</label>
+                            <select id="productType" class="form-select form-select-sm" required>
+                                <option value="">-- Select --</option>
+                                <option value="PROVISION_DRY">Provision Dry</option>
+                                <option value="PROVISION_FROZEN">Provision Frozen</option>
+                                <option value="PROVISION_MEAT">Provision Meat</option>
+                                <option value="ENGINE_STORES">Engine Stores</option>
+                                <option value="OTHERS">Others</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Qty</label>
+                            <input type="number" id="quantity" class="form-control form-control-sm" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Price</label>
+                            <input type="number" id="unitPrice" step="0.01" class="form-control form-control-sm" required>
+                        </div>
+
+                        <div class="col-md-8 d-flex align-items-end">
+                            <label class="form-label me-2">UOM</label>
+                            <select id="uomDropdown" class="form-select form-select-sm me-2" style="flex:1"></select>
+                            <button type="button" class="btn btn-sm btn-success" id="addUomBtn">
+                                <i class="bi bi-plus-circle"></i>
+                            </button>
+                        </div>
+
+                        <div id="newUomFields" class="col-12" style="display:none;">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">UOM Name</label>
+                                    <input type="text" id="uomName" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">UOM Code</label>
+                                    <input type="text" id="uomCode" class="form-control form-control-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-primary btn-sm mt-2">Save</button>
+                        </div>
+                    </form>
                 </div>
+            </div>
 
-                <div class="mb-2">
-                    <label>Product Type</label>
-                    <select id="productType" class="form-select" required>
-                        <option value="">-- Select Type --</option>
-                        <option value="PROVISION_DRY">Provision Dry</option>
-                        <option value="PROVISION_FROZEN">Provision Frozen</option>
-                        <option value="PROVISION_MEAT">Provision Meat</option>
-                        <option value="ENGINE_STORES">Engine Stores</option>
-                        <option value="OTHERS">Others</option>
-                    </select>
-                </div>
+            <hr>
+            <h1>All Products</h1>
 
-                <div class="mb-2">
-                    <label>Quantity</label>
-                    <input type="number" id="quantity" class="form-control" required>
-                </div>
-
-                <div class="mb-2">
-                    <label>Unit Price</label>
-                    <input type="number" id="unitPrice" step="0.01" class="form-control" required>
-                </div>
-
-                <div class="mb-2 d-flex align-items-center">
-                    <label class="me-2">UOM</label>
-                    <select id="uomDropdown" class="form-select me-2" style="width:200px"></select>
-                    <button type="button" class="btn btn-sm btn-success" id="addUomBtn">
-                        <i class="bi bi-plus-circle"></i>
-                    </button>
-                </div>
-
-
-                <div id="newUomFields" style="display:none;">
-                    <div class="mb-2">
-                        <label>UOM Name</label>
-                        <input type="text" id="uomName" class="form-control">
-                    </div>
-                    <div class="mb-2">
-                        <label>UOM Code</label>
-                        <input type="text" id="uomCode" class="form-control">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary mt-3">Save Product</button>
-            </form>
+            <table class="table table-bordered table-striped" id="productTable">
+                <thead class="table-dark">
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>UOM</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
 
+    </div>
 
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editProductForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="editId">
+                        <div class="mb-2">
+                            <label>Code</label>
+                            <input type="text" id="editCode" class="form-control" readonly>
+                        </div>
+                        <div class="mb-2">
+                            <label>Name</label>
+                            <input type="text" id="editName" class="form-control">
+                        </div>
+                        <div class="mb-2">
+                            <label>Product Type</label>
+                            <select id="editProductType" class="form-select">
+                                <option value="PROVISION_DRY">Provision Dry</option>
+                                <option value="PROVISION_FROZEN">Provision Frozen</option>
+                                <option value="PROVISION_MEAT">Provision Meat</option>
+                                <option value="ENGINE_STORES">Engine Stores</option>
+                                <option value="OTHERS">Others</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label>Unit Price</label>
+                            <input type="number" step="0.01" id="editUnitPrice" class="form-control">
+                        </div>
+                        <div class="mb-2">
+                            <label>UOM</label>
+                            <select id="editUomDropdown" class="form-select"></select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Quantity Modal -->
+    <div class="modal fade" id="editQtyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editQtyForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Quantity</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="editQtyId">
+                        <div class="mb-2">
+                            <label>Code</label>
+                            <input type="text" id="editQtyCode" class="form-control" readonly>
+                        </div>
+                        <div class="mb-2">
+                            <label>Quantity</label>
+                            <input type="number" id="editQtyValue" class="form-control">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Update Qty</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -297,6 +397,7 @@
 
         loadUoms();
         loadNextProductCode();
+        loadProducts();
 
 
         $("#addUomBtn").click(function () {
@@ -325,11 +426,11 @@
                 data: JSON.stringify(dto),
                 success: function (res) {
                     alert("Product saved successfully!");
-                    $("#code").val(res.code); // ✅ show saved code
+                    $("#code").val(res.code);
                     $("#productForm")[0].reset();
                     $("#newUomFields").hide();
                     loadUoms();
-                    loadNextProductCode(); // ✅ refresh for next product
+                    loadNextProductCode();
                 },
                 error: function (err) {
                     alert("Error saving product!");
@@ -337,26 +438,166 @@
                 }
             });
         });
-    });
 
+        // Load all products
+        function loadProducts() {
+            $.get(`${BASE_URL}/product/getAll`, function(res) {
+                // Check if backend returns APIResponse
+                const products = res.data || res; // fallback if backend returns raw array
 
-    // Load all UOMs
-    function loadUoms() {
-        $.get(`${BASE_URL}/uom/getAll`, function(res) {
+                let rows = "";
+                products.forEach(p => {
+                    rows += `
+                    <tr>
+                        <td>${p.code}</td>
+                        <td>${p.name}</td>
+                        <td>${p.productType}</td>
+                        <td>${p.quantity}</td>
+                        <td>${p.unitPrice.toFixed(2)}</td>
+                        <td>${p.uomName} (${p.uomCode})</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning edit-btn" data-id="${p.id}"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-info edit-qty-btn" data-id="${p.id}"><i class="bi bi-plus-slash-minus"></i></button>
+                            <button class="btn btn-sm btn-danger delete-btn" data-id="${p.id}"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>`;
+                });
 
-            let options = '<option value="">-- Select UOM --</option>';
-            res.data.forEach(u => {
-                options += `<option value="${u.id}">${u.uomName} (${u.uomCode})</option>`;
+                $("#productTable tbody").html(rows);
             });
-            $("#uomDropdown").html(options);
-        });
-    }
+        }
 
-    function loadNextProductCode() {
-        $.get(`${BASE_URL}/product/next-code`, function(res) {
-            $("#code").val(res);
+        // Open Edit Product Modal
+        $(document).on("click", ".edit-btn", function () {
+            const id = $(this).data("id");
+            $.get(`${BASE_URL}/product/${id}`, function(res) {
+                const p = res.data || res; // APIResponse handling
+                $("#editId").val(p.id);
+                $("#editCode").val(p.code);
+                $("#editName").val(p.name);
+                $("#editProductType").val(p.productType);
+                $("#editUnitPrice").val(p.unitPrice);
+                loadUomsIntoDropdown("#editUomDropdown", p.uomId);
+                $("#editProductModal").modal("show");
+            });
         });
-    }
+
+        $("#editProductForm").submit(function(e) {
+            e.preventDefault();
+
+            const dto = {
+                id: $("#editId").val(),
+                name: $("#editName").val(),
+                productType: $("#editProductType").val(),
+                unitPrice: parseFloat($("#editUnitPrice").val()),
+                uomId: $("#editUomDropdown").val()
+            };
+
+            $.ajax({
+                url: `${BASE_URL}/product/update`,
+                method: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(dto),
+                success: function() {
+                    alert("Product updated successfully!");
+                    $("#editProductModal").modal("hide");
+                    loadProducts();
+                },
+                error: function(err) {
+                    console.error(err);
+                    alert("Error updating product!");
+                }
+            });
+        });
+
+        // Open Edit Qty Modal
+        $(document).on("click", ".edit-qty-btn", function () {
+            const id = $(this).data("id");
+            $.get(`${BASE_URL}/product/${id}`, function(res) {
+                const p = res.data || res;
+                $("#editQtyId").val(p.id);
+                $("#editQtyCode").val(p.code);
+                $("#editQtyValue").val(p.quantity);
+                $("#editQtyModal").modal("show");
+            });
+        });
+
+        $("#editQtyForm").submit(function(e) {
+            e.preventDefault();
+
+            const dto = {
+                id: $("#editQtyId").val(),
+                quantity: parseInt($("#editQtyValue").val())
+            };
+
+            $.ajax({
+                url: `${BASE_URL}/product/update-qty`,
+                method: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(dto),
+                success: function() {
+                    alert("Quantity updated successfully!");
+                    $("#editQtyModal").modal("hide");
+                    loadProducts();
+                },
+                error: function(err) {
+                    console.error(err);
+                    alert("Error updating quantity!");
+                }
+            });
+        });
+
+        // Delete Product
+        $(document).on("click", ".delete-btn", function() {
+            const id = $(this).data("id");
+            if (confirm("Are you sure to delete this product?")) {
+                $.ajax({
+                    url: `${BASE_URL}/product/delete/${id}`,
+                    method: "DELETE",
+                    success: function() {
+                        alert("Product deleted successfully!");
+                        loadProducts();
+                    },
+                    error: function(err) {
+                        console.error(err);
+                        alert("Error deleting product!");
+                    }
+                });
+            }
+        });
+
+        // Helper: Load UOM dropdown with selected
+        function loadUoms() {
+            $.get(`${BASE_URL}/uom/getAll`, function(res) {
+                const uoms = res.data || res;
+                let options = '<option value="">-- Select UOM --</option>';
+                uoms.forEach(u => {
+                    options += `<option value="${u.id}">${u.uomName} (${u.uomCode})</option>`;
+                });
+                $("#uomDropdown").html(options);
+            });
+        }
+
+        function loadUomsIntoDropdown(selector, selectedId) {
+            $.get(`${BASE_URL}/uom/getAll`, function(res) {
+                const uoms = res.data || res;
+                let options = '<option value="">-- Select UOM --</option>';
+                uoms.forEach(u => {
+                    options += `<option value="${u.id}" ${u.id == selectedId ? "selected" : ""}>
+                                ${u.uomName} (${u.uomCode})
+                            </option>`;
+                });
+                $(selector).html(options);
+            });
+        }
+
+        // -------------------- NEXT PRODUCT CODE --------------------
+        function loadNextProductCode() {
+            $.get(`${BASE_URL}/product/next-code`, function(res) {
+                $("#code").val(res);
+            });
+        }
+    });
 
 
 </script>

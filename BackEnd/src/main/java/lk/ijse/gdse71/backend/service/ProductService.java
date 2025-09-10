@@ -10,4 +10,12 @@ public interface ProductService {
     List<ProductDTO> getAllProducts();
 
     String generateNextProductCode();
+
+    ProductDTO getProductById(Long id);
+
+    void updateProduct(ProductDTO dto);
+
+    ProductDTO updateQuantity(Long id, Integer quantity);
+
+    void deleteProduct(Long id);
 }

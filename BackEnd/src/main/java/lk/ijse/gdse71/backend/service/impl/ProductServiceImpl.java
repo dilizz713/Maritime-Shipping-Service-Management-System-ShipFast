@@ -17,41 +17,38 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
+
     private final ProductRepository productRepository;
     private final UOMRepository uomRepository;
 
     @Override
     public ProductDTO saveProduct(ProductDTO productDTO) {
+        // Handle UOM
         UOM uom = null;
-
         if (productDTO.getUomId() != null) {
             uom = uomRepository.findById(productDTO.getUomId())
                     .orElseThrow(() -> new RuntimeException("UOM not found with id: " + productDTO.getUomId()));
         } else if (productDTO.getUomName() != null && productDTO.getUomCode() != null) {
             uom = uomRepository.findByUomNameIgnoreCase(productDTO.getUomName())
-                    .orElseGet(() -> uomRepository.save(
-                            UOM.builder()
-                                    .uomName(productDTO.getUomName())
-                                    .uomCode(productDTO.getUomCode())
-                                    .build()
-                    ));
+                    .orElseGet(() -> uomRepository.save(UOM.builder()
+                            .uomName(productDTO.getUomName())
+                            .uomCode(productDTO.getUomCode())
+                            .build()));
         }
 
+        // Generate product code
         String generatedCode = generateNextProductCode();
 
         Product product = Product.builder()
                 .code(generatedCode)
                 .name(productDTO.getName())
-                .productType(productDTO.getProductType() != null
-                        ? ProductType.valueOf(productDTO.getProductType())
-                        : null)
+                .productType(productDTO.getProductType() != null ? ProductType.valueOf(productDTO.getProductType()) : null)
                 .quantity(productDTO.getQuantity())
                 .unitPrice(productDTO.getUnitPrice())
                 .uom(uom)
                 .build();
 
         Product savedProduct = productRepository.save(product);
-
         return toDTO(savedProduct);
     }
 
@@ -62,6 +59,65 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public ProductDTO getProductById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+        return toDTO(product);
+    }
+
+    @Override
+    public void updateProduct(ProductDTO dto) {
+        Product product = productRepository.findById(dto.getId())
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + dto.getId()));
+
+        UOM uom = uomRepository.findById(dto.getUomId())
+                .orElseThrow(() -> new RuntimeException("UOM not found with id: " + dto.getUomId()));
+
+        product.setName(dto.getName());
+        product.setProductType(dto.getProductType() != null ? ProductType.valueOf(dto.getProductType()) : null);
+        product.setUnitPrice(dto.getUnitPrice());
+        product.setUom(uom);
+
+        productRepository.save(product);
+    }
+
+    @Override
+    public ProductDTO updateQuantity(Long id, Integer quantity) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+        product.setQuantity(quantity);
+        return toDTO(productRepository.save(product));
+    }
+
+    @Override
+    public void deleteProduct(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new RuntimeException("Product not found with id: " + id);
+        }
+        productRepository.deleteById(id);
+    }
+
+    @Override
+    public String generateNextProductCode() {
+        Optional<Product> lastProductOpt = productRepository.findTopByOrderByIdDesc();
+        int nextNumber = 1;
+
+        if (lastProductOpt.isPresent()) {
+            String lastCode = lastProductOpt.get().getCode();
+            if (lastCode != null && lastCode.startsWith("P")) {
+                try {
+                    int number = Integer.parseInt(lastCode.substring(1));
+                    nextNumber = number + 1;
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+
+        return String.format("P%04d", nextNumber);
+    }
+
+    // Helper: convert entity to DTO
     private ProductDTO toDTO(Product product) {
         return new ProductDTO(
                 product.getId(),
@@ -70,30 +126,9 @@ public class ProductServiceImpl implements ProductService {
                 product.getProductType() != null ? product.getProductType().name() : null,
                 product.getQuantity(),
                 product.getUnitPrice(),
-                product.getUom().getId(),
-                product.getUom().getUomName(),
-                product.getUom().getUomCode()
+                product.getUom() != null ? product.getUom().getId() : null,
+                product.getUom() != null ? product.getUom().getUomName() : null,
+                product.getUom() != null ? product.getUom().getUomCode() : null
         );
-    }
-
-    @Override
-    public String generateNextProductCode() {
-        Optional<Product> lastProductOpt = productRepository.findTopByOrderByIdDesc();
-
-        int nextNumber = 1;
-        if (lastProductOpt.isPresent()) {
-            String lastCode = lastProductOpt.get().getCode();
-            if (lastCode != null && lastCode.startsWith("P")) {
-                try {
-                    int number = Integer.parseInt(lastCode.substring(1));
-                    nextNumber = number + 1;
-                } catch (NumberFormatException e) {
-                    nextNumber = 1;
-                }
-            }
-        }
-
-
-        return String.format("P%04d", nextNumber);
     }
 }
