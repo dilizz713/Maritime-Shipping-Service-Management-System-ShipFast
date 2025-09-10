@@ -224,7 +224,7 @@
             <form id="productForm">
                 <div class="mb-2">
                     <label>Code</label>
-                    <input type="text" id="code" class="form-control" required>
+                    <input type="text" id="code" class="form-control" readonly>
                 </div>
 
                 <div class="mb-2">
@@ -262,7 +262,7 @@
                     </button>
                 </div>
 
-                <!-- Hidden fields for new UOM -->
+
                 <div id="newUomFields" style="display:none;">
                     <div class="mb-2">
                         <label>UOM Name</label>
@@ -292,15 +292,16 @@
         $('#meetingModal .btn').click(function() {
             const action = $(this).text().trim();
             console.log("User selected:", action);
-            $('#meetingModal').modal('hide'); // Close modal after selection
+            $('#meetingModal').modal('hide');
         });
 
         loadUoms();
+        loadNextProductCode();
 
-        // Show new UOM input fields when + clicked
+
         $("#addUomBtn").click(function () {
             $("#newUomFields").toggle();
-            $("#uomDropdown").val(""); // clear existing selection
+            $("#uomDropdown").val("");
         });
 
         // Save Product
@@ -308,7 +309,6 @@
             e.preventDefault();
 
             const dto = {
-                code: $("#code").val(),
                 name: $("#name").val(),
                 productType: $("#productType").val(),
                 quantity: parseInt($("#quantity").val()),
@@ -325,9 +325,11 @@
                 data: JSON.stringify(dto),
                 success: function (res) {
                     alert("Product saved successfully!");
+                    $("#code").val(res.code); // ✅ show saved code
                     $("#productForm")[0].reset();
                     $("#newUomFields").hide();
                     loadUoms();
+                    loadNextProductCode(); // ✅ refresh for next product
                 },
                 error: function (err) {
                     alert("Error saving product!");
@@ -338,15 +340,21 @@
     });
 
 
-    // Load all UOMs into dropdown
+    // Load all UOMs
     function loadUoms() {
         $.get(`${BASE_URL}/uom/getAll`, function(res) {
-            // res.data contains the actual UOM array
+
             let options = '<option value="">-- Select UOM --</option>';
             res.data.forEach(u => {
                 options += `<option value="${u.id}">${u.uomName} (${u.uomCode})</option>`;
             });
             $("#uomDropdown").html(options);
+        });
+    }
+
+    function loadNextProductCode() {
+        $.get(`${BASE_URL}/product/next-code`, function(res) {
+            $("#code").val(res);
         });
     }
 

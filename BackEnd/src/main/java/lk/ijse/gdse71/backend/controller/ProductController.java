@@ -26,4 +26,10 @@ public class ProductController {
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
     }
+
+    @GetMapping("/next-code")
+    public ResponseEntity<String> getNextProductCode() {
+        String nextCode = productService.generateNextProductCode();
+        return ResponseEntity.ok(nextCode);
+    }
 }

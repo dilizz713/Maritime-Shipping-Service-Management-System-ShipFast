@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,15 +22,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO saveProduct(ProductDTO productDTO) {
-        // 1. Check if UOM exists
         UOM uom = null;
 
         if (productDTO.getUomId() != null) {
-            // Load existing UOM by ID
             uom = uomRepository.findById(productDTO.getUomId())
                     .orElseThrow(() -> new RuntimeException("UOM not found with id: " + productDTO.getUomId()));
         } else if (productDTO.getUomName() != null && productDTO.getUomCode() != null) {
-            // Try to find by name, otherwise create
             uom = uomRepository.findByUomNameIgnoreCase(productDTO.getUomName())
                     .orElseGet(() -> uomRepository.save(
                             UOM.builder()
@@ -39,9 +37,10 @@ public class ProductServiceImpl implements ProductService {
                     ));
         }
 
-        // 2. Save product with selected/created UOM
+        String generatedCode = generateNextProductCode();
+
         Product product = Product.builder()
-                .code(productDTO.getCode())
+                .code(generatedCode)
                 .name(productDTO.getName())
                 .productType(productDTO.getProductType() != null
                         ? ProductType.valueOf(productDTO.getProductType())
@@ -53,7 +52,6 @@ public class ProductServiceImpl implements ProductService {
 
         Product savedProduct = productRepository.save(product);
 
-        // 3. Convert back to DTO
         return toDTO(savedProduct);
     }
 
@@ -76,5 +74,26 @@ public class ProductServiceImpl implements ProductService {
                 product.getUom().getUomName(),
                 product.getUom().getUomCode()
         );
+    }
+
+    @Override
+    public String generateNextProductCode() {
+        Optional<Product> lastProductOpt = productRepository.findTopByOrderByIdDesc();
+
+        int nextNumber = 1;
+        if (lastProductOpt.isPresent()) {
+            String lastCode = lastProductOpt.get().getCode();
+            if (lastCode != null && lastCode.startsWith("P")) {
+                try {
+                    int number = Integer.parseInt(lastCode.substring(1));
+                    nextNumber = number + 1;
+                } catch (NumberFormatException e) {
+                    nextNumber = 1;
+                }
+            }
+        }
+
+
+        return String.format("P%04d", nextNumber);
     }
 }

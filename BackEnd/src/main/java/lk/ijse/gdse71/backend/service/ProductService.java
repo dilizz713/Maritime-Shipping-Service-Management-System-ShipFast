@@ -8,4 +8,6 @@ public interface ProductService {
     ProductDTO saveProduct(ProductDTO productDTO);
 
     List<ProductDTO> getAllProducts();
+
+    String generateNextProductCode();
 }
