@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class InquiryItemDTO {
     private Long productId;
+    private String productName;
     private Integer quantity;
     private Double unitPrice;
     private Double discount;

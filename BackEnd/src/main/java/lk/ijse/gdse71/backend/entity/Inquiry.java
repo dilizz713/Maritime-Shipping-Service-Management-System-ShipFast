@@ -19,7 +19,9 @@ public class Inquiry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "inquiry_date")
     private LocalDate inquiryDate;
+
     private String description;
 
     @Enumerated(EnumType.STRING)

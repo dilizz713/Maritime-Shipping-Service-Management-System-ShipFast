@@ -21,4 +21,8 @@ public class ProductDTO {
     private String uomCode;
 
 
+    public ProductDTO(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

@@ -14,4 +14,9 @@ public class VendorDTO {
     private String mobile;
     private String email;
     private String fax;
+
+    public VendorDTO(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
