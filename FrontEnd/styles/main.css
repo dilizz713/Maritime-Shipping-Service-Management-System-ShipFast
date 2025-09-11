@@ -328,6 +328,25 @@
     margin: 0 10px;
     width: 100px;
 }
+#chat-widget .card {
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+#chat-widget .card-header {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+#chat-widget .card-footer {
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+
+
+
+
 
 
 
