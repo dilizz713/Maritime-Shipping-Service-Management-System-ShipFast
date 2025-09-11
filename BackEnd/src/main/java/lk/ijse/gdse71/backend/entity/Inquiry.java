@@ -34,4 +34,7 @@ public class Inquiry {
     @OneToMany(mappedBy = "inquiry", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InquiryItem> items;
 
+    @Column(name = "excel_file_name")
+    private String excelFileName;
+
 }

@@ -10,13 +10,24 @@ import lk.ijse.gdse71.backend.repo.VendorRepository;
 import lk.ijse.gdse71.backend.service.EmailService;
 import lk.ijse.gdse71.backend.service.InquiryService;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lk.ijse.gdse71.backend.util.ExcelGenerator;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
@@ -26,6 +37,8 @@ public class InquiryServiceImpl implements InquiryService {
     private final InquiryRepository inquiryRepo;
     private final VendorRepository vendorRepo;
     private final ProductRepository productRepo;
+
+    private static final String UPLOAD_DIR = "uploads/inquiries/";
 
     private final EmailService emailService;
 
@@ -84,34 +97,20 @@ public class InquiryServiceImpl implements InquiryService {
         return saveInquiry(dto);
     }
 
+
     @Override
     public List<InquiryDTO> getAllInquiries() {
-        /*return inquiryRepo.findAll().stream().map(inquiry -> InquiryDTO.builder()
-                .id(inquiry.getId())
-                .vendorId(inquiry.getVendor().getId())
-                .description(inquiry.getDescription())
-                .inquiryDate(inquiry.getInquiryDate())
-                .inquiryStatus(inquiry.getInquiryStatus())
-                .items(inquiry.getItems().stream().map(item -> InquiryItemDTO.builder()
-                        .productId(item.getProduct().getId())
-                        .quantity(item.getQuantity())
-                        .unitPrice(item.getUnitPrice())
-                        .discount(item.getDiscount())
-                        .totalAmount(item.getTotalAmount())
-                        .status(item.getStatus())
-                        .build()).collect(Collectors.toList()))
-                .build()).collect(Collectors.toList());*/
-
         return inquiryRepo.findAll().stream().map(inquiry -> InquiryDTO.builder()
                 .id(inquiry.getId())
                 .vendorId(inquiry.getVendor().getId())
-                .vendorName(inquiry.getVendor().getName()) // add this
+                .vendorName(inquiry.getVendor().getName())
                 .description(inquiry.getDescription())
                 .inquiryDate(inquiry.getInquiryDate())
                 .inquiryStatus(inquiry.getInquiryStatus())
+                .excelFileName(inquiry.getExcelFileName()) // <-- add this
                 .items(inquiry.getItems().stream().map(item -> InquiryItemDTO.builder()
                         .productId(item.getProduct().getId())
-                        .productName(item.getProduct().getName()) // add this
+                        .productName(item.getProduct().getName())
                         .quantity(item.getQuantity())
                         .unitPrice(item.getUnitPrice())
                         .discount(item.getDiscount())
@@ -123,35 +122,19 @@ public class InquiryServiceImpl implements InquiryService {
 
     @Override
     public InquiryDTO getInquiryById(Long id) {
-        /*Inquiry inquiry = inquiryRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inquiry not found"));
-        return InquiryDTO.builder()
-                .id(inquiry.getId())
-                .vendorId(inquiry.getVendor().getId())
-                .description(inquiry.getDescription())
-                .inquiryDate(inquiry.getInquiryDate())
-                .inquiryStatus(inquiry.getInquiryStatus())
-                .items(inquiry.getItems().stream().map(item -> InquiryItemDTO.builder()
-                        .productId(item.getProduct().getId())
-                        .quantity(item.getQuantity())
-                        .unitPrice(item.getUnitPrice())
-                        .discount(item.getDiscount())
-                        .totalAmount(item.getTotalAmount())
-                        .status(item.getStatus())
-                        .build()).collect(Collectors.toList()))
-                .build();*/
         Inquiry inquiry = inquiryRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Inquiry not found"));
         return InquiryDTO.builder()
                 .id(inquiry.getId())
                 .vendorId(inquiry.getVendor().getId())
-                .vendorName(inquiry.getVendor().getName()) // add this
+                .vendorName(inquiry.getVendor().getName())
                 .description(inquiry.getDescription())
                 .inquiryDate(inquiry.getInquiryDate())
                 .inquiryStatus(inquiry.getInquiryStatus())
+                .excelFileName(inquiry.getExcelFileName()) // <-- add this
                 .items(inquiry.getItems().stream().map(item -> InquiryItemDTO.builder()
                         .productId(item.getProduct().getId())
-                        .productName(item.getProduct().getName()) // add this
+                        .productName(item.getProduct().getName())
                         .quantity(item.getQuantity())
                         .unitPrice(item.getUnitPrice())
                         .discount(item.getDiscount())
@@ -166,36 +149,122 @@ public class InquiryServiceImpl implements InquiryService {
         Inquiry inquiry = inquiryRepo.findById(inquiryId)
                 .orElseThrow(() -> new RuntimeException("Inquiry not found"));
 
-        InputStream inputStream = new ByteArrayInputStream(excelData);
-        Workbook workbook = WorkbookFactory.create(inputStream);
-        Sheet sheet = workbook.getSheetAt(0);
-
-        for (int i = 1; i <= sheet.getLastRowNum(); i++) { // skip header row
-            Row row = sheet.getRow(i);
-            if (row == null) continue;
-
-            String productName = row.getCell(0).getStringCellValue();
-            double quantity = row.getCell(1).getNumericCellValue();
-            double unitPrice = row.getCell(2).getNumericCellValue();
-            double discount = row.getCell(3).getNumericCellValue();
-            double totalAmount = row.getCell(4).getNumericCellValue();
-            String statusStr = row.getCell(5).getStringCellValue();
-
-            // Find the InquiryItem by product name
-            InquiryItem item = inquiry.getItems().stream()
-                    .filter(it -> it.getProduct().getName().equals(productName))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Product " + productName + " not found in inquiry"));
-
-            // Update values
-            item.setQuantity((int) quantity);
-            item.setUnitPrice(unitPrice);
-            item.setDiscount(discount);
-            item.setTotalAmount(totalAmount);
-            item.setStatus(statusStr.equalsIgnoreCase("AVAILABLE") ? ProductStatus.AVAILABLE : ProductStatus.NOT_AVAILABLE);
+        // Ensure upload directory exists
+        Path uploadPath = Paths.get(UPLOAD_DIR);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
         }
 
-        workbook.close();
-        inquiryRepo.save(inquiry);
+        // Save the Excel file
+        Path excelPath = uploadPath.resolve("Inquiry_" + inquiryId + ".xlsx");
+        Files.write(excelPath, excelData);
+
+        try (InputStream inputStream = new ByteArrayInputStream(excelData);
+             Workbook workbook = WorkbookFactory.create(inputStream)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // skip header
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
+                String productName = getCellString(row.getCell(0));
+                double quantity = getCellNumeric(row.getCell(1));
+                double unitPrice = getCellNumeric(row.getCell(2));
+                double discount = getCellNumeric(row.getCell(3));
+                double totalAmount = getCellNumeric(row.getCell(4));
+                String statusStr = getCellString(row.getCell(5));
+
+                if (productName.isEmpty()) continue;
+
+                // Find InquiryItem by product name
+                InquiryItem item = inquiry.getItems().stream()
+                        .filter(it -> it.getProduct().getName().equalsIgnoreCase(productName))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException(
+                                "Product '" + productName + "' not found in inquiry #" + inquiryId));
+
+                // Update values
+                item.setQuantity((int) quantity);
+                item.setUnitPrice(unitPrice);
+                item.setDiscount(discount);
+                item.setTotalAmount(totalAmount);
+                if (statusStr.equalsIgnoreCase("AVAILABLE")) {
+                    item.setStatus(ProductStatus.AVAILABLE);
+                } else {
+                    item.setStatus(ProductStatus.NOT_AVAILABLE);
+                }
+            }
+
+            inquiryRepo.save(inquiry);
+        }
     }
+
+    /* ---------------- Utility Parsers ---------------- */
+    private String getCellString(Cell cell) {
+        if (cell == null) return "";
+        cell.setCellType(CellType.STRING);
+        return cell.getStringCellValue().trim();
+    }
+
+    private double getCellNumeric(Cell cell) {
+        if (cell == null) return 0;
+        if (cell.getCellType() == CellType.NUMERIC) {
+            return cell.getNumericCellValue();
+        } else if (cell.getCellType() == CellType.STRING) {
+            try {
+                return Double.parseDouble(cell.getStringCellValue().trim());
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public String saveExcelForInquiry(Long inquiryId, MultipartFile file) throws IOException {
+        Path uploadPath = Paths.get(UPLOAD_DIR);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String filename = "Inquiry_" + inquiryId + ".xlsx";
+        Path excelPath = uploadPath.resolve(filename);
+        Files.write(excelPath, file.getBytes());
+
+        // Save the filename in the database
+        Inquiry inquiry = inquiryRepo.findById(inquiryId)
+                .orElseThrow(() -> new RuntimeException("Inquiry not found"));
+        inquiry.setExcelFileName(filename); // <-- store filename
+        inquiryRepo.save(inquiry);
+
+        return filename;
+    }
+
+    public List<Map<String, Object>> parseExcelToJson(MultipartFile file) throws IOException {
+        List<Map<String, Object>> rows = new ArrayList<>();
+
+        try (InputStream inputStream = file.getInputStream();
+             Workbook workbook = WorkbookFactory.create(inputStream)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // skip header
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
+                Map<String, Object> rowData = new HashMap<>();
+                rowData.put("productName", getCellString(row.getCell(0)));
+                rowData.put("quantity", getCellNumeric(row.getCell(1)));
+                rowData.put("unitPrice", getCellNumeric(row.getCell(2)));
+                rowData.put("discount", getCellNumeric(row.getCell(3)));
+                rowData.put("totalAmount", getCellNumeric(row.getCell(4)));
+                rowData.put("status", getCellString(row.getCell(5)));
+
+                rows.add(rowData);
+            }
+        }
+        return rows;
+    }
+
+
 }
