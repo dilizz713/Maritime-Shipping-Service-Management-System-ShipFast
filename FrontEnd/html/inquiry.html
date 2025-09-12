@@ -440,6 +440,9 @@
                         <button class="btn btn-outline-primary btn-sm viewDetail" data-id="${i.id}" title="View Inquiry">
                             <i class="bi bi-eye"></i>
                         </button>
+                        <button class="btn btn-outline-success btn-sm confirmQuotation" data-id="${i.id}" title="Confirm Quotation">
+                            <i class="bi bi-check2-circle"></i>
+                        </button>
                     </td>
                     <td>${excelLink}</td>
                 </tr>
@@ -447,6 +450,11 @@
             });
         });
     }
+
+    $(document).on("click", ".confirmQuotation", function() {
+        const inquiryId = $(this).data("id");
+        window.location.href = `vendor-quotation-confirmation.html?inquiryId=${inquiryId}`;
+    });
 
 
     // Add product
