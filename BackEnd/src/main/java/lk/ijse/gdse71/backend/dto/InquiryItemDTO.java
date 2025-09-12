@@ -18,4 +18,5 @@ public class InquiryItemDTO {
     private Double discount;
     private Double totalAmount;
     private ProductStatus status;
+    private String remarks;
 }

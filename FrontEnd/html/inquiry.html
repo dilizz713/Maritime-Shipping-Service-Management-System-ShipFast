@@ -284,7 +284,7 @@
                             <th>Date</th>
                             <th>Status</th>
                             <th>Actions</th>
-                            <th>Excel</th>
+                            <th>File</th>
                         </tr>
                         </thead>
                         <tbody></tbody>
@@ -364,11 +364,12 @@
                             <th>Discount</th>
                             <th>Total Amount</th>
                             <th>Status</th>
+                            <th>Remark</th>
                         </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
-                    <h5>Excel Preview</h5>
+
 
                 </div>
             </div>
@@ -421,10 +422,7 @@
             const tbody = $("#inquiryTable tbody");
             tbody.empty();
             data.forEach(i => {
-                // Excel link: only clickable if file exists
-               /* let excelLink = i.excelFileName
-                    ? `<a href="${API_URL}/inquiries/${i.id}/excel" target="_blank">${i.excelFileName}</a>`
-                    : 'Upload Excel';*/
+
                 let excelLink = i.excelFileName
                     ? `<a href="https://docs.google.com/viewer?url=${API_URL}/inquiries/${i.id}/excel" target="_blank">${i.excelFileName}</a>`
                     : 'Upload Excel';
@@ -444,7 +442,7 @@
                             <i class="bi bi-eye"></i>
                         </button>
                     </td>
-                    <td>${excelLink}</td> <!-- ✅ Excel column -->
+                    <td>${excelLink}</td>
                 </tr>
             `);
             });
@@ -491,7 +489,7 @@
         const inquiry = {
             vendorId: parseInt($("#vendorSelect").val()),
             description: $("#description").val(),
-            inquiryDate: today,   // <-- added this
+            inquiryDate: today,
             items
         };
 
@@ -534,6 +532,7 @@
                     <td>${item.discount || ""}</td>
                     <td>${item.totalAmount || ""}</td>
                     <td>${item.status || ""}</td>
+                    <td>${item.remarks || ""}</td>
                 </tr>
             `);
             });
@@ -594,7 +593,6 @@
             success: function(res){
                 alert("Excel uploaded successfully!");
 
-                // ✅ update product table
                 const tbody = $("#productsTableDetail tbody");
                 tbody.empty();
                 res.items.forEach(item => {
@@ -606,11 +604,12 @@
                         <td>${item.discount || ""}</td>
                         <td>${item.totalAmount || ""}</td>
                         <td>${item.status || ""}</td>
+                        <td>${item.remarks || ""}</td>
                     </tr>
                 `);
                 });
 
-                // ✅ reload table to show updated excelFileName
+
                 loadInquiries();
             }
         });

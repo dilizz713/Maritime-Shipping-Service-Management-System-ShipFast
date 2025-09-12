@@ -17,7 +17,7 @@ public class ExcelGenerator {
 
         // Header
         Row header = sheet.createRow(rowCount++);
-        String[] headers = {"Product Name", "Quantity", "Unit Price", "Discount", "Total Amount", "Status"};
+        String[] headers = {"Product Name", "Quantity", "Unit Price", "Discount", "Total Amount", "Status","Remark"};
         for (int i = 0; i < headers.length; i++) {
             Cell cell = header.createCell(i);
             cell.setCellValue(headers[i]);
@@ -37,6 +37,7 @@ public class ExcelGenerator {
             row.createCell(3).setCellValue(item.getDiscount() != null ? item.getDiscount() : 0.0);
             row.createCell(4).setCellValue(item.getTotalAmount() != null ? item.getTotalAmount() : 0.0);
             row.createCell(5).setCellValue(item.getStatus() != null ? item.getStatus().name() : "N/A");
+            row.createCell(6).setCellValue(item.getStatus() != null ? item.getRemarks() : "");
         }
 
         // Autosize columns

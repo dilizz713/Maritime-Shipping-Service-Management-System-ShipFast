@@ -102,7 +102,7 @@ public class InquiryController {
         headers.setContentType(MediaType.parseMediaType(
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
         headers.set(HttpHeaders.CONTENT_DISPOSITION,
-                "inline; filename=Inquiry_" + inquiryId + ".xlsx"); // ✅ inline (opens in Excel/Sheets)
+                "inline; filename=Inquiry_" + inquiryId + ".xlsx");
         headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
         return ResponseEntity.ok()

@@ -31,4 +31,6 @@ public class InquiryItem {
 
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
+
+    private String remarks;
 }
