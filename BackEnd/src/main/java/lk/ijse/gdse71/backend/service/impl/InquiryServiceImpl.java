@@ -162,17 +162,14 @@ public class InquiryServiceImpl implements InquiryService {
         Inquiry inquiry = inquiryRepo.findById(inquiryId)
                 .orElseThrow(() -> new RuntimeException("Inquiry not found"));
 
-
         Path uploadPath = Paths.get(UPLOAD_DIR);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
-
         String filename = "Inquiry_" + inquiryId + ".xlsx";
         Path excelPath = uploadPath.resolve(filename);
         Files.write(excelPath, excelData);
-
 
         inquiry.setExcelFileName(filename);
 
@@ -191,16 +188,13 @@ public class InquiryServiceImpl implements InquiryService {
                 String statusStr = getCellString(row.getCell(3));
                 String remarks = getCellString(row.getCell(4));
 
-
                 if (productName.isEmpty()) continue;
-
 
                 InquiryItem item = inquiry.getItems().stream()
                         .filter(it -> it.getProduct().getName().equalsIgnoreCase(productName))
                         .findFirst()
-                        .orElseThrow(() -> new RuntimeException(
-                                "Product '" + productName + "' not found in inquiry #" + inquiryId));
-
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                "Try to upload incorrect file.Please upload a correct file."));
 
                 item.setQuantity((int) quantity);
                 item.setUnitPrice(unitPrice);
@@ -211,9 +205,17 @@ public class InquiryServiceImpl implements InquiryService {
                 }
                 item.setRemarks(remarks);
             }
+
             inquiryRepo.save(inquiry);
+
+        } catch (IllegalArgumentException e) {
+            throw e; // pass friendly message to controller
+        } catch (Exception e) {
+            // Any other parsing error
+            throw new IllegalArgumentException("Failed to process Excel file. Please upload a correct file.");
         }
     }
+
 
 
     private String getCellString(Cell cell) {

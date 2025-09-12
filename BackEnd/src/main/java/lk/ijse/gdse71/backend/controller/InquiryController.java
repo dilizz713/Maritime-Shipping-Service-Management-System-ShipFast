@@ -48,46 +48,21 @@ public class InquiryController {
         return ResponseEntity.ok(inquiryService.getInquiryById(id));
     }
 
-    /*@PutMapping("/{inquiryId}/upload-excel")
-    public ResponseEntity<List<InquiryItemDTO>> uploadExcel(@PathVariable Long inquiryId, @RequestParam("file") MultipartFile file) {
-        try {
-            inquiryService.updateInquiryFromExcel(inquiryId, file.getBytes());
-            InquiryDTO updatedInquiry = inquiryService.getInquiryById(inquiryId);
-            return ResponseEntity.ok(updatedInquiry.getItems());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
-        }
-    }*/
 
     @PutMapping("/{inquiryId}/upload-excel")
-    public ResponseEntity<InquiryDTO> uploadExcel(@PathVariable Long inquiryId, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadExcel(@PathVariable Long inquiryId, @RequestParam("file") MultipartFile file) {
         try {
             inquiryService.updateInquiryFromExcel(inquiryId, file.getBytes());
             InquiryDTO updatedInquiry = inquiryService.getInquiryById(inquiryId);
-            return ResponseEntity.ok(updatedInquiry); // ✅ return entire InquiryDTO
+            return ResponseEntity.ok(updatedInquiry);
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).build();
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to process Excel file. Please upload a correct file."));
         }
     }
-
-
-    /*@GetMapping("/{inquiryId}/excel")
-    public ResponseEntity<byte[]> getInquiryExcel(@PathVariable Long inquiryId) throws IOException {
-        Path path = Paths.get("uploads/inquiries/Inquiry_" + inquiryId + ".xlsx");
-        if (!Files.exists(path)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        byte[] fileContent = Files.readAllBytes(path);
-        return ResponseEntity.ok()
-                .header("Content-Disposition", "inline; filename=Inquiry_" + inquiryId + ".xlsx")
-                .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                .body(fileContent);
-
-
-    }*/
 
     @GetMapping("/{inquiryId}/excel")
     public ResponseEntity<byte[]> getInquiryExcel(@PathVariable Long inquiryId) throws IOException {
