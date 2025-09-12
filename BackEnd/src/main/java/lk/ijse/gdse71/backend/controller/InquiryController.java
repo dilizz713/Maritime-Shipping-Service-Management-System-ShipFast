@@ -110,5 +110,23 @@ public class InquiryController {
                 .body(fileContent);
     }
 
+    @PutMapping("/{inquiryId}/items/{itemId}")
+    public ResponseEntity<InquiryItemDTO> updateItem(
+            @PathVariable Long inquiryId,
+            @PathVariable Long itemId,
+            @RequestBody InquiryItemDTO dto) {
+
+        return ResponseEntity.ok(inquiryService.updateInquiryItem(inquiryId, itemId, dto));
+    }
+
+    @DeleteMapping("/{inquiryId}/items/{itemId}")
+    public ResponseEntity<Void> deleteItem(
+            @PathVariable Long inquiryId,
+            @PathVariable Long itemId) {
+
+        inquiryService.deleteInquiryItem(inquiryId, itemId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

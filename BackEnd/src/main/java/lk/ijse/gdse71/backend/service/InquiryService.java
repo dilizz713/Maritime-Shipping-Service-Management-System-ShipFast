@@ -1,6 +1,7 @@
 package lk.ijse.gdse71.backend.service;
 
 import lk.ijse.gdse71.backend.dto.InquiryDTO;
+import lk.ijse.gdse71.backend.dto.InquiryItemDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,4 +22,8 @@ public interface InquiryService {
     String saveExcelForInquiry(Long inquiryId, MultipartFile file) throws IOException;
 
     List<Map<String, Object>> parseExcelToJson(MultipartFile file) throws IOException;
+
+    InquiryItemDTO updateInquiryItem(Long inquiryId, Long itemId, InquiryItemDTO dto);
+
+    void deleteInquiryItem(Long inquiryId, Long itemId);
 }

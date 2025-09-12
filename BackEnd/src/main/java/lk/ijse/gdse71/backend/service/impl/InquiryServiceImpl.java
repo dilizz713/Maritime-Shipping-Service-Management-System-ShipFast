@@ -120,6 +120,7 @@ public class InquiryServiceImpl implements InquiryService {
                 .excelFileName(inquiry.getExcelFileName())
                 .referenceNumber(inquiry.getReferenceNumber())
                 .items(inquiry.getItems().stream().map(item -> InquiryItemDTO.builder()
+                        .id(item.getId())
                         .productId(item.getProduct().getId())
                         .productName(item.getProduct().getName())
                         .quantity(item.getQuantity())
@@ -144,6 +145,7 @@ public class InquiryServiceImpl implements InquiryService {
                 .excelFileName(inquiry.getExcelFileName())
                 .referenceNumber(inquiry.getReferenceNumber())
                 .items(inquiry.getItems().stream().map(item -> InquiryItemDTO.builder()
+                        .id(item.getId())
                         .productId(item.getProduct().getId())
                         .productName(item.getProduct().getName())
                         .quantity(item.getQuantity())
@@ -277,6 +279,45 @@ public class InquiryServiceImpl implements InquiryService {
         }
         return rows;
     }
+
+    @Override
+    public InquiryItemDTO updateInquiryItem(Long inquiryId, Long itemId, InquiryItemDTO dto) {
+        Inquiry inquiry = inquiryRepo.findById(inquiryId)
+                .orElseThrow(() -> new RuntimeException("Inquiry not found"));
+
+        InquiryItem item = inquiry.getItems().stream()
+                .filter(i -> i.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Inquiry item not found"));
+
+        item.setQuantity(dto.getQuantity());
+        item.setUnitPrice(dto.getUnitPrice());
+        item.setStatus(dto.getStatus());
+        item.setRemarks(dto.getRemarks());
+
+        inquiryRepo.save(inquiry);
+
+        return InquiryItemDTO.builder()
+                .productId(item.getProduct().getId())
+                .productName(item.getProduct().getName())
+                .quantity(item.getQuantity())
+                .unitPrice(item.getUnitPrice())
+                .status(item.getStatus())
+                .remarks(item.getRemarks())
+                .build();
+    }
+
+    @Override
+    public void deleteInquiryItem(Long inquiryId, Long itemId) {
+        Inquiry inquiry = inquiryRepo.findById(inquiryId)
+                .orElseThrow(() -> new RuntimeException("Inquiry not found"));
+
+        boolean removed = inquiry.getItems().removeIf(i -> i.getId().equals(itemId));
+        if (!removed) throw new RuntimeException("Inquiry item not found");
+
+        inquiryRepo.save(inquiry);
+    }
+
 
 
 }
