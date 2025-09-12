@@ -147,6 +147,7 @@ public class InquiryServiceImpl implements InquiryService {
                         .productId(item.getProduct().getId())
                         .productName(item.getProduct().getName())
                         .quantity(item.getQuantity())
+                        .unitPrice(item.getUnitPrice())
                         .status(item.getStatus())
                         .remarks(item.getRemarks())
                         .build()).collect(Collectors.toList()))
