@@ -22,9 +22,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lk.ijse.gdse71.backend.util.ExcelGenerator;
 import org.apache.poi.ss.usermodel.*;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
@@ -39,11 +36,15 @@ public class InquiryServiceImpl implements InquiryService {
     private final InquiryRepository inquiryRepo;
     private final VendorRepository vendorRepo;
     private final ProductRepository productRepo;
-
     private static final String UPLOAD_DIR = "uploads/inquiries/";
-
     private final EmailService emailService;
+    private static int refCounter = 1;
     private final RequestMappingHandlerAdapter requestMappingHandlerAdapter;
+
+    private String generateReferenceNumber() {
+        return String.format("REF%05d", refCounter++);
+    }
+
 
     @Override
     public InquiryDTO saveInquiry(InquiryDTO dto) throws IOException {
@@ -55,6 +56,7 @@ public class InquiryServiceImpl implements InquiryService {
                 .description(dto.getDescription())
                 .inquiryDate(dto.getInquiryDate())
                 .inquiryStatus(dto.getInquiryStatus() != null ? dto.getInquiryStatus() : InquiryStatus.PENDING)
+                .referenceNumber(generateReferenceNumber())
                 .build();
 
         List<InquiryItem> items = dto.getItems().stream().map(itemDTO -> {
@@ -65,9 +67,8 @@ public class InquiryServiceImpl implements InquiryService {
                     .product(product)
                     .quantity(itemDTO.getQuantity())
                     .unitPrice(itemDTO.getUnitPrice())
-                    .discount(itemDTO.getDiscount())
-                    .totalAmount(itemDTO.getTotalAmount())
                     .status(itemDTO.getStatus())
+                    .remarks(itemDTO.getRemarks())
                     .build();
         }).collect(Collectors.toList());
 
@@ -83,6 +84,7 @@ public class InquiryServiceImpl implements InquiryService {
         try {
             String emailBody = "Dear " + vendor.getName() + ",\n\n" +
                     saved.getDescription() + "\n\n" +
+                    "Reference No: " + saved.getReferenceNumber() + "\n\n" +
                     "Best regards,\n" +
                     "Ship Fast Team";
 
@@ -116,14 +118,14 @@ public class InquiryServiceImpl implements InquiryService {
                 .inquiryDate(inquiry.getInquiryDate())
                 .inquiryStatus(inquiry.getInquiryStatus())
                 .excelFileName(inquiry.getExcelFileName())
+                .referenceNumber(inquiry.getReferenceNumber())
                 .items(inquiry.getItems().stream().map(item -> InquiryItemDTO.builder()
                         .productId(item.getProduct().getId())
                         .productName(item.getProduct().getName())
                         .quantity(item.getQuantity())
                         .unitPrice(item.getUnitPrice())
-                        .discount(item.getDiscount())
-                        .totalAmount(item.getTotalAmount())
                         .status(item.getStatus())
+                        .remarks(item.getRemarks())
                         .build()).collect(Collectors.toList()))
                 .build()).collect(Collectors.toList());
     }
@@ -140,13 +142,11 @@ public class InquiryServiceImpl implements InquiryService {
                 .inquiryDate(inquiry.getInquiryDate())
                 .inquiryStatus(inquiry.getInquiryStatus())
                 .excelFileName(inquiry.getExcelFileName())
+                .referenceNumber(inquiry.getReferenceNumber())
                 .items(inquiry.getItems().stream().map(item -> InquiryItemDTO.builder()
                         .productId(item.getProduct().getId())
                         .productName(item.getProduct().getName())
                         .quantity(item.getQuantity())
-                        .unitPrice(item.getUnitPrice())
-                        .discount(item.getDiscount())
-                        .totalAmount(item.getTotalAmount())
                         .status(item.getStatus())
                         .remarks(item.getRemarks())
                         .build()).collect(Collectors.toList()))
@@ -185,10 +185,9 @@ public class InquiryServiceImpl implements InquiryService {
                 String productName = getCellString(row.getCell(0));
                 double quantity = getCellNumeric(row.getCell(1));
                 double unitPrice = getCellNumeric(row.getCell(2));
-                double discount = getCellNumeric(row.getCell(3));
-                double totalAmount = getCellNumeric(row.getCell(4));
-                String statusStr = getCellString(row.getCell(5));
-                String remarks = getCellString(row.getCell(6));
+                String statusStr = getCellString(row.getCell(3));
+                String remarks = getCellString(row.getCell(4));
+
 
                 if (productName.isEmpty()) continue;
 
@@ -202,8 +201,6 @@ public class InquiryServiceImpl implements InquiryService {
 
                 item.setQuantity((int) quantity);
                 item.setUnitPrice(unitPrice);
-                item.setDiscount(discount);
-                item.setTotalAmount(totalAmount);
                 if (statusStr.equalsIgnoreCase("AVAILABLE")) {
                     item.setStatus(ProductStatus.AVAILABLE);
                 } else {
@@ -271,10 +268,8 @@ public class InquiryServiceImpl implements InquiryService {
                 rowData.put("productName", getCellString(row.getCell(0)));
                 rowData.put("quantity", getCellNumeric(row.getCell(1)));
                 rowData.put("unitPrice", getCellNumeric(row.getCell(2)));
-                rowData.put("discount", getCellNumeric(row.getCell(3)));
-                rowData.put("totalAmount", getCellNumeric(row.getCell(4)));
-                rowData.put("status", getCellString(row.getCell(5)));
-                rowData.put("remarks", getCellString(row.getCell(6)));
+                rowData.put("status", getCellString(row.getCell(3)));
+                rowData.put("remarks", getCellString(row.getCell(4)));
 
                 rows.add(rowData);
             }

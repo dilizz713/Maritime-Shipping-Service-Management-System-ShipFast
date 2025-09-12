@@ -26,11 +26,10 @@ public class InquiryItem {
 
     private Integer quantity;
     private Double unitPrice;
-    private Double discount;
-    private Double totalAmount;
 
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
     private String remarks;
+
 }

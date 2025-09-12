@@ -15,8 +15,7 @@ public class InquiryItemDTO {
     private String productName;
     private Integer quantity;
     private Double unitPrice;
-    private Double discount;
-    private Double totalAmount;
     private ProductStatus status;
     private String remarks;
+
 }

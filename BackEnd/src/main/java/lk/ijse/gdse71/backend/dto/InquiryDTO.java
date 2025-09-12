@@ -26,4 +26,5 @@ public class InquiryDTO {
     private InquiryStatus inquiryStatus;
     private List<InquiryItemDTO> items;
     private String excelFileName;
+    private String referenceNumber;
 }

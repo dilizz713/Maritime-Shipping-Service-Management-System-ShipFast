@@ -37,4 +37,7 @@ public class Inquiry {
     @Column(name = "excel_file_name")
     private String excelFileName;
 
+    @Column(unique = true, nullable = false)
+    private String referenceNumber;
+
 }

@@ -280,6 +280,7 @@
                         <thead class="table-dark">
                         <tr>
                             <th>ID</th>
+                            <th>Reference No.</th>
                             <th>Vendor</th>
                             <th>Date</th>
                             <th>Status</th>
@@ -361,16 +362,12 @@
                             <th>Product</th>
                             <th>Quantity</th>
                             <th>Unit Price</th>
-                            <th>Discount</th>
-                            <th>Total Amount</th>
                             <th>Status</th>
                             <th>Remark</th>
                         </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
-
-
                 </div>
             </div>
         </div>
@@ -430,6 +427,7 @@
                 tbody.append(`
                 <tr>
                     <td>${i.id}</td>
+                    <td>${i.referenceNumber}</td>
                     <td>${i.vendorName}</td>
                     <td>${i.inquiryDate}</td>
                     <td>
@@ -518,63 +516,31 @@
         const id = $(this).data("id");
         $.get(`${API_URL}/inquiries/${id}`, function(data){
             $("#inquiryInfo")
-                .html(`<p><strong>Vendor:</strong> ${data.vendorName} | <strong>Status:</strong> ${data.inquiryStatus}</p>`)
-                .attr("data-id", id);   // <-- store inquiryId here
+                .html(`<p>
+                    <strong>Vendor:</strong> ${data.vendorName} |
+                    <strong>Status:</strong> ${data.inquiryStatus} |
+                    <strong>Reference No.:</strong> ${data.referenceNumber}
+                </p>`)
+                .attr("data-id", id);
 
             const tbody = $("#productsTableDetail tbody");
             tbody.empty();
             data.items.forEach(item => {
                 tbody.append(`
-                <tr>
-                    <td>${item.productName}</td>
-                    <td>${item.quantity}</td>
-                    <td>${item.unitPrice || ""}</td>
-                    <td>${item.discount || ""}</td>
-                    <td>${item.totalAmount || ""}</td>
-                    <td>${item.status || ""}</td>
-                    <td>${item.remarks || ""}</td>
-                </tr>
-            `);
+                    <tr>
+
+                        <td>${item.productName}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.unitPrice || ""}</td>
+                        <td>${item.status || ""}</td>
+                        <td>${item.remarks || ""}</td>
+                    </tr>
+                `);
             });
             $("#inquiryDetailCard").removeClass("d-none");
         });
     });
 
-
-    /*// Upload Excel
-    $("#uploadExcelForm").submit(function(e){
-        e.preventDefault();
-        const file = $("#excelFile")[0].files[0];
-        const inquiryId = $("#inquiryInfo").attr("data-id");
-        const formData = new FormData();
-        formData.append("file", file);
-
-        $.ajax({
-            url: `${API_URL}/inquiries/${inquiryId}/upload-excel`,
-            type: "PUT",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(res){
-                alert("Excel uploaded successfully!");
-                const tbody = $("#productsTableDetail tbody");
-                tbody.empty();
-
-                res.forEach(item => {   // ❌ Error happens here
-                    tbody.append(`
-                        <tr>
-                            <td>${item.productName}</td>
-                            <td>${item.quantity}</td>
-                            <td>${item.unitPrice || ""}</td>
-                            <td>${item.discount || ""}</td>
-                            <td>${item.totalAmount || ""}</td>
-                            <td>${item.status || ""}</td>
-                        </tr>
-                    `);
-                });
-            }
-        });
-    });*/
 
     // Upload Excel
     $("#uploadExcelForm").submit(function(e){
@@ -601,14 +567,11 @@
                         <td>${item.productName}</td>
                         <td>${item.quantity}</td>
                         <td>${item.unitPrice || ""}</td>
-                        <td>${item.discount || ""}</td>
-                        <td>${item.totalAmount || ""}</td>
                         <td>${item.status || ""}</td>
                         <td>${item.remarks || ""}</td>
                     </tr>
                 `);
                 });
-
 
                 loadInquiries();
             }
