@@ -144,7 +144,7 @@ public class InquiryServiceImpl implements InquiryService {
                 .build();
     }
 
-    @Override
+   /* @Override
     public void updateInquiryFromExcel(Long inquiryId, byte[] excelData) throws Exception {
         Inquiry inquiry = inquiryRepo.findById(inquiryId)
                 .orElseThrow(() -> new RuntimeException("Inquiry not found"));
@@ -198,7 +198,69 @@ public class InquiryServiceImpl implements InquiryService {
 
             inquiryRepo.save(inquiry);
         }
+    }*/
+
+    @Override
+    public void updateInquiryFromExcel(Long inquiryId, byte[] excelData) throws Exception {
+        Inquiry inquiry = inquiryRepo.findById(inquiryId)
+                .orElseThrow(() -> new RuntimeException("Inquiry not found"));
+
+        // Ensure upload directory exists
+        Path uploadPath = Paths.get(UPLOAD_DIR);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        // Save the Excel file
+        String filename = "Inquiry_" + inquiryId + ".xlsx";
+        Path excelPath = uploadPath.resolve(filename);
+        Files.write(excelPath, excelData);
+
+        // ✅ Update file name in DB
+        inquiry.setExcelFileName(filename);
+
+        try (InputStream inputStream = new ByteArrayInputStream(excelData);
+             Workbook workbook = WorkbookFactory.create(inputStream)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // skip header
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
+                String productName = getCellString(row.getCell(0));
+                double quantity = getCellNumeric(row.getCell(1));
+                double unitPrice = getCellNumeric(row.getCell(2));
+                double discount = getCellNumeric(row.getCell(3));
+                double totalAmount = getCellNumeric(row.getCell(4));
+                String statusStr = getCellString(row.getCell(5));
+
+                if (productName.isEmpty()) continue;
+
+                // Find InquiryItem by product name
+                InquiryItem item = inquiry.getItems().stream()
+                        .filter(it -> it.getProduct().getName().equalsIgnoreCase(productName))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException(
+                                "Product '" + productName + "' not found in inquiry #" + inquiryId));
+
+                // Update values
+                item.setQuantity((int) quantity);
+                item.setUnitPrice(unitPrice);
+                item.setDiscount(discount);
+                item.setTotalAmount(totalAmount);
+                if (statusStr.equalsIgnoreCase("AVAILABLE")) {
+                    item.setStatus(ProductStatus.AVAILABLE);
+                } else {
+                    item.setStatus(ProductStatus.NOT_AVAILABLE);
+                }
+            }
+
+            // ✅ Save inquiry with updated file name + items
+            inquiryRepo.save(inquiry);
+        }
     }
+
 
     /* ---------------- Utility Parsers ---------------- */
     private String getCellString(Cell cell) {

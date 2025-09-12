@@ -422,8 +422,11 @@
             tbody.empty();
             data.forEach(i => {
                 // Excel link: only clickable if file exists
-                let excelLink = i.excelFileName
+               /* let excelLink = i.excelFileName
                     ? `<a href="${API_URL}/inquiries/${i.id}/excel" target="_blank">${i.excelFileName}</a>`
+                    : 'Upload Excel';*/
+                let excelLink = i.excelFileName
+                    ? `<a href="https://docs.google.com/viewer?url=${API_URL}/inquiries/${i.id}/excel" target="_blank">${i.excelFileName}</a>`
                     : 'Upload Excel';
 
                 tbody.append(`
@@ -539,7 +542,7 @@
     });
 
 
-    // Upload Excel
+    /*// Upload Excel
     $("#uploadExcelForm").submit(function(e){
         e.preventDefault();
         const file = $("#excelFile")[0].files[0];
@@ -572,7 +575,47 @@
                 });
             }
         });
+    });*/
+
+    // Upload Excel
+    $("#uploadExcelForm").submit(function(e){
+        e.preventDefault();
+        const file = $("#excelFile")[0].files[0];
+        const inquiryId = $("#inquiryInfo").attr("data-id");
+        const formData = new FormData();
+        formData.append("file", file);
+
+        $.ajax({
+            url: `${API_URL}/inquiries/${inquiryId}/upload-excel`,
+            type: "PUT",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(res){
+                alert("Excel uploaded successfully!");
+
+                // ✅ update product table
+                const tbody = $("#productsTableDetail tbody");
+                tbody.empty();
+                res.items.forEach(item => {
+                    tbody.append(`
+                    <tr>
+                        <td>${item.productName}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.unitPrice || ""}</td>
+                        <td>${item.discount || ""}</td>
+                        <td>${item.totalAmount || ""}</td>
+                        <td>${item.status || ""}</td>
+                    </tr>
+                `);
+                });
+
+                // ✅ reload table to show updated excelFileName
+                loadInquiries();
+            }
+        });
     });
+
 
 
 

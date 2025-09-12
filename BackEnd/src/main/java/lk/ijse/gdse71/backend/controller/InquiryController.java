@@ -5,6 +5,8 @@ import lk.ijse.gdse71.backend.dto.InquiryItemDTO;
 import lk.ijse.gdse71.backend.service.InquiryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,12 +48,24 @@ public class InquiryController {
         return ResponseEntity.ok(inquiryService.getInquiryById(id));
     }
 
-    @PutMapping("/{inquiryId}/upload-excel")
+    /*@PutMapping("/{inquiryId}/upload-excel")
     public ResponseEntity<List<InquiryItemDTO>> uploadExcel(@PathVariable Long inquiryId, @RequestParam("file") MultipartFile file) {
         try {
             inquiryService.updateInquiryFromExcel(inquiryId, file.getBytes());
             InquiryDTO updatedInquiry = inquiryService.getInquiryById(inquiryId);
-            return ResponseEntity.ok(updatedInquiry.getItems()); // ✅ return items array
+            return ResponseEntity.ok(updatedInquiry.getItems());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }*/
+
+    @PutMapping("/{inquiryId}/upload-excel")
+    public ResponseEntity<InquiryDTO> uploadExcel(@PathVariable Long inquiryId, @RequestParam("file") MultipartFile file) {
+        try {
+            inquiryService.updateInquiryFromExcel(inquiryId, file.getBytes());
+            InquiryDTO updatedInquiry = inquiryService.getInquiryById(inquiryId);
+            return ResponseEntity.ok(updatedInquiry); // ✅ return entire InquiryDTO
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).build();
@@ -59,7 +73,7 @@ public class InquiryController {
     }
 
 
-    @GetMapping("/{inquiryId}/excel")
+    /*@GetMapping("/{inquiryId}/excel")
     public ResponseEntity<byte[]> getInquiryExcel(@PathVariable Long inquiryId) throws IOException {
         Path path = Paths.get("uploads/inquiries/Inquiry_" + inquiryId + ".xlsx");
         if (!Files.exists(path)) {
@@ -71,6 +85,30 @@ public class InquiryController {
                 .header("Content-Disposition", "inline; filename=Inquiry_" + inquiryId + ".xlsx")
                 .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 .body(fileContent);
+
+
+    }*/
+
+    @GetMapping("/{inquiryId}/excel")
+    public ResponseEntity<byte[]> getInquiryExcel(@PathVariable Long inquiryId) throws IOException {
+        Path path = Paths.get("uploads/inquiries/Inquiry_" + inquiryId + ".xlsx");
+        if (!Files.exists(path)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        byte[] fileContent = Files.readAllBytes(path);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.set(HttpHeaders.CONTENT_DISPOSITION,
+                "inline; filename=Inquiry_" + inquiryId + ".xlsx"); // ✅ inline (opens in Excel/Sheets)
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(fileContent);
     }
+
 
 }
