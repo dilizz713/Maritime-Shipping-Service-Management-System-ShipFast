@@ -81,10 +81,15 @@ public class InquiryServiceImpl implements InquiryService {
 
         // Send Email
         try {
+            String emailBody = "Dear " + vendor.getName() + ",\n\n" +
+                    saved.getDescription() + "\n\n" +
+                    "Best regards,\n" +
+                    "Ship Fast Team";
+
             emailService.sendEmailWithAttachment(
                     vendor.getEmail(),
-                    "New Inquiry #" + saved.getId(),
-                    "Dear " + vendor.getName() + ",\nPlease find attached the inquiry.",
+                    "Requesting New Inquiry",
+                    emailBody,
                     excelData,
                     "Inquiry_" + saved.getId() + ".xlsx"
             );
