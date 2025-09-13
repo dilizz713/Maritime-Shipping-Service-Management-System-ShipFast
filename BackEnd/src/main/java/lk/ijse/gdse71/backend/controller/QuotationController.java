@@ -3,6 +3,7 @@ package lk.ijse.gdse71.backend.controller;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lk.ijse.gdse71.backend.dto.QuotationRequestDTO;
+import lk.ijse.gdse71.backend.service.impl.BillNumberGenerator;
 import lk.ijse.gdse71.backend.util.APIResponse;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class QuotationController {
     private final JavaMailSender mailSender;
+
+
 
     @PostMapping("/request")
     public ResponseEntity<APIResponse> requestQuotation(@RequestBody QuotationRequestDTO dto) {
@@ -49,6 +52,7 @@ public class QuotationController {
                     .body(new APIResponse(500, "Failed to send email. Please try again later.", false));
         }
     }
+
 
 
 }
