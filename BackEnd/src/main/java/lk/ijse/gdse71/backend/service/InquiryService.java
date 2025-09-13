@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import lk.ijse.gdse71.backend.dto.ConfirmInquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryItemDTO;
+import lk.ijse.gdse71.backend.dto.ReceivedProductCheckDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,4 +31,6 @@ public interface InquiryService {
     void deleteInquiryItem(Long inquiryId, Long itemId);
 
     ConfirmInquiryDTO confirmInquiry(Long inquiryId, String description) throws MessagingException;
+
+    List<ReceivedProductCheckDTO> getProductsToVerify(Long confirmId);
 }

@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import lk.ijse.gdse71.backend.dto.ConfirmInquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryItemDTO;
+import lk.ijse.gdse71.backend.dto.ReceivedProductCheckDTO;
 import lk.ijse.gdse71.backend.entity.*;
 import lk.ijse.gdse71.backend.repo.ConfirmInquiryRepository;
 import lk.ijse.gdse71.backend.repo.InquiryRepository;
@@ -374,6 +375,23 @@ public class InquiryServiceImpl implements InquiryService {
                 .build();
     }
 
+    @Override
+    public List<ReceivedProductCheckDTO> getProductsToVerify(Long confirmId) {
+        ConfirmInquiry confirm = confirmInquiryRepo.findById(confirmId)
+                .orElseThrow(() -> new RuntimeException("Confirm inquiry not found"));
+
+        return confirm.getInquiry().getItems().stream()
+                .map(item -> ReceivedProductCheckDTO.builder()
+                        .itemId(item.getId())
+                        .productCode(item.getProduct().getCode())
+                        .productName(item.getProduct().getName())
+                        .confirmedQty(item.getQuantity())
+                        .receivedQty(0)
+                        .description(item.getRemarks())
+                        .correct(false)
+                        .build())
+                .collect(Collectors.toList());
+    }
 
 
 }

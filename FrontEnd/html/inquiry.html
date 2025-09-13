@@ -399,6 +399,37 @@
     </div>
 </div>
 
+<!-- Verify Received Products Modal -->
+<div class="modal fade" id="verifyProductsModal" tabindex="-1" aria-labelledby="verifyProductsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow-lg">
+            <div class="modal-header bg-warning text-dark border-0">
+                <h5 class="modal-title" id="verifyProductsLabel"><i class="bi bi-card-checklist me-2"></i>Verify Received Products</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped" id="verifyProductsTable">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Product Code</th>
+                        <th>Product Name</th>
+                        <th>Confirmed Qty</th>
+                        <th>Received Qty</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <script src="../lib/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -467,6 +498,9 @@
                         </button>
                         <button class="btn btn-outline-success btn-sm confirmQuotation" data-id="${i.id}" title="Confirm Quotation">
                             <i class="bi bi-check2-circle"></i>
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm verifyProducts" data-id="${i.id}" title="Verify Received Products">
+                            <i class="bi bi-card-checklist"></i>
                         </button>
                     </td>
                     <td>${excelLink}</td>
@@ -700,7 +734,7 @@
         }
 
         $.ajax({
-            url: `${API_URL}/inquiries/${inquiryId}/confirm`, // backend endpoint to confirm inquiry
+            url: `${API_URL}/inquiries/${inquiryId}/confirm`,
             type: "PUT",
             contentType: "application/json",
             data: JSON.stringify({ description }),
@@ -715,6 +749,52 @@
             }
         });
     });
+
+    // Verify received products
+    $(document).on("click", ".verifyProducts", function() {
+        const confirmId = $(this).data("id");
+
+        $.get(`${API_URL}/inquiries/${confirmId}/verify`, function(data) {
+            const tbody = $("#verifyProductsTable tbody");
+            tbody.empty();
+            data.forEach(item => {
+                tbody.append(`
+                <tr data-item-id="${item.itemId}">
+                    <td>${item.productCode}</td>
+                    <td>${item.productName}</td>
+                    <td>${item.confirmedQty}</td>
+                    <td><input type="number" class="form-control receivedQty" value="${item.receivedQty}" min="0"></td>
+                    <td>${item.description || ''}</td>
+                    <td class="d-flex gap-1">
+                        <button class="btn btn-success btn-sm markCorrect"><i class="bi bi-check2"></i></button>
+                        <button class="btn btn-danger btn-sm markIncorrect"><i class="bi bi-x"></i></button>
+                    </td>
+                </tr>
+            `);
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById("verifyProductsModal"));
+            modal.show();
+        }).fail(function(err){
+            console.error(err);
+            alert("Failed to load products to verify.");
+        });
+    });
+
+    // Mark as correct
+    $(document).on("click", ".markCorrect", function() {
+        const row = $(this).closest("tr");
+        row.find(".receivedQty").val(row.find(".confirmedQty").text());
+        row.css("background-color", "#d4edda"); // green highlight
+    });
+
+    // Mark as incorrect
+    $(document).on("click", ".markIncorrect", function() {
+        const row = $(this).closest("tr");
+        row.css("background-color", "#f8d7da"); // red highlight
+    });
+
+
 
 
 

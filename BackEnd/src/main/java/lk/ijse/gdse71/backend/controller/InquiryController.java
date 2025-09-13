@@ -3,6 +3,8 @@ package lk.ijse.gdse71.backend.controller;
 import lk.ijse.gdse71.backend.dto.ConfirmInquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryItemDTO;
+import lk.ijse.gdse71.backend.dto.ReceivedProductCheckDTO;
+import lk.ijse.gdse71.backend.entity.ConfirmInquiry;
 import lk.ijse.gdse71.backend.service.InquiryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -116,6 +118,14 @@ public class InquiryController {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/{confirmId}/verify")
+    public ResponseEntity<List<ReceivedProductCheckDTO>> getProductsToVerify(
+            @PathVariable Long confirmId) {
+        List<ReceivedProductCheckDTO> checks = inquiryService.getProductsToVerify(confirmId);
+        return ResponseEntity.ok(checks);
+    }
+
 
 
 
