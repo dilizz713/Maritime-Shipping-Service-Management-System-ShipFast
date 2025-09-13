@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.backend.controller;
 
+import lk.ijse.gdse71.backend.dto.ConfirmInquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryItemDTO;
 import lk.ijse.gdse71.backend.service.InquiryService;
@@ -102,6 +103,20 @@ public class InquiryController {
         inquiryService.deleteInquiryItem(inquiryId, itemId);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PutMapping("/{id}/confirm")
+    public ResponseEntity<?> confirmInquiry(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        try {
+            String description = body.get("description");
+            ConfirmInquiryDTO confirmedInquiry = inquiryService.confirmInquiry(id, description);
+            return ResponseEntity.ok(confirmedInquiry);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
 
 
 }

@@ -1,5 +1,7 @@
 package lk.ijse.gdse71.backend.service;
 
+import jakarta.mail.MessagingException;
+import lk.ijse.gdse71.backend.dto.ConfirmInquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryItemDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,4 +28,6 @@ public interface InquiryService {
     InquiryItemDTO updateInquiryItem(Long inquiryId, Long itemId, InquiryItemDTO dto);
 
     void deleteInquiryItem(Long inquiryId, Long itemId);
+
+    ConfirmInquiryDTO confirmInquiry(Long inquiryId, String description) throws MessagingException;
 }

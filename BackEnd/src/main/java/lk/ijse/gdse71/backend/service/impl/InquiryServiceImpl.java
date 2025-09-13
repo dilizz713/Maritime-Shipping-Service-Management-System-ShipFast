@@ -1,9 +1,11 @@
 package lk.ijse.gdse71.backend.service.impl;
 
 import jakarta.mail.MessagingException;
+import lk.ijse.gdse71.backend.dto.ConfirmInquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryItemDTO;
 import lk.ijse.gdse71.backend.entity.*;
+import lk.ijse.gdse71.backend.repo.ConfirmInquiryRepository;
 import lk.ijse.gdse71.backend.repo.InquiryRepository;
 import lk.ijse.gdse71.backend.repo.ProductRepository;
 import lk.ijse.gdse71.backend.repo.VendorRepository;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +40,7 @@ public class InquiryServiceImpl implements InquiryService {
     private final InquiryRepository inquiryRepo;
     private final VendorRepository vendorRepo;
     private final ProductRepository productRepo;
+    private final ConfirmInquiryRepository confirmInquiryRepo;
     private static final String UPLOAD_DIR = "uploads/inquiries/";
     private final EmailService emailService;
     private static int refCounter = 1;
@@ -209,9 +214,8 @@ public class InquiryServiceImpl implements InquiryService {
             inquiryRepo.save(inquiry);
 
         } catch (IllegalArgumentException e) {
-            throw e; // pass friendly message to controller
+            throw e;
         } catch (Exception e) {
-            // Any other parsing error
             throw new IllegalArgumentException("Failed to process Excel file. Please upload a correct file.");
         }
     }
@@ -318,6 +322,56 @@ public class InquiryServiceImpl implements InquiryService {
         if (!removed) throw new RuntimeException("Inquiry item not found");
 
         inquiryRepo.save(inquiry);
+    }
+
+    @Override
+    public ConfirmInquiryDTO confirmInquiry(Long inquiryId, String description) throws MessagingException {
+        Inquiry inquiry = inquiryRepo.findById(inquiryId)
+                .orElseThrow(() -> new RuntimeException("Inquiry not found"));
+
+        String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+
+        long countToday = confirmInquiryRepo.countByConfirmationDate(LocalDate.now()) + 1;
+        String sequence = String.format("%03d", countToday);
+
+
+        String billNumber = datePart + "-" + sequence;
+
+        ConfirmInquiry confirm = ConfirmInquiry.builder()
+                .billNumber(billNumber)
+                .description(description)
+                .inquiry(inquiry)
+                .confirmationDate(LocalDate.now())
+                .build();
+
+        confirmInquiryRepo.save(confirm);
+
+
+        byte[] billExcel = ExcelGenerator.generateConfirmBillExcel(inquiry, confirm);
+
+        String emailBody = "Dear " + inquiry.getVendor().getName() + ",\n\n" +
+                description + "\n\n" +
+                "Bill No: " + billNumber + "\n" +
+                "Reference No: " + inquiry.getReferenceNumber() + "\n\n" +
+                "Regards,\nShip Fast Team";
+
+        emailService.sendEmailWithAttachment(
+                inquiry.getVendor().getEmail(),
+                "Final Confirmation - Inquiry " + inquiry.getReferenceNumber(),
+                emailBody,
+                billExcel,
+                "Bill_" + billNumber + ".xlsx"
+        );
+
+        return ConfirmInquiryDTO.builder()
+                .id(confirm.getId())
+                .billNumber(confirm.getBillNumber())
+                .description(confirm.getDescription())
+                .inquiryId(inquiry.getId())
+                .referenceNumber(inquiry.getReferenceNumber())
+                .vendorName(inquiry.getVendor().getName())
+                .build();
     }
 
 
