@@ -11,17 +11,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class Ship {
+public class Vessels {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
     private Double capacity;
-    private String location;   //country
+    private String location;
 
     @Enumerated(EnumType.STRING)
-    private ShipType shipType;
+    private VesselsType type;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
 
 }
