@@ -424,6 +424,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveVerification">Save Verification</button>
             </div>
         </div>
     </div>
@@ -691,7 +692,6 @@
         });
     });
 
-
     // Delete an inquiry item
     $(document).on("click", ".deleteItem", function(){
         if(!confirm("Are you sure you want to delete this item?")) return;
@@ -750,20 +750,25 @@
         });
     });
 
-    // Verify received products
-    $(document).on("click", ".verifyProducts", function() {
-        const confirmId = $(this).data("id");
 
-        $.get(`${API_URL}/inquiries/${confirmId}/verify`, function(data) {
-            const tbody = $("#verifyProductsTable tbody");
-            tbody.empty();
-            data.forEach(item => {
-                tbody.append(`
+
+    // Open Verify Received Products Modal
+    $(document).on("click", ".verifyProducts", function() {
+        const inquiryId = $(this).data("id");
+
+        $.get(`${API_URL}/inquiries/${inquiryId}/confirmId`, function(confirmId) {
+
+            $.get(`${API_URL}/inquiries/${confirmId}/verify`, function(data) {
+                const tbody = $("#verifyProductsTable tbody");
+                tbody.empty();
+
+                data.forEach(item => {
+                    tbody.append(`
                 <tr data-item-id="${item.itemId}">
                     <td>${item.productCode}</td>
                     <td>${item.productName}</td>
                     <td>${item.confirmedQty}</td>
-                    <td><input type="number" class="form-control receivedQty" value="${item.receivedQty}" min="0"></td>
+                    <td><input type="number" class="form-control receivedQty" value="${item.receivedQty || 0}" min="0"></td>
                     <td>${item.description || ''}</td>
                     <td class="d-flex gap-1">
                         <button class="btn btn-success btn-sm markCorrect"><i class="bi bi-check2"></i></button>
@@ -771,20 +776,100 @@
                     </td>
                 </tr>
             `);
-            });
+                });
 
-            const modal = new bootstrap.Modal(document.getElementById("verifyProductsModal"));
-            modal.show();
+                // Store confirmId in the modal for later use
+                $("#verifyProductsModal").attr("data-confirm-id", confirmId);
+
+                const modal = new bootstrap.Modal(document.getElementById("verifyProductsModal"));
+                modal.show();
+            }).fail(function(err){
+                console.error(err);
+                alert("Failed to load products to verify.");
+            });
         }).fail(function(err){
             console.error(err);
-            alert("Failed to load products to verify.");
+            alert("Confirm inquiry not found for this inquiry.");
+        });
+    });
+
+
+    // Save verification
+   /* $(document).on("click", "#saveVerification", function() {
+        const confirmId = $("#verifyProductsModal").attr("data-confirm-id");
+        if (!confirmId) {
+            alert("Confirm ID not found!");
+            return;
+        }
+
+        const products = [];
+
+        $("#verifyProductsTable tbody tr").each(function(){
+            const row = $(this);
+            products.push({
+                itemId: row.data("item-id"),
+                receivedQty: parseInt(row.find(".receivedQty").val()) || 0,
+                correct: row.css("background-color") === "rgb(212, 237, 218)", // green = correct
+                description: row.find("td:eq(4)").text() || ""
+            });
+        });
+
+        if(products.length === 0) return;
+
+        $.ajax({
+            url: `${API_URL}/inquiries/${confirmId}/verify`,
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify(products),
+            success: function(res) {
+                alert("Products verified successfully!");
+                const modal = bootstrap.Modal.getInstance(document.getElementById("verifyProductsModal"));
+                modal.hide();
+                loadInquiries(); // refresh table
+            },
+            error: function(err) {
+                console.error(err);
+                alert("Failed to save verification.");
+            }
+        });
+    });*/
+
+    $(document).on("click", "#saveVerification", function() {
+        const confirmId = $("#verifyProductsModal").attr("data-confirm-id"); // now it's set correctly
+        const products = [];
+
+        $("#verifyProductsTable tbody tr").each(function(){
+            const row = $(this);
+            products.push({
+                itemId: row.data("item-id"),
+                receivedQty: parseInt(row.find(".receivedQty").val()) || 0,
+                correct: row.css("background-color") === "rgb(212, 237, 218)", // green = correct
+                description: row.find("td:eq(4)").text() || ""
+            });
+        });
+
+        $.ajax({
+            url: `${API_URL}/inquiries/${confirmId}/verify`,
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify(products),
+            success: function() {
+                alert("Products verified successfully!");
+                const modal = bootstrap.Modal.getInstance(document.getElementById("verifyProductsModal"));
+                modal.hide();
+            },
+            error: function(err) {
+                console.error(err);
+                alert("Failed to save verification.");
+            }
         });
     });
 
     // Mark as correct
     $(document).on("click", ".markCorrect", function() {
         const row = $(this).closest("tr");
-        row.find(".receivedQty").val(row.find(".confirmedQty").text());
+        const confirmedQty = parseInt(row.find("td:eq(2)").text());
+        row.find(".receivedQty").val(confirmedQty);
         row.css("background-color", "#d4edda"); // green highlight
     });
 
@@ -793,6 +878,7 @@
         const row = $(this).closest("tr");
         row.css("background-color", "#f8d7da"); // red highlight
     });
+
 
 
 

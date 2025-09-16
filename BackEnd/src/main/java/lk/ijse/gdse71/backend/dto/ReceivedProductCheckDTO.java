@@ -8,8 +8,9 @@ public class ReceivedProductCheckDTO {
     private Long itemId;
     private String productCode;
     private String productName;
-    private int confirmedQty;
-    private int receivedQty;
+    private Integer confirmedQty;
+    private Integer receivedQty;
+    private Boolean correct;
     private String description;
-    private boolean correct;
+
 }

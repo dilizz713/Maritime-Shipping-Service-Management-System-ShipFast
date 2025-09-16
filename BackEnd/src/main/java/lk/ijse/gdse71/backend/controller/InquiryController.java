@@ -126,6 +126,25 @@ public class InquiryController {
         return ResponseEntity.ok(checks);
     }
 
+    @PutMapping("/{confirmId}/verify")
+    public ResponseEntity<?> saveVerifiedProducts(
+            @PathVariable Long confirmId,
+            @RequestBody List<ReceivedProductCheckDTO> products) {
+
+        inquiryService.saveVerifiedProducts(confirmId, products);
+        return ResponseEntity.ok(Map.of("message", "Products verified successfully"));
+    }
+
+    @GetMapping("/{inquiryId}/confirmId")
+    public ResponseEntity<Long> getConfirmId(@PathVariable Long inquiryId) {
+        try {
+            Long confirmId = inquiryService.getConfirmIdByInquiryId(inquiryId);
+            return ResponseEntity.ok(confirmId);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(null);
+        }
+    }
+
 
 
 

@@ -33,4 +33,8 @@ public interface InquiryService {
     ConfirmInquiryDTO confirmInquiry(Long inquiryId, String description) throws MessagingException;
 
     List<ReceivedProductCheckDTO> getProductsToVerify(Long confirmId);
+
+    void saveVerifiedProducts(Long confirmId, List<ReceivedProductCheckDTO> products);
+
+    Long getConfirmIdByInquiryId(Long inquiryId);
 }

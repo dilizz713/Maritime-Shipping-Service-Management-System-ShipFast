@@ -2,9 +2,192 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Goods Received Note (GRN)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
-<body>
+<body class="bg-light">
+
+<div class="container mt-4">
+    <h2 class="mb-3">Goods Received Note (GRN)</h2>
+
+    <!-- Search by Bill Number -->
+    <div class="card mb-3 p-3 shadow-sm">
+        <div class="row g-2">
+            <div class="col-md-6">
+                <input type="text" id="billNumber" class="form-control" placeholder="Enter Bill Number (e.g. 20230913-001)">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary" id="searchBtn">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRN Header Details -->
+    <div id="grnDetails" class="card p-3 shadow-sm d-none">
+        <h5>GRN Information</h5>
+        <div class="row mb-2">
+            <div class="col-md-4">
+                <label class="form-label">GRN Number</label>
+                <input type="text" id="grnNumber" class="form-control" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Bill Number</label>
+                <input type="text" id="billNumDisplay" class="form-control" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Vendor</label>
+                <input type="text" id="vendorName" class="form-control" readonly>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-4">
+                <label class="form-label">Received Date</label>
+                <input type="text" id="receivedDate" class="form-control" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Total Amount</label>
+                <input type="text" id="totalAmount" class="form-control" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Remark</label>
+                <input type="text" id="remark" class="form-control">
+            </div>
+        </div>
+    </div>
+
+    <!-- GRN Items -->
+    <div id="grnItemsContainer" class="card mt-3 p-3 shadow-sm d-none">
+        <h5>GRN Items</h5>
+        <table class="table table-bordered table-striped" id="grnItemsTable">
+            <thead class="table-dark">
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>UOM</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Discount</th>
+                <th>Amount</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-3 d-none" id="actionButtons">
+        <button class="btn btn-success" id="updateBtn">Update GRN</button>
+    </div>
+</div>
+
+<script>
+    let currentGRN = null;
+
+    // Search GRN by Bill Number
+    $("#searchBtn").click(function () {
+        const billNumber = $("#billNumber").val().trim();
+        if (!billNumber) {
+            alert("Please enter a Bill Number");
+            return;
+        }
+
+        $.ajax({
+            url: `http://localhost:8080/api/v1/grn/by-bill/${billNumber}`,
+            method: "GET",
+            success: function (data) {
+                currentGRN = data;
+                $("#grnDetails, #grnItemsContainer, #actionButtons").removeClass("d-none");
+
+                $("#grnNumber").val(data.grnNumber);
+                $("#billNumDisplay").val(data.billNumber);
+                $("#vendorName").val(data.vendorName);
+                $("#receivedDate").val(data.receivedDate);
+                $("#totalAmount").val(data.totalAmount.toFixed(2));
+                $("#remark").val(data.remark);
+
+                let rows = "";
+                data.items.forEach(item => {
+                    rows += `
+                        <tr data-id="${item.id}">
+                            <td>${item.productCode}</td>
+                            <td>${item.productName}</td>
+                            <td>${item.productType}</td>
+                            <td>${item.uom}</td>
+                            <td><input type="number" class="form-control qty" value="${item.qty}"></td>
+                            <td><input type="number" class="form-control unitPrice" value="${item.unitPrice}"></td>
+                            <td><input type="number" class="form-control discount" value="${item.discount}"></td>
+                            <td class="amount">${item.amount.toFixed(2)}</td>
+                            <td><input type="text" class="form-control desc" value="${item.description}"></td>
+                        </tr>
+                    `;
+                });
+                $("#grnItemsTable tbody").html(rows);
+            },
+            error: function (xhr) {
+                alert("GRN not found for Bill Number: " + billNumber);
+                $("#grnDetails, #grnItemsContainer, #actionButtons").addClass("d-none");
+            }
+        });
+    });
+
+    // Update GRN
+    $("#updateBtn").click(function () {
+        if (!currentGRN) return;
+
+        let updatedItems = [];
+        $("#grnItemsTable tbody tr").each(function () {
+            const row = $(this);
+            const id = row.data("id");
+            const qty = parseInt(row.find(".qty").val()) || 0;
+            const unitPrice = parseFloat(row.find(".unitPrice").val()) || 0;
+            const discount = parseFloat(row.find(".discount").val()) || 0;
+            const desc = row.find(".desc").val();
+
+            const amount = (qty * unitPrice) - discount;
+            row.find(".amount").text(amount.toFixed(2));
+
+            updatedItems.push({
+                id: id,
+                productCode: row.find("td:eq(0)").text(),
+                productName: row.find("td:eq(1)").text(),
+                productType: row.find("td:eq(2)").text(),
+                uom: row.find("td:eq(3)").text(),
+                qty: qty,
+                unitPrice: unitPrice,
+                discount: discount,
+                amount: amount,
+                description: desc
+            });
+        });
+
+        const updatedGRN = {
+            id: currentGRN.id,
+            grnNumber: $("#grnNumber").val(),
+            billNumber: $("#billNumDisplay").val(),
+            vendorName: $("#vendorName").val(),
+            receivedDate: $("#receivedDate").val(),
+            totalAmount: updatedItems.reduce((sum, it) => sum + it.amount, 0),
+            remark: $("#remark").val(),
+            items: updatedItems
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/api/v1/grn/update",
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify(updatedGRN),
+            success: function (res) {
+                alert("GRN updated successfully!");
+            },
+            error: function (xhr) {
+                alert("Error updating GRN: " + xhr.responseText);
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

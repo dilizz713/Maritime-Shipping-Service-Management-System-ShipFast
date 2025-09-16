@@ -6,10 +6,7 @@ import lk.ijse.gdse71.backend.dto.InquiryDTO;
 import lk.ijse.gdse71.backend.dto.InquiryItemDTO;
 import lk.ijse.gdse71.backend.dto.ReceivedProductCheckDTO;
 import lk.ijse.gdse71.backend.entity.*;
-import lk.ijse.gdse71.backend.repo.ConfirmInquiryRepository;
-import lk.ijse.gdse71.backend.repo.InquiryRepository;
-import lk.ijse.gdse71.backend.repo.ProductRepository;
-import lk.ijse.gdse71.backend.repo.VendorRepository;
+import lk.ijse.gdse71.backend.repo.*;
 import lk.ijse.gdse71.backend.service.EmailService;
 import lk.ijse.gdse71.backend.service.InquiryService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +39,7 @@ public class InquiryServiceImpl implements InquiryService {
     private final VendorRepository vendorRepo;
     private final ProductRepository productRepo;
     private final ConfirmInquiryRepository confirmInquiryRepo;
+    private final ReceivedProductRepository receivedProductRepo;
     private static final String UPLOAD_DIR = "uploads/inquiries/";
     private final EmailService emailService;
     private static int refCounter = 1;
@@ -391,6 +389,36 @@ public class InquiryServiceImpl implements InquiryService {
                         .correct(false)
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void saveVerifiedProducts(Long confirmId, List<ReceivedProductCheckDTO> products) {
+        ConfirmInquiry confirm = confirmInquiryRepo.findById(confirmId)
+                .orElseThrow(() -> new RuntimeException("Confirm inquiry not found"));
+
+        List<ReceivedProduct> receivedProducts = products.stream().map(p -> {
+            InquiryItem item = confirm.getInquiry().getItems().stream()
+                    .filter(i -> i.getId().equals(p.getItemId()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Item not found"));
+
+            return ReceivedProduct.builder()
+                    .confirmInquiry(confirm)
+                    .inquiryItem(item)
+                    .receivedQty(p.getReceivedQty())
+                    .correct(p.getCorrect())
+                    .description(p.getDescription())
+                    .build();
+        }).collect(Collectors.toList());
+
+        receivedProductRepo.saveAll(receivedProducts);
+    }
+
+    @Override
+    public Long getConfirmIdByInquiryId(Long inquiryId) {
+        ConfirmInquiry confirm = confirmInquiryRepo.findByInquiryId(inquiryId)
+                .orElseThrow(() -> new RuntimeException("Confirm inquiry not found"));
+        return confirm.getId();
     }
 
 
