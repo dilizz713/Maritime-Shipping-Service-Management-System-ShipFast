@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class GRNServiceImpl implements GRNService {
     private final GRNRepository grnRepo;
 
+
     @Override
     public GRNDTO getGrnByBillNumber(String billNumber) {
         GRN grn = grnRepo.findByBillNumber(billNumber)
@@ -83,5 +84,12 @@ public class GRNServiceImpl implements GRNService {
         grnRepo.save(grn);
     }
 
-
 }
+
+
+
+
+
+
+
+

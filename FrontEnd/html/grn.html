@@ -193,6 +193,17 @@
                         <label class="form-label"><i class="bi bi-currency-dollar"></i> Total Amount</label>
                         <div class="fw-data" id="totalAmount"></div>
                     </div>
+                    <!--<div class="row mb-2">
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="bi bi-currency-exchange"></i> Currency</label>
+                            <select id="currencySelect" class="form-select form-select-sm">
+                                <option value="LKR">LKR (Sri Lankan Rupee)</option>
+                                <option value="USD">USD (US Dollar)</option>
+                                <option value="EUR">EUR (Euro)</option>
+                                <option value="GBP">GBP (British Pound)</option>
+                            </select>
+                        </div>
+                    </div>-->
                     <div class="col-md-4">
                         <label class="form-label">Remark</label>
                         <input type="text" id="remark" class="form-control form-control-sm">
@@ -279,12 +290,11 @@
                 });
                 $("#grnItemsTable tbody").html(rows);
 
-                // Set previous discount selection if exists
+
                 data.items.forEach((item, idx) => {
                     $(`#grnItemsTable tbody tr:eq(${idx}) .discountPercentage`).val(0);
                 });
 
-                // Update amounts on change
                 $("#grnItemsTable tbody tr").each(function () {
                     $(this).find(".qty, .unitPrice, .discountPercentage").on("input change", function () {
                         const row = $(this).closest("tr");
@@ -313,7 +323,6 @@
         });
     });
 
-    // Update GRN
     $("#updateBtn").click(function () {
         if (!currentGRN) return;
 

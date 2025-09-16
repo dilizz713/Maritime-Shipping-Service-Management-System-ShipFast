@@ -24,11 +24,12 @@ public class GRN {
 
     private String remark;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "confirm_inquiry_id")
     private ConfirmInquiry confirmInquiry;
 
     @OneToMany(mappedBy = "grn", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GRNItem> items;
+
+
 }
