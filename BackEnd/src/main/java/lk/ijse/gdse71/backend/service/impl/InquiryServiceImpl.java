@@ -390,28 +390,6 @@ public class InquiryServiceImpl implements InquiryService {
                 .collect(Collectors.toList());
     }
 
-   /* @Override
-    public void saveVerifiedProducts(Long confirmId, List<ReceivedProductCheckDTO> products) {
-        ConfirmInquiry confirm = confirmInquiryRepo.findById(confirmId)
-                .orElseThrow(() -> new RuntimeException("Confirm inquiry not found"));
-
-        List<ReceivedProduct> receivedProducts = products.stream().map(p -> {
-            InquiryItem item = confirm.getInquiry().getItems().stream()
-                    .filter(i -> i.getId().equals(p.getItemId()))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Item not found"));
-
-            return ReceivedProduct.builder()
-                    .confirmInquiry(confirm)
-                    .inquiryItem(item)
-                    .receivedQty(p.getReceivedQty())
-                    .correct(p.getCorrect())
-                    .description(p.getDescription())
-                    .build();
-        }).collect(Collectors.toList());
-
-        receivedProductRepo.saveAll(receivedProducts);
-    }*/
 
     @Override
     @Transactional
@@ -419,7 +397,7 @@ public class InquiryServiceImpl implements InquiryService {
         ConfirmInquiry confirm = confirmInquiryRepo.findById(confirmId)
                 .orElseThrow(() -> new RuntimeException("Confirm inquiry not found"));
 
-        // 1️⃣ Save Received Products
+
         List<ReceivedProduct> receivedProducts = products.stream().map(p -> {
             InquiryItem item = confirm.getInquiry().getItems().stream()
                     .filter(i -> i.getId().equals(p.getItemId()))
@@ -437,18 +415,18 @@ public class InquiryServiceImpl implements InquiryService {
 
         receivedProductRepo.saveAll(receivedProducts);
 
-        // 2️⃣ Create GRN
+
         String grnNumber = generateGRNNumber();
         LocalDate today = LocalDate.now();
 
         GRN grn = GRN.builder()
                 .grnNumber(grnNumber)
                 .receivedDate(today)
-                .remark("Auto-generated from verification")
+                .remark("")
                 .confirmInquiry(confirm)
                 .build();
 
-        // 3️⃣ Add GRN Items
+
         List<GRNItem> grnItems = receivedProducts.stream().map(rp -> {
             Product product = rp.getInquiryItem().getProduct();
             return GRNItem.builder()
@@ -467,14 +445,14 @@ public class InquiryServiceImpl implements InquiryService {
 
         grn.setItems(grnItems);
 
-        // 4️⃣ Calculate total
+
         double total = grnItems.stream().mapToDouble(GRNItem::getAmount).sum();
         grn.setTotalAmount(total);
 
-        // 5️⃣ Save GRN
+
         GRN savedGrn = grnRepo.save(grn);
 
-        // 6️⃣ Convert to DTO
+
         return GRNDTO.builder()
                 .id(savedGrn.getId())
                 .grnNumber(savedGrn.getGrnNumber())
