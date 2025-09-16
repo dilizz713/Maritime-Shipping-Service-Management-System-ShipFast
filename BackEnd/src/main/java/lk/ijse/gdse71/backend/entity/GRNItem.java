@@ -16,9 +16,11 @@ public class GRNItem {
 
     private String productCode;
     private String productName;
-    private String productType;
-    private String uom;
 
+    @Enumerated(EnumType.STRING)
+    private ProductType productType;
+
+    private String uom;
     private Integer qty;
     private Double unitPrice;
     private Double discount;

@@ -1,14 +1,12 @@
 package lk.ijse.gdse71.backend.controller;
 
-import lk.ijse.gdse71.backend.dto.ConfirmInquiryDTO;
-import lk.ijse.gdse71.backend.dto.InquiryDTO;
-import lk.ijse.gdse71.backend.dto.InquiryItemDTO;
-import lk.ijse.gdse71.backend.dto.ReceivedProductCheckDTO;
+import lk.ijse.gdse71.backend.dto.*;
 import lk.ijse.gdse71.backend.entity.ConfirmInquiry;
 import lk.ijse.gdse71.backend.service.InquiryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -130,9 +128,14 @@ public class InquiryController {
     public ResponseEntity<?> saveVerifiedProducts(
             @PathVariable Long confirmId,
             @RequestBody List<ReceivedProductCheckDTO> products) {
-
-        inquiryService.saveVerifiedProducts(confirmId, products);
-        return ResponseEntity.ok(Map.of("message", "Products verified successfully"));
+        try {
+            GRNDTO grn = inquiryService.saveVerifiedProducts(confirmId, products);
+            return ResponseEntity.ok(grn);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/{inquiryId}/confirmId")

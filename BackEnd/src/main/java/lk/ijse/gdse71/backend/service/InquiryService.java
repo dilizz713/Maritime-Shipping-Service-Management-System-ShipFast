@@ -1,10 +1,7 @@
 package lk.ijse.gdse71.backend.service;
 
 import jakarta.mail.MessagingException;
-import lk.ijse.gdse71.backend.dto.ConfirmInquiryDTO;
-import lk.ijse.gdse71.backend.dto.InquiryDTO;
-import lk.ijse.gdse71.backend.dto.InquiryItemDTO;
-import lk.ijse.gdse71.backend.dto.ReceivedProductCheckDTO;
+import lk.ijse.gdse71.backend.dto.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -34,7 +31,7 @@ public interface InquiryService {
 
     List<ReceivedProductCheckDTO> getProductsToVerify(Long confirmId);
 
-    void saveVerifiedProducts(Long confirmId, List<ReceivedProductCheckDTO> products);
+    GRNDTO saveVerifiedProducts(Long confirmId, List<ReceivedProductCheckDTO> products);
 
     Long getConfirmIdByInquiryId(Long inquiryId);
 }

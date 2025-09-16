@@ -13,15 +13,5 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @Slf4j
 public class GRNController {
-    private final GRNService grnService;
 
-    @PostMapping("/{confirmId}/create")
-    public ResponseEntity<GRNDTO> createGRN(@PathVariable Long confirmId) {
-        return ResponseEntity.ok(grnService.createGRNFromVerification(confirmId));
-    }
-
-    @GetMapping("/by-bill/{billNumber}")
-    public ResponseEntity<GRNDTO> getByBillNumber(@PathVariable String billNumber) {
-        return ResponseEntity.ok(grnService.getGRNByBillNumber(billNumber));
-    }
 }

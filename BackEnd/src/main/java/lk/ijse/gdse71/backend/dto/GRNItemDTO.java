@@ -1,4 +1,5 @@
 package lk.ijse.gdse71.backend.dto;
+import lk.ijse.gdse71.backend.entity.ProductType;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -12,7 +13,7 @@ public class GRNItemDTO {
 
     private String productCode;
     private String productName;
-    private String productType;
+    private ProductType productType;
     private String uom;
 
     private Integer qty;
