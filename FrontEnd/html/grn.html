@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Costing</title>
+    <title>GRN</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="../styles/side-bar.css" rel="stylesheet">
@@ -212,7 +212,7 @@
                             <th>UOM</th>
                             <th>Qty</th>
                             <th>Unit Price</th>
-                            <th>Discount</th>
+                            <th>Discount (%)</th>
                             <th>Amount</th>
                             <th>Description</th>
                         </tr>
@@ -256,7 +256,6 @@
                 currentGRN = data;
                 $("#grnDetails, #grnItemsContainer, #actionButtons").removeClass("d-none");
 
-
                 $("#grnNumber").text(data.grnNumber);
                 $("#billNumDisplay").text(data.billNumber);
                 $("#vendorName").text(data.vendorName);
@@ -264,31 +263,38 @@
                 $("#totalAmount").text(data.totalAmount.toFixed(2));
                 $("#remark").val(data.remark || '');
 
-
                 let rows = "";
                 data.items.forEach(item => {
                     rows += `<tr data-id="${item.id}">
-                        <td>${item.productCode}</td>
-                        <td>${item.productName}</td>
-                        <td>${item.productType}</td>
-                        <td>${item.uom}</td>
-                        <td><input type="number" class="form-control form-control-sm qty" value="${item.qty}"></td>
-                        <td><input type="number" class="form-control form-control-sm unitPrice" value="${item.unitPrice}"></td>
-                        <td><input type="number" class="form-control form-control-sm discount" value="${item.discount}"></td>
-                        <td class="amount">${item.amount.toFixed(2)}</td>
-                        <td><input type="text" class="form-control form-control-sm desc" value="${item.description || ''}"></td>
-                    </tr>`;
+                    <td>${item.productCode}</td>
+                    <td>${item.productName}</td>
+                    <td>${item.productType}</td>
+                    <td>${item.uom}</td>
+                    <td><input type="number" class="form-control form-control-sm qty" value="${item.qty}"></td>
+                    <td><input type="number" class="form-control form-control-sm unitPrice" value="${item.unitPrice}"></td>
+                    <td><input type="number" class="form-control form-control-sm discountPercentage" value="${item.discountPercentage}" placeholder="%" min="0" max="100"></td>
+                    <td class="amount">${item.amount.toFixed(2)}</td>
+                    <td><input type="text" class="form-control form-control-sm desc" value="${item.description || ''}"></td>
+                </tr>`;
                 });
                 $("#grnItemsTable tbody").html(rows);
 
+                // Set previous discount selection if exists
+                data.items.forEach((item, idx) => {
+                    $(`#grnItemsTable tbody tr:eq(${idx}) .discountPercentage`).val(0);
+                });
 
+                // Update amounts on change
                 $("#grnItemsTable tbody tr").each(function () {
-                    $(this).find(".qty, .unitPrice, .discount").on("input", function () {
+                    $(this).find(".qty, .unitPrice, .discountPercentage").on("input change", function () {
                         const row = $(this).closest("tr");
                         const qty = parseFloat(row.find(".qty").val()) || 0;
                         const unitPrice = parseFloat(row.find(".unitPrice").val()) || 0;
-                        const discount = parseFloat(row.find(".discount").val()) || 0;
+                        const discountPerc = parseFloat(row.find(".discountPercentage").val()) || 0;
+
+                        const discount = (qty * unitPrice) * (discountPerc / 100);
                         const amount = (qty * unitPrice) - discount;
+
                         row.find(".amount").text(amount.toFixed(2));
 
                         // Update total
@@ -318,8 +324,7 @@
                 id: row.data("id"),
                 qty: parseInt(row.find(".qty").val()) || 0,
                 unitPrice: parseFloat(row.find(".unitPrice").val()) || 0,
-                discount: parseFloat(row.find(".discount").val()) || 0,
-                amount: parseFloat(row.find(".amount").text()) || 0,
+                discountPercentage: parseFloat(row.find(".discountPercentage").val()) || 0,
                 description: row.find(".desc").val()
             });
         });

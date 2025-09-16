@@ -29,4 +29,15 @@ public class GRNController {
         }
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<?> updateGrn(@RequestBody GRNDTO dto) {
+        try {
+            grnService.updateGRN(dto);
+            return ResponseEntity.ok(Map.of("message", "GRN updated successfully!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }
