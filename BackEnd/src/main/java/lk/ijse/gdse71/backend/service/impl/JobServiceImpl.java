@@ -1,11 +1,24 @@
 package lk.ijse.gdse71.backend.service.impl;
 
+import jakarta.mail.internet.MimeMessage;
 import lk.ijse.gdse71.backend.dto.JobDTO;
 import lk.ijse.gdse71.backend.entity.*;
 import lk.ijse.gdse71.backend.repo.*;
+import lk.ijse.gdse71.backend.service.EmailService;
 import lk.ijse.gdse71.backend.service.JobService;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -23,6 +36,9 @@ public class JobServiceImpl implements JobService {
     private final ServiceRepository servicesRepository;
     private final EmployeeRepository employeeRepository;
 
+    private final JavaMailSender mailSender;
+    private final EmailService emailService;
+
     @Override
     public JobDTO createJob(JobDTO jobDTO) {
         LocalDate today = LocalDate.now();
@@ -39,15 +55,24 @@ public class JobServiceImpl implements JobService {
                 .referenceFilePath(jobDTO.getReferenceFilePath())
                 .build();
 
+        if (jobDTO.getReferenceFile() != null && !jobDTO.getReferenceFile().isEmpty()) {
+            try {
+                String uploadDir = "uploads";
+                Files.createDirectories(Paths.get(uploadDir));
+
+                String fileName = UUID.randomUUID() + "-" + jobDTO.getReferenceFile().getOriginalFilename();
+                String filePath = uploadDir + "/" + fileName;
+                Files.write(Paths.get(filePath), jobDTO.getReferenceFile().getBytes());
+
+                job.setReferenceFilePath(fileName);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to upload file: " + e.getMessage());
+            }
+        }
 
         String datePart = today.format(DateTimeFormatter.ofPattern("ddMMyy"));
-
-
         long countToday = jobRepository.countByDate(java.sql.Date.valueOf(today));
-
-
         String seqNumber = String.format("%02d", countToday + 1);
-
         String jobRef = "Ref" + datePart + seqNumber;
         job.setJobReference(jobRef);
 
@@ -129,7 +154,22 @@ public class JobServiceImpl implements JobService {
         job.setEmployee(employee);
         job.setService(service);
         job.setRemark(jobDTO.getRemark());
-        job.setReferenceFilePath(jobDTO.getReferenceFilePath());
+
+        // Handle file upload
+        if (jobDTO.getReferenceFile() != null && !jobDTO.getReferenceFile().isEmpty()) {
+            try {
+                String uploadDir = "uploads";
+                Files.createDirectories(Paths.get(uploadDir));
+
+                String fileName = UUID.randomUUID() + "-" + jobDTO.getReferenceFile().getOriginalFilename();
+                String filePath = uploadDir + "/" + fileName;
+                Files.write(Paths.get(filePath), jobDTO.getReferenceFile().getBytes());
+
+                job.setReferenceFilePath(fileName); // save the UUID-generated name
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to upload file: " + e.getMessage());
+            }
+        }
 
 
         jobRepository.save(job);
@@ -170,4 +210,86 @@ public class JobServiceImpl implements JobService {
 
         return dto;
     }
+
+    @Override
+    public Map<String, Object> sendJobEmail(Long jobId) {
+        Map<String, Object> response = new HashMap<>();
+
+        Optional<Job> optionalJob = jobRepository.findById(jobId);
+        if (optionalJob.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Job not found with ID: " + jobId);
+            return response;
+        }
+
+        Job job = optionalJob.get();
+        Employee employee = job.getEmployee();
+
+        if (employee == null) {
+            response.put("success", false);
+            response.put("message", "No employee assigned to this job.");
+            return response;
+        }
+
+        String employeeEmail = employee.getEmail();
+        if (employeeEmail == null || employeeEmail.isBlank()) {
+            response.put("success", false);
+            response.put("message", "Employee email not found for job ID: " + jobId);
+            return response;
+        }
+
+        String subject = "New Job Assignment - " + job.getJobReference();
+        String body = String.format("""
+            Hello %s,
+
+            You have been assigned a new job. Please prepare the quotation for this job.
+
+            📌 Customer: %s
+            📌 Vessel: %s
+            📌 Service: %s
+            📌 Port: %s
+
+            Regards,
+            Operations Manager
+            """,
+                employee.getName(),
+                job.getCustomer().getCompanyName(),
+                job.getVessel().getName(),
+                job.getService().getServiceName(),
+                job.getPort().getPortName()
+        );
+
+        try {
+            byte[] attachmentBytes = null;
+            String attachmentName = null;
+
+            if (job.getReferenceFilePath() != null && !job.getReferenceFilePath().isBlank()) {
+                java.io.File file = new java.io.File("uploads/" + job.getReferenceFilePath());
+                if (file.exists()) {
+                    attachmentBytes = Files.readAllBytes(file.toPath());
+                    attachmentName = file.getName();
+                } else {
+                    System.err.println("Reference file not found: " + file.getAbsolutePath());
+                }
+            }
+
+            emailService.sendEmailWithOptionalAttachment(
+                    employeeEmail,
+                    subject,
+                    body,
+                    attachmentBytes,
+                    attachmentName
+            );
+
+            response.put("success", true);
+            response.put("message", "Email sent successfully to " + employeeEmail);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Failed to send email: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
 }

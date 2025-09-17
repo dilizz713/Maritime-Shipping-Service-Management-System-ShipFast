@@ -32,7 +32,6 @@ public class MeetingController {
         return ResponseEntity.ok(new APIResponse(200,"Found",m));
     }
 
-    // helper: get employee by id (used by frontend to auto-name)
     @GetMapping("/employee/{id}")
     public ResponseEntity<APIResponse> getEmployee(@PathVariable Long id) {
         Employee e = employeeRepository.findById(id).orElse(null);

@@ -26,4 +26,20 @@ public class EmailServiceImpl implements EmailService {
 
         mailSender.send(message);
     }
+
+    @Override
+    public void sendEmailWithOptionalAttachment(String to, String subject, String text, byte[] attachment, String attachmentName) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(text);
+
+        if (attachment != null && attachment.length > 0) {
+            helper.addAttachment(attachmentName, new org.springframework.core.io.ByteArrayResource(attachment));
+        }
+
+        mailSender.send(message);
+    }
 }

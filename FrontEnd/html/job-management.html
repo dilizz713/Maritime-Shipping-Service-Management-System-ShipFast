@@ -444,7 +444,7 @@
     $("#saveExcelBtn").click(saveExcel);
 
     $(document).ready(function() {
-        $('#meetingModal .btn').click(function() {
+        $('#meetingModal .btn').click(function () {
             const action = $(this).text().trim();
             console.log("User selected:", action);
             $('#meetingModal').modal('hide');
@@ -455,115 +455,126 @@
         loadServices();
         loadJobs();
 
-        $("#customerSelect").change(function() {
+        $("#customerSelect").change(function () {
             const customerId = $(this).val();
             const vesselSelect = $("#vesselSelect").empty().append('<option value="">Select Vessel</option>');
-            if(!customerId) return;
-            $.get("http://localhost:8080/api/v1/vessels/getAllVessels", function(res) {
+            if (!customerId) return;
+            $.get("http://localhost:8080/api/v1/vessels/getAllVessels", function (res) {
                 res.data.filter(v => v.customerId == customerId)
                     .forEach(v => vesselSelect.append(`<option value="${v.id}">${v.name} (${v.type})</option>`));
             });
         });
 
-        $("#editCustomerSelect").change(function() {
+        $("#editCustomerSelect").change(function () {
             const customerId = $(this).val();
             const vesselSelect = $("#editVesselSelect").empty().append('<option value="">Select Vessel</option>');
-            if(!customerId) return;
-            $.get("http://localhost:8080/api/v1/vessels/getAllVessels", function(res) {
+            if (!customerId) return;
+            $.get("http://localhost:8080/api/v1/vessels/getAllVessels", function (res) {
                 res.data.filter(v => v.customerId == customerId)
                     .forEach(v => vesselSelect.append(`<option value="${v.id}">${v.name} (${v.type})</option>`));
             });
         });
+
 
         $("#jobForm").submit(function(e) {
             e.preventDefault();
-            const jobDTO = {
-                customerId: Number($("#customerSelect").val()),
-                vesselId: Number($("#vesselSelect").val()),
-                portId: Number($("#portSelect").val()),
-                employeeId: Number($("#employeeSelect").val()),
-                serviceId: Number($("#serviceSelect").val()),
-                remark: $("#remark").val(),
-                referenceFilePath: $("#referenceFile")[0].files[0]?.name || null
-            };
+            const formData = new FormData();
+            formData.append("customerId", $("#customerSelect").val());
+            formData.append("vesselId", $("#vesselSelect").val());
+            formData.append("portId", $("#portSelect").val());
+            formData.append("employeeId", $("#employeeSelect").val());
+            formData.append("serviceId", $("#serviceSelect").val());
+            formData.append("remark", $("#remark").val());
+
+            const file = $("#referenceFile")[0].files[0];
+            if(file) formData.append("referenceFile", file);
+
             $.ajax({
                 url: "http://localhost:8080/api/v1/jobs/create",
                 method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify(jobDTO),
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(res) {
                     alert(res.message || "Job created successfully!");
-                    $("#jobModal").modal('hide');
+                    $("#jobModal").modal("hide");
                     $("#jobForm")[0].reset();
-                    $('#serviceSelect').val('').trigger('change');
                     loadJobs();
                 },
                 error: function(err) {
-                    alert("Error creating job. Check console for details.");
                     console.error(err);
+                    alert("Error creating job!");
                 }
             });
         });
+
+
+    });
 
         $("#editJobForm").submit(function(e) {
             e.preventDefault();
             const jobId = $("#editJobId").val();
-            const jobDTO = {
-                customerId: Number($("#editCustomerSelect").val()),
-                vesselId: Number($("#editVesselSelect").val()),
-                portId: Number($("#editPortSelect").val()),
-                employeeId: Number($("#editEmployeeSelect").val()),
-                serviceId: Number($("#editServiceSelect").val()),
-                remark: $("#editRemark").val(),
-                referenceFilePath: $("#editReferenceFile")[0].files[0]?.name || null
-            };
+            const formData = new FormData();
+
+            formData.append("customerId", $("#editCustomerSelect").val());
+            formData.append("vesselId", $("#editVesselSelect").val());
+            formData.append("portId", $("#editPortSelect").val());
+            formData.append("employeeId", $("#editEmployeeSelect").val());
+            formData.append("serviceId", $("#editServiceSelect").val());
+            formData.append("remark", $("#editRemark").val());
+
+            const file = $("#editReferenceFile")[0].files[0];
+            if(file) formData.append("referenceFile", file);
+
+            const oldFile = $("#currentFile").text();
+            if(oldFile && !file) formData.append("referenceFilePath", oldFile);
+
             $.ajax({
                 url: `http://localhost:8080/api/v1/jobs/update/${jobId}`,
-                method: "PUT",
-                contentType: "application/json",
-                data: JSON.stringify(jobDTO),
+                method: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(res) {
                     alert(res.message || "Job updated successfully!");
-                    $("#editJobModal").modal('hide');
+                    $("#editJobModal").modal("hide");
                     loadJobs();
                 },
                 error: function(err) {
-                    alert("Error updating job. Check console for details.");
                     console.error(err);
+                    alert("Error updating job!");
                 }
             });
         });
-    });
-
 
     function loadJobs() {
         $.get("http://localhost:8080/api/v1/jobs/getAllJobs", function(res) {
             const tbody = $("#jobsTable tbody").empty();
-            res.forEach((job, index) => {
-                const refFileIcon = job.referenceFilePath
+            res.forEach((job, i) => {
+                const fileIcon = job.referenceFilePath
                     ? `<i class="bi bi-file-earmark-excel-fill text-success" style="cursor:pointer"
-         title="Open ${job.referenceFilePath}"
-         onclick="openExcel(${job.id}, '${job.referenceFilePath}')"></i>`
-                    : '';
+                     onclick="window.open('http://localhost:8080/uploads/${job.referenceFilePath}', '_blank')"></i>`
+                    : "";
                 tbody.append(`
-            <tr>
-                <td>${index + 1}</td>
-                <td>${job.dateAsString}</td>
-                <td>${job.jobReference}</td>
-                <td>${job.customerName}</td>
-                <td>${job.vesselName}</td>
-                <td>${job.portName}</td>
-                <td>${job.serviceName}</td>
-                <td>${job.employeeName}</td>
-                <td>${job.status}</td>
-                <td>${refFileIcon}</td>
-                <td>${job.remark}</td>
-                <td>
-                    <i class="bi bi-pencil-square text-primary me-2" style="cursor:pointer" onclick="editJob(${job.id})"></i>
-                    <i class="bi bi-trash text-danger" style="cursor:pointer" onclick="deleteJob(${job.id})"></i>
-                </td>
-            </tr>
-        `);
+                <tr>
+                    <td>${i+1}</td>
+                    <td>${job.dateAsString}</td>
+                    <td>${job.jobReference}</td>
+                    <td>${job.customerName}</td>
+                    <td>${job.vesselName}</td>
+                    <td>${job.portName}</td>
+                    <td>${job.serviceName}</td>
+                    <td>${job.employeeName}</td>
+                    <td>${job.status}</td>
+                    <td>${fileIcon}</td>
+                    <td>${job.remark}</td>
+                    <td>
+                        <i class="bi bi-pencil-square text-primary" onclick="editJob(${job.id})"></i>
+                        <i class="bi bi-trash text-danger" onclick="deleteJob(${job.id})"></i>
+                        <i class="bi bi-envelope-fill text-success" onclick="sendJobEmail(${job.id})"></i>
+                    </td>
+                </tr>
+            `);
             });
         });
     }
@@ -643,6 +654,32 @@
             res.data.forEach(s => select.append(`<option value="${s.id}">${s.serviceName}</option>`));
             $(selector).trigger('change');
             if(callback) callback();
+        });
+    }
+
+    function sendJobEmail(jobId) {
+        if (!confirm("Are you sure you want to send this job email to the employee?")) return;
+
+        $.ajax({
+            url: `http://localhost:8080/api/v1/jobs/${jobId}/sendJobEmail`,
+            method: "POST",
+            success: function(res) {
+                // Backend might return custom message
+                if (res && res.message) {
+                    alert(res.message);
+                } else {
+                    alert("📧 Email sent successfully (or skipped if no email was found)!");
+                }
+            },
+            error: function(err) {
+                console.error("Error sending job email:", err);
+
+                if (err.responseJSON && err.responseJSON.message) {
+                    alert("❌ Failed to send email: " + err.responseJSON.message);
+                } else {
+                    alert("❌ Failed to send email. Check console for details.");
+                }
+            }
         });
     }
 
