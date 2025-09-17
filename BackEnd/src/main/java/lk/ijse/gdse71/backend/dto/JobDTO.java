@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class JobDTO {
     private Long id;
+    private String jobReference;
     private String remark;
     private String status;
 
@@ -33,4 +34,5 @@ public class JobDTO {
     private String serviceName;
 
     private String referenceFilePath;
+    private String dateAsString;
 }

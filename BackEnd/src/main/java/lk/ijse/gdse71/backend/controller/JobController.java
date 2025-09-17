@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/jobs")
 @RequiredArgsConstructor
@@ -22,5 +24,11 @@ public class JobController {
         } catch (RuntimeException ex) {
             return ResponseEntity.badRequest().body(new APIResponse(400, ex.getMessage(), false));
         }
+    }
+
+    @GetMapping("/getAllJobs")
+    public ResponseEntity<?> getAllJobs() {
+        List<JobDTO> jobs = jobService.getAllJobs();
+        return ResponseEntity.ok().body(jobs);
     }
 }

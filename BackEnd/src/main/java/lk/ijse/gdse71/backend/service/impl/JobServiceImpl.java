@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -64,5 +65,30 @@ public class JobServiceImpl implements JobService {
         jobRepository.save(job);
 
 
+    }
+
+    @Override
+    public List<JobDTO> getAllJobs() {
+        List<Job> jobs = jobRepository.findAll();
+
+        return jobs.stream().map(job -> {
+            JobDTO dto = new JobDTO();
+            dto.setId(job.getId());
+            dto.setJobReference(job.getJobReference());
+            dto.setRemark(job.getRemark());
+            dto.setStatus(job.getStatus());
+            dto.setCustomerName(job.getCustomer().getCompanyName());
+            dto.setVesselName(job.getVessel().getName());
+            dto.setPortName(job.getPort().getPortName());
+            dto.setServiceName(job.getService().getServiceName());
+            dto.setEmployeeName(job.getEmployee().getName());
+            dto.setReferenceFilePath(job.getReferenceFilePath());
+
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            dto.setDateAsString(sdf.format(job.getDate()));
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
