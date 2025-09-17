@@ -6,84 +6,51 @@
     <title>Job Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../styles/side-bar.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f5f7fa;
-            font-size: 0.875rem;
+        .job-table-card {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 15px;
+            background: #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
-        h1{
-            font-size: 1.0rem;
+        .modal-header {
+            background-color: #0d6efd;
+            color: white;
         }
-        h2{
-            font-size: 0.975rem;
-            padding: 5px;
-        }
-        #ship-logo {
-            border-radius: 50%;
-            border: 2px solid #fff;
-            padding: 4px;
+        .form-label i {
+            color: #0d6efd;
+            margin-right: 6px;
         }
 
-        .company-name {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #fff;
+        #jobsTable {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #dee2e6;
         }
-        .sidebar {
-            min-height: 100vh;
-            background-color: #003366;
-            color: #fff;
-        }
-        .sidebar .nav-link {
-            color: #fff;
-        }
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            background-color: #00509e;
-            border-radius: 8px;
-        }
-        .sidebar .logo {
-            font-size: 1.2rem;
-            font-weight: bold;
+
+        #jobsTable th, #jobsTable td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
             text-align: center;
-            padding: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .navbar {
-            background-color: #00509e;
-        }
-        .navbar .navbar-brand, .navbar .nav-link, .navbar .dropdown-toggle {
-            color: #fff !important;
-        }
-        .content {
-            padding: 2rem;
-        }
-        .card-body img:hover {
-            transform: scale(1.05);
-        }
-        .meeting-btn {
-            transition: all 0.3s ease;
-            background: linear-gradient(135deg, #0066cc, #00bfff);
-            color: #fff !important;
-            border-radius: 8px;
-            font-weight: 500;
+            vertical-align: middle;
         }
 
-        .meeting-btn:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            text-decoration: none;
-            color: #fff !important;
+        #jobsTable td {
+            font-size: 0.72rem;
         }
 
-        /* Badge style */
-        .meeting-btn .badge {
-            font-size: 0.7rem;
+        #jobsTable th {
+            background-color: #f8f9fa;
             font-weight: 600;
         }
-        i {
-            font-size: 0.75rem;
+
+        #jobsTable tbody tr:hover {
+            background-color: #f1f3f5;
         }
+
     </style>
 </head>
 <body>
@@ -162,7 +129,7 @@
                 </a>
                 <div class="collapse ps-4" id="jobMenu">
                     <ul class="nav flex-column">
-                        <li class="nav-item"><a href="#" class="nav-link">Job Manage</a></li>
+                        <li class="nav-item"><a href="job-management.html" class="nav-link">Job Manage</a></li>
                         <li class="nav-item"><a href="#" class="nav-link">Quotation</a></li>
                         <li class="nav-item"><a href="#" class="nav-link">Pending PO</a></li>
                         <li class="nav-item"><a href="#" class="nav-link">Job Schedule</a></li>
@@ -220,8 +187,100 @@
             </div>
         </nav>
 
-        <div class="content">
+        <div class="job-table-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold text-primary"><i class="bi bi-briefcase-fill"></i> Job Management</h2>
+                <button class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#jobModal">
+                    <i class="bi bi-plus-circle me-2"></i> Create New Job
+                </button>
+            </div>
 
+            <!-- Jobs Table -->
+            <table class="table table-hover align-middle" id="jobsTable">
+                <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Reference</th>
+                    <th>Customer</th>
+                    <th>Vessel</th>
+                    <th>Port</th>
+                    <th>Services</th>
+                    <th>Employee</th>
+                    <th>Status</th>
+                    <th>Ref File</th>
+                    <th>Remark</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Rows will be loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Create Job Modal -->
+        <div class="modal fade" id="jobModal" tabindex="-1" aria-labelledby="jobModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content rounded-4 shadow-lg">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="jobModalLabel"><i class="bi bi-briefcase-fill me-2"></i>Create Job</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="jobForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="customerSelect" class="form-label"><i class="bi bi-people-fill"></i> Customer</label>
+                                    <select id="customerSelect" class="form-select" required>
+                                        <option value="">Select Customer</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="vesselSelect" class="form-label"><i class="bi bi-ship"></i> Vessel</label>
+                                    <select id="vesselSelect" class="form-select" required>
+                                        <option value="">Select Vessel</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="portSelect" class="form-label"><i class="bi bi-pin-map-fill"></i> Port</label>
+                                    <select id="portSelect" class="form-select" required>
+                                        <option value="">Select Port</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="employeeSelect" class="form-label"><i class="bi bi-person-badge-fill"></i> Employee</label>
+                                    <select id="employeeSelect" class="form-select" required>
+                                        <option value="">Select Employee</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="serviceSelect" class="form-label"><i class="bi bi-gear-fill"></i> Services</label>
+                                <select id="serviceSelect" class="form-select" multiple="multiple" required></select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="remark" class="form-label"><i class="bi bi-pencil-fill"></i> Remark</label>
+                                <textarea id="remark" class="form-control" rows="3" placeholder="Enter remark"></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="referenceFile" class="form-label"><i class="bi bi-file-earmark-spreadsheet-fill"></i> Reference File (Excel)</label>
+                                <input type="file" id="referenceFile" class="form-control" accept=".xls,.xlsx">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 btn-lg">
+                                <i class="bi bi-check-circle-fill"></i> Create Job
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -234,9 +293,119 @@
         $('#meetingModal .btn').click(function() {
             const action = $(this).text().trim();
             console.log("User selected:", action);
-            $('#meetingModal').modal('hide'); // Close modal after selection
+            $('#meetingModal').modal('hide');
         });
+
+
+        function loadCustomers() {
+            $.get("http://localhost:8080/api/v1/customer/getAllCustomers", function(res) {
+                const select = $("#customerSelect").empty().append('<option value="">Select Customer</option>');
+                res.data.forEach(c => select.append(`<option value="${c.id}">${c.companyName}</option>`));
+            });
+        }
+
+        function loadPorts() {
+            $.get("http://localhost:8080/api/v1/port/getAllPorts", function(res) {
+                const select = $("#portSelect").empty().append('<option value="">Select Port</option>');
+                res.data.forEach(p => select.append(`<option value="${p.id}">${p.portName}</option>`));
+            });
+        }
+
+        function loadEmployees() {
+            $.get("http://localhost:8080/api/v1/employee/getAllEmployees", function(res) {
+                const select = $("#employeeSelect").empty().append('<option value="">Select Employee</option>');
+                res.data.forEach(e => select.append(`<option value="${e.id}">${e.name}</option>`));
+            });
+        }
+
+        function loadServices() {
+            $.get("http://localhost:8080/api/v1/service/getAllServices", function(res) {
+                const select = $("#serviceSelect").empty().append('<option value="">Select Service</option>');
+                res.data.forEach(s => select.append(`<option value="${s.id}">${s.serviceName}</option>`));
+                $('#serviceSelect').trigger('change');
+            });
+        }
+
+
+        $("#customerSelect").change(function() {
+            const customerId = $(this).val();
+            const vesselSelect = $("#vesselSelect").empty().append('<option value="">Select Vessel</option>');
+            if(!customerId) return;
+
+            $.get("http://localhost:8080/api/v1/vessels/getAllVessels", function(res) {
+                res.data.filter(v => v.customerId == customerId)
+                    .forEach(v => vesselSelect.append(`<option value="${v.id}">${v.name} (${v.type})</option>`));
+            });
+        });
+
+        // Submit form
+        $("#jobForm").submit(function(e) {
+            e.preventDefault();
+
+            const jobDTO = {
+                customerId: Number($("#customerSelect").val()),
+                vesselId: Number($("#vesselSelect").val()),
+                portId: Number($("#portSelect").val()),
+                employeeId: Number($("#employeeSelect").val()),
+                serviceId: Number($("#serviceSelect").val()),
+                remark: $("#remark").val(),
+                referenceFilePath: $("#referenceFile")[0].files[0]?.name || null
+            };
+
+            $.ajax({
+                url: "http://localhost:8080/api/v1/jobs/create",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(jobDTO),
+                success: function(res) {
+                    alert(res.message || "Job created successfully!");
+                    $("#jobModal").modal('hide');
+                    $("#jobForm")[0].reset();
+                    $('#serviceSelect').val('').trigger('change');
+                },
+                error: function(err) {
+                    console.error("Error creating job:", err);
+                    alert("Error creating job. Check console for details.");
+                }
+            });
+        });
+
+        loadCustomers();
+        loadPorts();
+        loadEmployees();
+        loadServices();
+        loadJobs();
     });
+
+    function loadJobs() {
+        $.get("http://localhost:8080/api/v1/jobs/getAllJobs", function(res) {
+            const tbody = $("#jobsTable tbody").empty();
+            res.forEach((job, index) => {
+                const refFileIcon = job.referenceFilePath
+                    ? `<i class="bi bi-file-earmark-fill" title="${job.referenceFilePath}"></i>`
+                    : '';
+                tbody.append(`
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${job.dateAsString}</td>
+                    <td>${job.jobReference}</td>
+                    <td>${job.customerName}</td>
+                    <td>${job.vesselName}</td>
+                    <td>${job.portName}</td>
+                    <td>${job.serviceName}</td>
+                    <td>${job.employeeName}</td>
+                    <td>${job.status}</td>
+                    <td>${refFileIcon}</td>
+                    <td>${job.remark}</td>
+                    <td>
+                        <i class="bi bi-pencil-square text-primary me-2" style="cursor:pointer" onclick="editJob(${job.id})"></i>
+                        <i class="bi bi-trash text-danger" style="cursor:pointer" onclick="deleteJob(${job.id})"></i>
+                    </td>
+                </tr>
+            `);
+            });
+        });
+    }
 
 </script>
 </body>
