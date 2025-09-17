@@ -5,10 +5,7 @@ import lk.ijse.gdse71.backend.entity.*;
 import lk.ijse.gdse71.backend.repo.*;
 import lk.ijse.gdse71.backend.service.JobService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -25,7 +22,6 @@ public class JobServiceImpl implements JobService {
     private final PortRepository portRepository;
     private final ServiceRepository servicesRepository;
     private final EmployeeRepository employeeRepository;
-    private final ModelMapper modelMapper;
 
     @Override
     public JobDTO createJob(JobDTO jobDTO) {
@@ -64,6 +60,8 @@ public class JobServiceImpl implements JobService {
 
         jobRepository.save(job);*/
 
+        LocalDate today = LocalDate.now();
+
         Job job = Job.builder()
                 .customer(customerRepository.findById(jobDTO.getCustomerId()).orElseThrow())
                 .vessel(vesselsRepository.findById(jobDTO.getVesselId()).orElseThrow())
@@ -72,15 +70,24 @@ public class JobServiceImpl implements JobService {
                 .service(servicesRepository.findById(jobDTO.getServiceId()).orElseThrow())
                 .remark(jobDTO.getRemark())
                 .status("New")
-                .jobReference(UUID.randomUUID().toString())
-                .date(new Date())
-                .referenceFilePath(jobDTO.getReferenceFilePath()) // initially null if no file
+                .date(java.sql.Date.valueOf(today))
+                .referenceFilePath(jobDTO.getReferenceFilePath())
                 .build();
 
+        // Format date as ddMMyy
+        String datePart = today.format(DateTimeFormatter.ofPattern("ddMMyy"));
+
+        // Count jobs created today
+        long countToday = jobRepository.countByDate(java.sql.Date.valueOf(today));
+
+        // Sequential number with 2 digits
+        String seqNumber = String.format("%02d", countToday + 1);
+
+        String jobRef = "Ref" + datePart + seqNumber;
+        job.setJobReference(jobRef);
+
         jobRepository.save(job);
-
         return mapToDTO(job);
-
 
     }
 
@@ -102,7 +109,7 @@ public class JobServiceImpl implements JobService {
                 .employeeName(job.getEmployee() != null ? job.getEmployee().getName() : null)
                 .serviceId(job.getService() != null ? job.getService().getId() : null)
                 .serviceName(job.getService() != null ? job.getService().getServiceName() : null)
-                .referenceFilePath(job.getReferenceFilePath()) // important: saved file name
+                .referenceFilePath(job.getReferenceFilePath())
                 .dateAsString(job.getDate() != null ? new java.text.SimpleDateFormat("yyyy-MM-dd").format(job.getDate()) : null)
                 .build();
     }

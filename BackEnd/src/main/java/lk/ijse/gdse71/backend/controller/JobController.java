@@ -89,7 +89,7 @@ public class JobController {
             String uploadDir = "uploads";
             Files.createDirectories(Paths.get(uploadDir));
 
-            String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename(); // keep UUID to avoid collision
+            String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
             String filePath = uploadDir + "/" + fileName;
             Files.write(Paths.get(filePath), file.getBytes());
 

@@ -29,6 +29,14 @@
     <properties>
         <java.version>21</java.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>google-api-services</id>
+            <url>https://maven.google.com</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!--spring web-->
         <dependency>
