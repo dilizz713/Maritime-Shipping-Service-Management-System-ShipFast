@@ -91,4 +91,70 @@ public class JobServiceImpl implements JobService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public void updateJob(Long jobId, JobDTO jobDTO) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        Customer customer = customerRepository.findById(jobDTO.getCustomerId())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        Vessels vessel = vesselsRepository.findById(jobDTO.getVesselId())
+                .orElseThrow(() -> new RuntimeException("Vessel not found"));
+        if (!vessel.getCustomer().getId().equals(customer.getId()))
+            throw new RuntimeException("Vessel does not belong to selected customer");
+        Port port = portRepository.findById(jobDTO.getPortId())
+                .orElseThrow(() -> new RuntimeException("Port not found"));
+        Employee employee = employeeRepository.findById(jobDTO.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        Services service = servicesRepository.findById(jobDTO.getServiceId())
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+
+        job.setCustomer(customer);
+        job.setVessel(vessel);
+        job.setPort(port);
+        job.setEmployee(employee);
+        job.setService(service);
+        job.setRemark(jobDTO.getRemark());
+        job.setReferenceFilePath(jobDTO.getReferenceFilePath());
+
+
+        jobRepository.save(job);
+    }
+
+    @Override
+    public void deleteJob(Long jobId) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+        jobRepository.delete(job);
+
+    }
+
+    @Override
+    public JobDTO getJobById(Long jobId) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        JobDTO dto = new JobDTO();
+        dto.setId(job.getId());
+        dto.setJobReference(job.getJobReference());
+        dto.setRemark(job.getRemark());
+        dto.setStatus(job.getStatus());
+        dto.setCustomerId(job.getCustomer().getId());
+        dto.setCustomerName(job.getCustomer().getCompanyName());
+        dto.setVesselId(job.getVessel().getId());
+        dto.setVesselName(job.getVessel().getName());
+        dto.setPortId(job.getPort().getId());
+        dto.setPortName(job.getPort().getPortName());
+        dto.setEmployeeId(job.getEmployee().getId());
+        dto.setEmployeeName(job.getEmployee().getName());
+        dto.setServiceId(job.getService().getId());
+        dto.setServiceName(job.getService().getServiceName());
+        dto.setReferenceFilePath(job.getReferenceFilePath());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        dto.setDateAsString(sdf.format(job.getDate()));
+
+        return dto;
+    }
 }

@@ -282,8 +282,75 @@
                 </div>
             </div>
         </div>
+
+        <!-- Edit Job Modal -->
+        <div class="modal fade" id="editJobModal" tabindex="-1" aria-labelledby="editJobModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content rounded-4 shadow-lg">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editJobModalLabel"><i class="bi bi-pencil-square me-2"></i>Edit Job</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editJobForm">
+                            <input type="hidden" id="editJobId">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="editCustomerSelect" class="form-label"><i class="bi bi-people-fill"></i> Customer</label>
+                                    <select id="editCustomerSelect" class="form-select" required>
+                                        <option value="">Select Customer</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editVesselSelect" class="form-label"><i class="bi bi-ship"></i> Vessel</label>
+                                    <select id="editVesselSelect" class="form-select" required>
+                                        <option value="">Select Vessel</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="editPortSelect" class="form-label"><i class="bi bi-pin-map-fill"></i> Port</label>
+                                    <select id="editPortSelect" class="form-select" required>
+                                        <option value="">Select Port</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editEmployeeSelect" class="form-label"><i class="bi bi-person-badge-fill"></i> Employee</label>
+                                    <select id="editEmployeeSelect" class="form-select" required>
+                                        <option value="">Select Employee</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="editServiceSelect" class="form-label"><i class="bi bi-gear-fill"></i> Services</label>
+                                <select id="editServiceSelect" class="form-select" multiple="multiple" required></select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="editRemark" class="form-label"><i class="bi bi-pencil-fill"></i> Remark</label>
+                                <textarea id="editRemark" class="form-control" rows="3" placeholder="Enter remark"></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label"><i class="bi bi-file-earmark-spreadsheet-fill"></i> Reference File</label>
+                                <input type="file" id="editReferenceFile" class="form-control" accept=".xls,.xlsx">
+                                <small id="currentFile" class="form-text text-muted"></small>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 btn-lg">
+                                <i class="bi bi-check-circle-fill"></i> Update Job
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
 
 <script src="../lib/jquery-3.7.1.min.js"></script>
 <script src="../js/navigation-bar.js"></script>
@@ -297,51 +364,34 @@
         });
 
 
-        function loadCustomers() {
-            $.get("http://localhost:8080/api/v1/customer/getAllCustomers", function(res) {
-                const select = $("#customerSelect").empty().append('<option value="">Select Customer</option>');
-                res.data.forEach(c => select.append(`<option value="${c.id}">${c.companyName}</option>`));
-            });
-        }
-
-        function loadPorts() {
-            $.get("http://localhost:8080/api/v1/port/getAllPorts", function(res) {
-                const select = $("#portSelect").empty().append('<option value="">Select Port</option>');
-                res.data.forEach(p => select.append(`<option value="${p.id}">${p.portName}</option>`));
-            });
-        }
-
-        function loadEmployees() {
-            $.get("http://localhost:8080/api/v1/employee/getAllEmployees", function(res) {
-                const select = $("#employeeSelect").empty().append('<option value="">Select Employee</option>');
-                res.data.forEach(e => select.append(`<option value="${e.id}">${e.name}</option>`));
-            });
-        }
-
-        function loadServices() {
-            $.get("http://localhost:8080/api/v1/service/getAllServices", function(res) {
-                const select = $("#serviceSelect").empty().append('<option value="">Select Service</option>');
-                res.data.forEach(s => select.append(`<option value="${s.id}">${s.serviceName}</option>`));
-                $('#serviceSelect').trigger('change');
-            });
-        }
-
+        loadCustomers();
+        loadPorts();
+        loadEmployees();
+        loadServices();
+        loadJobs();
 
         $("#customerSelect").change(function() {
             const customerId = $(this).val();
             const vesselSelect = $("#vesselSelect").empty().append('<option value="">Select Vessel</option>');
             if(!customerId) return;
-
             $.get("http://localhost:8080/api/v1/vessels/getAllVessels", function(res) {
                 res.data.filter(v => v.customerId == customerId)
                     .forEach(v => vesselSelect.append(`<option value="${v.id}">${v.name} (${v.type})</option>`));
             });
         });
 
-        // Submit form
+        $("#editCustomerSelect").change(function() {
+            const customerId = $(this).val();
+            const vesselSelect = $("#editVesselSelect").empty().append('<option value="">Select Vessel</option>');
+            if(!customerId) return;
+            $.get("http://localhost:8080/api/v1/vessels/getAllVessels", function(res) {
+                res.data.filter(v => v.customerId == customerId)
+                    .forEach(v => vesselSelect.append(`<option value="${v.id}">${v.name} (${v.type})</option>`));
+            });
+        });
+
         $("#jobForm").submit(function(e) {
             e.preventDefault();
-
             const jobDTO = {
                 customerId: Number($("#customerSelect").val()),
                 vesselId: Number($("#vesselSelect").val()),
@@ -351,7 +401,6 @@
                 remark: $("#remark").val(),
                 referenceFilePath: $("#referenceFile")[0].files[0]?.name || null
             };
-
             $.ajax({
                 url: "http://localhost:8080/api/v1/jobs/create",
                 method: "POST",
@@ -362,20 +411,45 @@
                     $("#jobModal").modal('hide');
                     $("#jobForm")[0].reset();
                     $('#serviceSelect').val('').trigger('change');
+                    loadJobs();
                 },
                 error: function(err) {
-                    console.error("Error creating job:", err);
                     alert("Error creating job. Check console for details.");
+                    console.error(err);
                 }
             });
         });
 
-        loadCustomers();
-        loadPorts();
-        loadEmployees();
-        loadServices();
-        loadJobs();
+        $("#editJobForm").submit(function(e) {
+            e.preventDefault();
+            const jobId = $("#editJobId").val();
+            const jobDTO = {
+                customerId: Number($("#editCustomerSelect").val()),
+                vesselId: Number($("#editVesselSelect").val()),
+                portId: Number($("#editPortSelect").val()),
+                employeeId: Number($("#editEmployeeSelect").val()),
+                serviceId: Number($("#editServiceSelect").val()),
+                remark: $("#editRemark").val(),
+                referenceFilePath: $("#editReferenceFile")[0].files[0]?.name || null
+            };
+            $.ajax({
+                url: `http://localhost:8080/api/v1/jobs/update/${jobId}`,
+                method: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(jobDTO),
+                success: function(res) {
+                    alert(res.message || "Job updated successfully!");
+                    $("#editJobModal").modal('hide');
+                    loadJobs();
+                },
+                error: function(err) {
+                    alert("Error updating job. Check console for details.");
+                    console.error(err);
+                }
+            });
+        });
     });
+
 
     function loadJobs() {
         $.get("http://localhost:8080/api/v1/jobs/getAllJobs", function(res) {
@@ -404,6 +478,84 @@
                 </tr>
             `);
             });
+        });
+    }
+
+    function editJob(jobId) {
+        $.get(`http://localhost:8080/api/v1/jobs/getJob/${jobId}`, function(job) {
+            if(!job) return alert("Job not found!");
+
+            $("#editJobId").val(job.id);
+            $("#editRemark").val(job.remark);
+            $("#currentFile").text(job.referenceFilePath || "No file uploaded");
+
+
+            loadCustomers("#editCustomerSelect", () => {
+                $("#editCustomerSelect").val(job.customerId).trigger('change');
+
+                $.get("http://localhost:8080/api/v1/vessels/getAllVessels", function(res) {
+                    const vesselSelect = $("#editVesselSelect").empty().append('<option value="">Select Vessel</option>');
+                    res.data.filter(v => v.customerId == job.customerId)
+                        .forEach(v => vesselSelect.append(`<option value="${v.id}">${v.name} (${v.type})</option>`));
+                    $("#editVesselSelect").val(job.vesselId);
+                });
+            });
+
+            loadPorts("#editPortSelect", () => $("#editPortSelect").val(job.portId));
+            loadEmployees("#editEmployeeSelect", () => $("#editEmployeeSelect").val(job.employeeId));
+            loadServices("#editServiceSelect", () => $("#editServiceSelect").val(job.serviceId).trigger('change'));
+
+            $("#editJobModal").modal("show");
+        });
+    }
+
+
+    function deleteJob(jobId) {
+        if(!confirm("Are you sure you want to delete this job?")) return;
+        $.ajax({
+            url: `http://localhost:8080/api/v1/jobs/delete/${jobId}`,
+            method: "DELETE",
+            success: function(res) {
+                alert(res.message || "Job deleted successfully!");
+                loadJobs();
+            },
+            error: function(err) {
+                alert("Error deleting job. Check console for details.");
+                console.error(err);
+            }
+        });
+    }
+
+    function loadCustomers(selector = "#customerSelect", callback) {
+        $.get("http://localhost:8080/api/v1/customer/getAllCustomers", function(res) {
+            const select = $(selector).empty().append('<option value="">Select Customer</option>');
+            res.data.forEach(c => select.append(`<option value="${c.id}">${c.companyName}</option>`));
+            if(callback) callback();
+        });
+    }
+
+    function loadPorts(selector = "#portSelect", callback) {
+        $.get("http://localhost:8080/api/v1/port/getAllPorts", function(res) {
+            const select = $(selector).empty().append('<option value="">Select Port</option>');
+            res.data.forEach(p => select.append(`<option value="${p.id}">${p.portName}</option>`));
+            if(callback) callback();
+        });
+    }
+
+    function loadEmployees(selector = "#employeeSelect", callback) {
+        $.get("http://localhost:8080/api/v1/employee/getAllEmployees", function(res) {
+            const select = $(selector).empty().append('<option value="">Select Employee</option>');
+            res.data.forEach(e => select.append(`<option value="${e.id}">${e.name}</option>`));
+            if(callback) callback();
+        });
+    }
+
+    function loadServices(selector = "#serviceSelect", callback) {
+        $.get("http://localhost:8080/api/v1/service/getAllServices", function(res) {
+            const select = $(selector).empty().append('<option value="">Select Service</option>');
+            res.data.forEach(s => select.append(`<option value="${s.id}">${s.serviceName}</option>`));
+            $(selector).trigger('change');
+            if(callback) callback();
         });
     }
 

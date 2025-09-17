@@ -8,4 +8,10 @@ public interface JobService {
     void createJob(JobDTO jobDTO);
 
     List<JobDTO> getAllJobs();
+
+    void updateJob(Long jobId, JobDTO jobDTO);
+
+    void deleteJob(Long jobId);
+
+    JobDTO getJobById(Long jobId);
 }
