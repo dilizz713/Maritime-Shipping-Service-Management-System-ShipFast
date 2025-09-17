@@ -24,4 +24,7 @@ public class Services {
     @ManyToMany(mappedBy = "services")
     private List<ServiceRequest> serviceRequests;
 
+    @ManyToMany(mappedBy = "services")
+    private List<Job> jobs;
+
 }

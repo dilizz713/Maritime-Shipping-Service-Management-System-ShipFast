@@ -27,5 +27,8 @@ public class Vessels {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @OneToOne(mappedBy = "vessel" , cascade =  CascadeType.ALL)
+    private Job job;
+
 
 }
