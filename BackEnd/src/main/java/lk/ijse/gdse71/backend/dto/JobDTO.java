@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +14,6 @@ import java.util.List;
 @Builder
 public class JobDTO {
     private Long id;
-    private Date date;
-    private String jobReference;
     private String remark;
     private String status;
 
@@ -30,8 +29,8 @@ public class JobDTO {
     private Long employeeId;
     private String employeeName;
 
-    private List<Long> serviceIds;
-    private List<String> serviceNames;
+    private Long serviceId;
+    private String serviceName;
 
     private String referenceFilePath;
 }

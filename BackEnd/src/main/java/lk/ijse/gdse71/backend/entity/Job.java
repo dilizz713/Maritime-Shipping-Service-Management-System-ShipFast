@@ -36,13 +36,9 @@ public class Job {
     @JoinColumn(name = "port_id", nullable = false, unique = true)
     private Port port;
 
-    @ManyToMany
-    @JoinTable(
-            name = "job_services",
-            joinColumns = @JoinColumn(name = "job_id"),
-            inverseJoinColumns = @JoinColumn(name = "service_id")
-    )
-    private List<Services> services;
+    @ManyToOne
+    @JoinColumn(name = "service_id", nullable = false)
+    private Services service;
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
