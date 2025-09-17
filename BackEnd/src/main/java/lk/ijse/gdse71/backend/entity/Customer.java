@@ -37,6 +37,6 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Vessels> vessels;
 
-    @OneToOne(mappedBy = "customer" , cascade = CascadeType.ALL)
-    private Job job;
+    @OneToMany(mappedBy = "customer" , cascade = CascadeType.ALL)
+    private List<Job> job;
 }

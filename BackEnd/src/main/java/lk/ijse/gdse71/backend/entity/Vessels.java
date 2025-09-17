@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,8 +29,8 @@ public class Vessels {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToOne(mappedBy = "vessel" , cascade =  CascadeType.ALL)
-    private Job job;
+    @OneToMany(mappedBy = "vessel" , cascade =  CascadeType.ALL)
+    private List<Job> job;
 
 
 }

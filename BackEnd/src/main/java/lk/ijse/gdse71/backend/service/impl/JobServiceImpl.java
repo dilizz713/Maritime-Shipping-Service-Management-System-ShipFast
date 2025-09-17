@@ -28,8 +28,8 @@ public class JobServiceImpl implements JobService {
     private final ModelMapper modelMapper;
 
     @Override
-    public void createJob(JobDTO jobDTO) {
-        Customer customer = customerRepository.findById(jobDTO.getCustomerId())
+    public JobDTO createJob(JobDTO jobDTO) {
+        /*Customer customer = customerRepository.findById(jobDTO.getCustomerId())
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
         Vessels vessel = vesselsRepository.findById(jobDTO.getVesselId())
                 .orElseThrow(() -> new RuntimeException("Vessel not found"));
@@ -62,10 +62,51 @@ public class JobServiceImpl implements JobService {
         job.setJobReference(jobRef);
 
 
+        jobRepository.save(job);*/
+
+        Job job = Job.builder()
+                .customer(customerRepository.findById(jobDTO.getCustomerId()).orElseThrow())
+                .vessel(vesselsRepository.findById(jobDTO.getVesselId()).orElseThrow())
+                .port(portRepository.findById(jobDTO.getPortId()).orElseThrow())
+                .employee(employeeRepository.findById(jobDTO.getEmployeeId()).orElseThrow())
+                .service(servicesRepository.findById(jobDTO.getServiceId()).orElseThrow())
+                .remark(jobDTO.getRemark())
+                .status("New")
+                .jobReference(UUID.randomUUID().toString())
+                .date(new Date())
+                .referenceFilePath(jobDTO.getReferenceFilePath()) // initially null if no file
+                .build();
+
         jobRepository.save(job);
+
+        return mapToDTO(job);
 
 
     }
+
+    public JobDTO mapToDTO(Job job) {
+        if (job == null) return null;
+
+        return JobDTO.builder()
+                .id(job.getId())
+                .jobReference(job.getJobReference())
+                .remark(job.getRemark())
+                .status(job.getStatus())
+                .customerId(job.getCustomer() != null ? job.getCustomer().getId() : null)
+                .customerName(job.getCustomer() != null ? job.getCustomer().getCompanyName() : null)
+                .vesselId(job.getVessel() != null ? job.getVessel().getId() : null)
+                .vesselName(job.getVessel() != null ? job.getVessel().getName() : null)
+                .portId(job.getPort() != null ? job.getPort().getId() : null)
+                .portName(job.getPort() != null ? job.getPort().getPortName() : null)
+                .employeeId(job.getEmployee() != null ? job.getEmployee().getId() : null)
+                .employeeName(job.getEmployee() != null ? job.getEmployee().getName() : null)
+                .serviceId(job.getService() != null ? job.getService().getId() : null)
+                .serviceName(job.getService() != null ? job.getService().getServiceName() : null)
+                .referenceFilePath(job.getReferenceFilePath()) // important: saved file name
+                .dateAsString(job.getDate() != null ? new java.text.SimpleDateFormat("yyyy-MM-dd").format(job.getDate()) : null)
+                .build();
+    }
+
 
     @Override
     public List<JobDTO> getAllJobs() {

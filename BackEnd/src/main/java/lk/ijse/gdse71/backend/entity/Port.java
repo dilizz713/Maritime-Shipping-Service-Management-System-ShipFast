@@ -24,6 +24,6 @@ public class Port {
     @OneToMany(mappedBy = "port", cascade = CascadeType.ALL)
     private List<ServiceRequest> serviceRequest;
 
-    @OneToOne(mappedBy = "port" , cascade = CascadeType.ALL)
-    private Job job;
+    @OneToMany(mappedBy = "port" , cascade = CascadeType.ALL)
+    private List<Job> job;
 }

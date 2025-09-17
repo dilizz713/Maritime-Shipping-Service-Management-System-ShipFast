@@ -24,21 +24,25 @@ public class Job {
     private String remark;
     private String status;
 
-    @OneToOne
-    @JoinColumn(name = "customer_id", nullable = false, unique = true)
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @OneToOne
-    @JoinColumn(name = "vessel_id", nullable = false, unique = true)
+
+    @ManyToOne
+    @JoinColumn(name = "vessel_id", nullable = false)
     private Vessels vessel;
 
-    @OneToOne
-    @JoinColumn(name = "port_id", nullable = false, unique = true)
+
+    @ManyToOne
+    @JoinColumn(name = "port_id", nullable = false)
     private Port port;
+
 
     @ManyToOne
     @JoinColumn(name = "service_id", nullable = false)
     private Services service;
+
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)

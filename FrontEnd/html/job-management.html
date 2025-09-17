@@ -351,19 +351,136 @@
     </div>
 </div>
 
+<!-- Excel Viewer/Editor Modal -->
+<div class="modal fade" id="excelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" style="max-width: 95%;">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-file-earmark-excel-fill"></i> Excel Editor</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="height: 80vh; padding:0;">
+                <div id="luckysheet" style="width:100%;height:100%;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" id="saveExcelBtn"><i class="bi bi-save"></i> Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<script src="../lib/jquery-3.7.1.min.js"></script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- jQuery Mousewheel plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
+
+<!-- Luckysheet CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/css/pluginsCss.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/plugins.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet/dist/css/luckysheet.css">
+
+<!-- Luckysheet JS -->
+<script src="https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/js/plugin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luckysheet/dist/luckysheet.umd.js"></script>
+
+<!-- XLSX library (needed for openExcel) -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+
 <script src="../js/navigation-bar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+
+    let currentJobId = null; // Track job for saving
+
+    // Make openExcel globally accessible
+    async function openExcel(jobId, filePath) {
+        if (!filePath) {
+            alert("No file uploaded for this job.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`http://localhost:8080${filePath}`);
+            if (!res.ok) throw new Error("Failed to fetch file");
+
+            const arrayBuffer = await res.arrayBuffer();
+            const workbook = XLSX.read(arrayBuffer, { type: "array" });
+
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+            const celldata = data.map((row, r) =>
+                row.map((val, c) => ({ r, c, v: { v: val } }))
+            ).flat();
+
+            document.getElementById("luckysheet").innerHTML = "";
+
+            luckysheet.create({
+                container: "luckysheet",
+                data: [{ name: sheetName, celldata: celldata }]
+            });
+
+            $("#excelModal").modal("show");
+        } catch (err) {
+            console.error(err);
+            alert("Error loading Excel file: " + err.message);
+        }
+    }
+
+    async function saveExcel() {
+        const luckysheetData = luckysheet.getAllSheets()[0].celldata;
+        const maxRow = Math.max(...luckysheetData.map(c => c.r), 0) + 1;
+        const maxCol = Math.max(...luckysheetData.map(c => c.c), 0) + 1;
+
+        const data = Array.from({ length: maxRow }, () => Array(maxCol).fill(""));
+        luckysheetData.forEach(cell => {
+            data[cell.r][cell.c] = cell.v.v;
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+        const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        const file = new File([wbout], "EditedFile.xlsx", {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const res = await fetch(`http://localhost:8080/api/v1/jobs/uploadRefFile/${currentJobId}`, {
+                method: "POST",
+                body: formData
+            });
+
+            if (res.ok) {
+                alert("File saved on server!");
+                $("#excelModal").modal("hide");
+                loadJobs();
+            } else {
+                alert("Error saving file");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error uploading file");
+        }
+    }
+
+    $("#saveExcelBtn").click(saveExcel);
+
     $(document).ready(function() {
         $('#meetingModal .btn').click(function() {
             const action = $(this).text().trim();
             console.log("User selected:", action);
             $('#meetingModal').modal('hide');
         });
-
-
         loadCustomers();
         loadPorts();
         loadEmployees();
@@ -456,27 +573,29 @@
             const tbody = $("#jobsTable tbody").empty();
             res.forEach((job, index) => {
                 const refFileIcon = job.referenceFilePath
-                    ? `<i class="bi bi-file-earmark-fill" title="${job.referenceFilePath}"></i>`
+                    ? `<i class="bi bi-file-earmark-excel-fill text-success" style="cursor:pointer"
+       title="Open ${job.referenceFilePath}"
+       onclick="openExcel(${job.id}, '/uploads/${job.referenceFilePath}')"></i>`
                     : '';
                 tbody.append(`
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${job.dateAsString}</td>
-                    <td>${job.jobReference}</td>
-                    <td>${job.customerName}</td>
-                    <td>${job.vesselName}</td>
-                    <td>${job.portName}</td>
-                    <td>${job.serviceName}</td>
-                    <td>${job.employeeName}</td>
-                    <td>${job.status}</td>
-                    <td>${refFileIcon}</td>
-                    <td>${job.remark}</td>
-                    <td>
-                        <i class="bi bi-pencil-square text-primary me-2" style="cursor:pointer" onclick="editJob(${job.id})"></i>
-                        <i class="bi bi-trash text-danger" style="cursor:pointer" onclick="deleteJob(${job.id})"></i>
-                    </td>
-                </tr>
-            `);
+            <tr>
+                <td>${index + 1}</td>
+                <td>${job.dateAsString}</td>
+                <td>${job.jobReference}</td>
+                <td>${job.customerName}</td>
+                <td>${job.vesselName}</td>
+                <td>${job.portName}</td>
+                <td>${job.serviceName}</td>
+                <td>${job.employeeName}</td>
+                <td>${job.status}</td>
+                <td>${refFileIcon}</td>
+                <td>${job.remark}</td>
+                <td>
+                    <i class="bi bi-pencil-square text-primary me-2" style="cursor:pointer" onclick="editJob(${job.id})"></i>
+                    <i class="bi bi-trash text-danger" style="cursor:pointer" onclick="deleteJob(${job.id})"></i>
+                </td>
+            </tr>
+        `);
             });
         });
     }
