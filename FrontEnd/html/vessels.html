@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Costing</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../styles/side-bar.css" rel="stylesheet">
+    <style>
+
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar p-3">
+        <div class="logo mb-4 text-center">
+            <img src="../assets/ship%20logo.png" alt="ShipFast Logo" height="80" id="ship-logo" class="mb-2">
+            <div class="company-name">Ship Fast</div>
+        </div>
+        <ul class="nav flex-column">
+            <!-- Meetings -->
+            <li class="nav-item mb-2">
+                <a href="#" class="nav-link d-flex align-items-center justify-content-between meeting-btn" data-bs-toggle="modal" data-bs-target="#meetingModal">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-camera-video-fill me-2"></i>Meetings
+                    </div>
+                    <span class="badge bg-success rounded-pill">Live</span>
+                </a>
+            </li>
+
+            <!-- Dashboard -->
+            <li class="nav-item mb-2">
+                <a href="admin-dashboard.html" class="nav-link "><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+            </li>
+            <!-- Customer -->
+            <li class="nav-item mb-2">
+                <a href="customer-management.html" class="nav-link"><i class="bi bi-people me-2"></i>Customer</a>
+            </li>
+            <!-- Services -->
+            <li class="nav-item mb-2">
+                <a href="service-management.html" class="nav-link">
+                    <i class="bi bi-gear me-2"></i>Services
+                </a>
+            </li>
+
+            <!-- Inventory -->
+            <li class="nav-item mb-2">
+                <a class="nav-link" data-bs-toggle="collapse" href="#inventoryMenu" role="button" aria-expanded="false" aria-controls="inventoryMenu">
+                    <i class="bi bi-box-seam me-2"></i>Inventory
+                </a>
+                <div class="collapse ps-4" id="inventoryMenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a href="vendors.html" class="nav-link">Vendors</a></li>
+                        <li class="nav-item"><a href="products.html" class="nav-link">Products</a></li>
+                        <li class="nav-item"><a href="inquiry.html" class="nav-link">Inquiry</a></li>
+                        <li class="nav-item"><a href="release-note.html" class="nav-link">Release Note</a></li>
+                        <li class="nav-item"><a href="grn.html" class="nav-link">GRN</a></li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a href="employee.html" class="nav-link">
+                    <i class="bi bi-person-badge me-2"></i>Employee
+                </a>
+            </li>
+
+            <!-- Vehicle -->
+            <li class="nav-item mb-2">
+                <a href="vehicle.html" class="nav-link">
+                    <i class="bi bi-truck me-2"></i>Vehicle
+                </a>
+            </li>
+
+            <!-- Request Services -->
+            <li class="nav-item mb-2">
+                <a href="request-services.html" class="nav-link">
+                    <i class="bi bi-card-checklist me-2"></i>Request Services
+                </a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a class="nav-link" data-bs-toggle="collapse" href="#jobMenu" role="button" aria-expanded="false" aria-controls="jobMenu">
+                    <i class="bi bi-briefcase me-2"></i>Job
+                </a>
+                <div class="collapse ps-4" id="jobMenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a href="#" class="nav-link">Job Manage</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Quotation</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Pending PO</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Job Schedule</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Delivery Note</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item mb-2 costing-btn">
+                <a href="#" class="nav-link"><i class="bi bi-cash-coin me-2"></i>Costing</a>
+            </li>
+            <li class="nav-item mb-2 user-btn">
+                <a href="user-management.html" class="nav-link"><i class="bi bi-person-circle me-2"></i>User</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Meeting Modal -->
+    <div class="modal fade" id="meetingModal" tabindex="-1" aria-labelledby="meetingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow-lg">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="meetingModalLabel"><i class="bi bi-camera-video-fill me-2"></i>Meetings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="text-muted">Choose an option to get started</p>
+                    <div class="d-grid gap-3 mt-3">
+                        <a href="create.html" class="btn btn-primary btn-lg rounded-pill">
+                            <i class="bi bi-plus-circle me-2"></i> Create New Meeting
+                        </a>
+                        <a href="meeting.html" class="btn btn-outline-primary btn-lg rounded-pill">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Join Meeting
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="flex-grow-1">
+        <nav class="navbar navbar-expand-lg px-3">
+            <div class="container-fluid justify-content-end">
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle me-2"></i>
+                        <span id="user-info">Loading...</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" id="logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="content p-4">
+
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">Vessels Management</h2>
+                <button class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#vesselModal">
+                    <i class="bi bi-plus-circle me-2"></i> Add New Vessel
+                </button>
+            </div>
+
+            <!-- Vessels Table -->
+            <table class="table table-hover align-middle" id="vesselsTable">
+                <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Capacity (Tons)</th>
+                    <th>Location</th>
+                    <th>Customer</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+
+            <!-- Add/Edit Vessel Modal -->
+            <div class="modal fade" id="vesselModal" tabindex="-1" aria-labelledby="vesselModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 shadow-lg">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="vesselModalLabel">Add / Edit Vessel</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="vesselForm">
+                                <input type="hidden" id="vesselId">
+                                <div class="mb-3">
+                                    <label for="vesselName" class="form-label">Vessel Name</label>
+                                    <input type="text" class="form-control" id="vesselName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="vesselType" class="form-label">Vessel Type</label>
+                                    <select class="form-select" id="vesselType" required>
+                                        <option value="">Select Type</option>
+                                        <option value="CONTAINER">Container</option>
+                                        <option value="BULK">Bulk</option>
+                                        <option value="TANKER">Tanker</option>
+                                        <option value="FERRY">Ferry</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="vesselCapacity" class="form-label">Capacity (Tons)</label>
+                                    <input type="number" class="form-control" id="vesselCapacity" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="vesselLocation" class="form-label">Location</label>
+                                    <input type="text" class="form-control" id="vesselLocation" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="customerSelect" class="form-label">Customer</label>
+                                    <select class="form-select" id="customerSelect" required>
+                                        <option value="">Select Customer</option>
+
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                                    Save Vessel
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="../lib/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/navigation-bar.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#meetingModal .btn').click(function() {
+            const action = $(this).text().trim();
+            console.log("User selected:", action);
+            $('#meetingModal').modal('hide');
+        });
+
+        // Load customers
+        function loadCustomers() {
+            $.ajax({
+                url: "http://localhost:8080/api/v1/customer/getAllCustomers",
+                method: "GET",
+                success: function (response) {
+                    const select = $("#customerSelect");
+                    select.empty();
+                    select.append(`<option value="">Select Customer</option>`);
+                    response.data.forEach(c => {
+                        select.append(`<option value="${c.id}">${c.companyName}</option>`);
+                    });
+                },
+                error: function (err) {
+                    console.error("Failed to load customers", err);
+                }
+            });
+        }
+
+        // Load all vessels
+        function loadVessels() {
+            $.ajax({
+                url: "http://localhost:8080/api/v1/vessels/getAllVessels",
+                method: "GET",
+                success: function (response) {
+                    const vessels = response.data;
+                    const tbody = $("#vesselsTable tbody");
+                    tbody.empty();
+                    vessels.forEach((v, index) => {
+                        tbody.append(`
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${v.name}</td>
+                                <td>${v.type}</td>
+                                <td>${v.capacity}</td>
+                                <td>${v.location}</td>
+                                <td>${v.customerName || "-"}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info me-1 edit-btn" data-id="${v.id}"><i class="bi bi-pencil-fill"></i></button>
+                                    <button class="btn btn-sm btn-danger delete-btn" data-id="${v.id}"><i class="bi bi-trash-fill"></i></button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                },
+                error: function (err) {
+                    console.error("Failed to load vessels", err);
+                }
+            });
+        }
+
+        loadCustomers();
+        loadVessels();
+
+        $('[data-bs-target="#vesselModal"]').click(function () {
+            $("#vesselForm")[0].reset();
+            $("#vesselId").val("");
+        });
+
+        // Open modal for edit
+        $(document).on("click", ".edit-btn", function () {
+            const id = $(this).data("id");
+            $.ajax({
+                url: `http://localhost:8080/api/v1/vessels/getVessel/${id}`,
+                method: "GET",
+                success: function (response) {
+                    const v = response.data;
+                    $("#vesselId").val(v.id);
+                    $("#vesselName").val(v.name);
+                    $("#vesselType").val(v.type);
+                    $("#vesselCapacity").val(v.capacity);
+                    $("#vesselLocation").val(v.location);
+                    $("#customerSelect").val(v.customerId);
+                    $("#vesselModal").modal("show");
+                },
+                error: function (err) {
+                    console.error("Failed to fetch vessel", err);
+                }
+            });
+        });
+
+        // Delete vessel
+        $(document).on("click", ".delete-btn", function () {
+            const id = $(this).data("id");
+            if (confirm("Are you sure you want to delete this vessel?")) {
+                $.ajax({
+                    url: `http://localhost:8080/api/v1/vessels/deleteVessel/${id}`,
+                    method: "DELETE",
+                    success: function (response) {
+                        alert(response.message || "Vessel deleted successfully");
+                        loadVessels();
+                    },
+                    error: function (err) {
+                        console.error("Failed to delete vessel", err);
+                    }
+                });
+            }
+        });
+
+        // Save / Update vessel
+        $("#vesselForm").submit(function (e) {
+            e.preventDefault();
+            const vessel = {
+                id: $("#vesselId").val() || null,
+                name: $("#vesselName").val(),
+                type: $("#vesselType").val(),
+                capacity: Number($("#vesselCapacity").val()), // number
+                location: $("#vesselLocation").val(),
+                customerId: Number($("#customerSelect").val()) // long
+            };
+
+            const method = vessel.id ? "PUT" : "POST";
+            const url = vessel.id
+                ? "http://localhost:8080/api/v1/vessels/updateVessel"
+                : "http://localhost:8080/api/v1/vessels/saveVessel";
+
+            $.ajax({
+                url: url,
+                method: method,
+                contentType: "application/json",
+                data: JSON.stringify(vessel),
+                success: function (response) {
+                    alert(response.message || "Vessel saved successfully");
+                    $("#vesselModal").modal("hide");
+                    $("#vesselForm")[0].reset();
+                    loadVessels();
+                },
+                error: function (err) {
+                    console.error("Failed to save vessel", err);
+                    alert("Error: Could not save vessel. Check console for details.");
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
