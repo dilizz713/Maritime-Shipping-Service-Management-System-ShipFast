@@ -376,15 +376,6 @@
 <!-- jQuery Mousewheel plugin -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
 
-<!-- Luckysheet CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/css/pluginsCss.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/plugins.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet/dist/css/luckysheet.css">
-
-<!-- Luckysheet JS -->
-<script src="https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/js/plugin.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/luckysheet/dist/luckysheet.umd.js"></script>
-
 <!-- XLSX library (needed for openExcel) -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
@@ -397,39 +388,16 @@
     let currentJobId = null; // Track job for saving
 
     // Make openExcel globally accessible
-    async function openExcel(jobId, filePath) {
+    function openExcel(jobId, filePath) {
         if (!filePath) {
             alert("No file uploaded for this job.");
             return;
         }
+        // Construct public URL for the uploaded file
+        const fileURL = `http://localhost:8080/uploads/${filePath}`; // adjust if needed
+        const googleSheetsURL = `https://docs.google.com/spreadsheets/u/0/?action=import&url=${encodeURIComponent(fileURL)}`;
 
-        try {
-            const res = await fetch(`http://localhost:8080${filePath}`);
-            if (!res.ok) throw new Error("Failed to fetch file");
-
-            const arrayBuffer = await res.arrayBuffer();
-            const workbook = XLSX.read(arrayBuffer, { type: "array" });
-
-            const sheetName = workbook.SheetNames[0];
-            const sheet = workbook.Sheets[sheetName];
-            const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-            const celldata = data.map((row, r) =>
-                row.map((val, c) => ({ r, c, v: { v: val } }))
-            ).flat();
-
-            document.getElementById("luckysheet").innerHTML = "";
-
-            luckysheet.create({
-                container: "luckysheet",
-                data: [{ name: sheetName, celldata: celldata }]
-            });
-
-            $("#excelModal").modal("show");
-        } catch (err) {
-            console.error(err);
-            alert("Error loading Excel file: " + err.message);
-        }
+        window.open(googleSheetsURL, "_blank");
     }
 
     async function saveExcel() {
@@ -574,8 +542,8 @@
             res.forEach((job, index) => {
                 const refFileIcon = job.referenceFilePath
                     ? `<i class="bi bi-file-earmark-excel-fill text-success" style="cursor:pointer"
-       title="Open ${job.referenceFilePath}"
-       onclick="openExcel(${job.id}, '/uploads/${job.referenceFilePath}')"></i>`
+         title="Open ${job.referenceFilePath}"
+         onclick="openExcel(${job.id}, '${job.referenceFilePath}')"></i>`
                     : '';
                 tbody.append(`
             <tr>
