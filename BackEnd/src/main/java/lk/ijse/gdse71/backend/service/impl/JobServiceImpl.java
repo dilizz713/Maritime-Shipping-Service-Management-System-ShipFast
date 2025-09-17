@@ -25,41 +25,6 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public JobDTO createJob(JobDTO jobDTO) {
-        /*Customer customer = customerRepository.findById(jobDTO.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-        Vessels vessel = vesselsRepository.findById(jobDTO.getVesselId())
-                .orElseThrow(() -> new RuntimeException("Vessel not found"));
-        if (!vessel.getCustomer().getId().equals(customer.getId()))
-            throw new RuntimeException("Vessel does not belong to selected customer");
-        Port port = portRepository.findById(jobDTO.getPortId())
-                .orElseThrow(() -> new RuntimeException("Port not found"));
-        Employee employee = employeeRepository.findById(jobDTO.getEmployeeId())
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-        Services service = servicesRepository.findById(jobDTO.getServiceId())
-                .orElseThrow(() -> new RuntimeException("Service not found"));
-
-        Job job = new Job();
-        job.setCustomer(customer);
-        job.setVessel(vessel);
-        job.setPort(port);
-        job.setEmployee(employee);
-        job.setService(service);
-        job.setRemark(jobDTO.getRemark());
-        job.setReferenceFilePath(jobDTO.getReferenceFilePath());
-        job.setStatus("PENDING");
-
-
-        LocalDate today = LocalDate.now();
-        job.setDate(java.sql.Date.valueOf(today));
-
-        String datePart = today.format(DateTimeFormatter.ofPattern("ddMMyy"));
-        long countToday = jobRepository.countByDate(java.sql.Date.valueOf(today));
-        String jobRef = "ref" + datePart + String.format("%02d", countToday + 1);
-        job.setJobReference(jobRef);
-
-
-        jobRepository.save(job);*/
-
         LocalDate today = LocalDate.now();
 
         Job job = Job.builder()
@@ -69,18 +34,18 @@ public class JobServiceImpl implements JobService {
                 .employee(employeeRepository.findById(jobDTO.getEmployeeId()).orElseThrow())
                 .service(servicesRepository.findById(jobDTO.getServiceId()).orElseThrow())
                 .remark(jobDTO.getRemark())
-                .status("New")
+                .status("Pending")
                 .date(java.sql.Date.valueOf(today))
                 .referenceFilePath(jobDTO.getReferenceFilePath())
                 .build();
 
-        // Format date as ddMMyy
+
         String datePart = today.format(DateTimeFormatter.ofPattern("ddMMyy"));
 
-        // Count jobs created today
+
         long countToday = jobRepository.countByDate(java.sql.Date.valueOf(today));
 
-        // Sequential number with 2 digits
+
         String seqNumber = String.format("%02d", countToday + 1);
 
         String jobRef = "Ref" + datePart + seqNumber;
