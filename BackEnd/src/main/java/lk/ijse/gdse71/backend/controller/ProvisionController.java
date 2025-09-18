@@ -5,10 +5,7 @@ import lk.ijse.gdse71.backend.service.ProvisionService;
 import lk.ijse.gdse71.backend.util.APIResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +20,19 @@ public class ProvisionController {
     public ResponseEntity<APIResponse> getProvisionJobs() {
         List<ProvisionManageDTO> jobs = provisionService.getProvisionJobs();
         return ResponseEntity.ok(new APIResponse(200, "Provision jobs fetched successfully", jobs));
+    }
+
+    @GetMapping("/jobs/search")
+    public ResponseEntity<APIResponse> searchProvisionJobs(@RequestParam String ref) {
+        List<ProvisionManageDTO> jobs = provisionService.searchProvisionJobs(ref);
+
+        if (jobs.isEmpty()) {
+            return ResponseEntity.status(404)
+                    .body(new APIResponse(404, "No provision jobs found for reference: " + ref, null));
+        }
+
+        return ResponseEntity.ok(
+                new APIResponse(200, "Provision jobs search results", jobs)
+        );
     }
 }

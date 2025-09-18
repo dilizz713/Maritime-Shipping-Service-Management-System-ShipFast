@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ProvisionService {
     List<ProvisionManageDTO> getProvisionJobs();
+
+    List<ProvisionManageDTO> searchProvisionJobs(String reference);
 }

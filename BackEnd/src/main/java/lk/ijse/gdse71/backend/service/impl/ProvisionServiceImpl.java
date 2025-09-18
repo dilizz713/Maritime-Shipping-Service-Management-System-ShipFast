@@ -26,4 +26,16 @@ public class ProvisionServiceImpl implements ProvisionService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<ProvisionManageDTO> searchProvisionJobs(String ref) {
+        List<Job> jobs = jobRepository.searchProvisionJobs(ref);
+
+        return jobs.stream()
+                .map(job -> ProvisionManageDTO.builder()
+                        .jobId(job.getId())
+                        .jobReference(job.getJobReference())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }
