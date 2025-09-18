@@ -2,6 +2,7 @@ package lk.ijse.gdse71.backend.service.impl;
 
 import jakarta.transaction.Transactional;
 import lk.ijse.gdse71.backend.dto.QuotationDTO;
+import lk.ijse.gdse71.backend.dto.QuotationInfoDTO;
 import lk.ijse.gdse71.backend.entity.Job;
 import lk.ijse.gdse71.backend.entity.Quotation;
 import lk.ijse.gdse71.backend.repo.JobRepository;
@@ -34,13 +35,19 @@ public class QuotationServiceImpl implements QuotationService {
 
 
     @Override
-    public List<QuotationDTO> getQuotationsByJob(Long jobId) {
-        return quotationRepository.findByJobId(jobId)
-                .stream()
-                .map(q -> QuotationDTO.builder()
-                        .id(q.getId())
-                        .jobId(q.getJob().getId())
+    public List<QuotationInfoDTO> getQuotationsInfoByJob(Long jobId) {
+        System.out.println("Fetching quotations for Job ID: " + jobId);
+
+        List<Quotation> quotations = quotationRepository.findByJobId(jobId);
+        System.out.println("Found " + quotations.size() + " quotations.");
+
+        return quotations.stream()
+                .map(q -> QuotationInfoDTO.builder()
                         .jobReference(q.getJob().getJobReference())
+                        .quotationNumber(q.getQuotationNumber())
+                        .employeeName(q.getJob().getEmployee() != null ? q.getJob().getEmployee().getName() : "N/A")
+                        .customerName(q.getJob().getCustomer() != null ? q.getJob().getCustomer().getCompanyName() : "N/A")
+                        .vesselName(q.getJob().getVessel() != null ? q.getJob().getVessel().getName() : "N/A")
                         .quotationFile(q.getQuotationFile())
                         .quotationDate(q.getQuotationDate())
                         .build())

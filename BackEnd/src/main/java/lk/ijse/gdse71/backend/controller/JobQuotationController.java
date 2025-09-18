@@ -1,6 +1,7 @@
 package lk.ijse.gdse71.backend.controller;
 
 import lk.ijse.gdse71.backend.dto.QuotationDTO;
+import lk.ijse.gdse71.backend.dto.QuotationInfoDTO;
 import lk.ijse.gdse71.backend.entity.Quotation;
 import lk.ijse.gdse71.backend.service.QuotationService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class JobQuotationController {
     public ResponseEntity<Map<String, Object>> uploadQuotation(
             @PathVariable Long jobId,
             @RequestParam("file") MultipartFile file
-    ) throws IOException, IOException {
+    ) throws  IOException {
         QuotationDTO dto = quotationService.saveQuotationFile(jobId, file);
 
         Map<String, Object> response = new HashMap<>();
@@ -36,9 +37,9 @@ public class JobQuotationController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/getByJob/{jobId}")
-    public ResponseEntity<List<QuotationDTO>> getQuotationsByJob(@PathVariable Long jobId) {
-        List<QuotationDTO> quotations = quotationService.getQuotationsByJob(jobId);
+    @GetMapping("/info-by-job/{jobId}")
+    public ResponseEntity<List<QuotationInfoDTO>> getQuotationsInfoByJob(@PathVariable Long jobId) {
+        List<QuotationInfoDTO> quotations = quotationService.getQuotationsInfoByJob(jobId);
         return ResponseEntity.ok(quotations);
     }
 }
