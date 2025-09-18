@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,18 @@ import java.util.Date;
 public class PendingPODTO {
     private Long id;
     private String description;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date date;
 
-    private JobDTO job;
+
+    private Long jobId;
+    private String jobReference;
+    private String remark;
+
+    private String customerName;
+    private String vesselName;
+    private String portName;
+    private String serviceName;
+    private String employeeName;
 }
