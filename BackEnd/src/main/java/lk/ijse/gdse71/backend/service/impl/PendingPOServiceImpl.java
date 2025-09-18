@@ -1,6 +1,7 @@
 package lk.ijse.gdse71.backend.service.impl;
 
 import lk.ijse.gdse71.backend.dto.PendingPODTO;
+import lk.ijse.gdse71.backend.entity.PendingPO;
 import lk.ijse.gdse71.backend.repo.PendingPORepository;
 import lk.ijse.gdse71.backend.service.PendingPOService;
 import lombok.RequiredArgsConstructor;
@@ -34,5 +35,14 @@ public class PendingPOServiceImpl implements PendingPOService {
                     .employeeName(job.getEmployee().getName())
                     .build();
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateDescription(Long pendingPOId, String description) {
+        PendingPO pendingPO = pendingPORepository.findById(pendingPOId)
+                .orElseThrow(() -> new RuntimeException("Pending PO not found"));
+
+        pendingPO.setDescription(description);
+        pendingPORepository.save(pendingPO);
     }
 }

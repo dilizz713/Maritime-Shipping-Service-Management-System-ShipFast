@@ -7,4 +7,6 @@ import java.util.List;
 public interface PendingPOService {
 
     List<PendingPODTO> getAllPendingPOs();
+
+    void updateDescription(Long pendingPOId, String description);
 }

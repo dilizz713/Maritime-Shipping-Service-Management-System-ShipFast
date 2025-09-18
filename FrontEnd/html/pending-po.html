@@ -233,10 +233,30 @@
                     <td>${po.employeeName}</td>
                     <td>${po.remark}</td>
                     <td>${po.description || "-"}</td>
+                    <td>
+                        <i class="bi bi-pencil-square text-primary" style="cursor:pointer"
+                            onclick="editPendingPODesc(${po.id}, '${po.description}')"></i>
+                    </td>
                 </tr>
             `);
             });
         });
+    }
+
+    function editPendingPODesc(pendingPOId, currentDesc) {
+        const newDesc = prompt("Update Pending PO Description:", currentDesc || "");
+        if (newDesc !== null) {
+            $.post(`http://localhost:8080/api/v1/pending-po/updateDescription/${pendingPOId}`,
+                { description: newDesc })
+                .done(function(res) {
+                    alert(res.message || "Description updated!");
+                    loadPendingPOs();
+                })
+                .fail(function(err) {
+                    console.error(err);
+                    alert("Error updating description");
+                });
+        }
     }
 
 
