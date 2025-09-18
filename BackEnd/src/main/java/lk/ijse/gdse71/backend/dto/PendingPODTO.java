@@ -19,10 +19,10 @@ public class PendingPODTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date date;
 
-
     private Long jobId;
     private String jobReference;
     private String remark;
+    private String status;
 
     private String customerName;
     private String vesselName;

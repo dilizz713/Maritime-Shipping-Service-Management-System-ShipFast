@@ -43,6 +43,7 @@ public class QuotationServiceImpl implements QuotationService {
 
         return quotations.stream()
                 .map(q -> QuotationInfoDTO.builder()
+                        .jobId(q.getJob().getId())
                         .jobReference(q.getJob().getJobReference())
                         .quotationNumber(q.getQuotationNumber())
                         .employeeName(q.getJob().getEmployee() != null ? q.getJob().getEmployee().getName() : "N/A")
@@ -55,9 +56,23 @@ public class QuotationServiceImpl implements QuotationService {
     }
 
     @Override
+    public QuotationDTO getQuotationById(Long id) {
+        Quotation quotation = quotationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Quotation not found with ID " + id));
+
+        return QuotationDTO.builder()
+                .id(quotation.getId())
+                .jobId(quotation.getJob().getId())
+                .jobReference(quotation.getJob().getJobReference())
+                .quotationFile(quotation.getQuotationFile())
+                .quotationDate(quotation.getQuotationDate())
+                .quotationNumber(quotation.getQuotationNumber())
+                .build();
+    }
+
+    @Override
     @Transactional
     public QuotationDTO saveQuotationFile(Long jobId, MultipartFile file) throws IOException {
-        System.out.println("=== saveQuotationFile START ===");
         System.out.println("Job ID received: " + jobId);
 
 
@@ -91,7 +106,6 @@ public class QuotationServiceImpl implements QuotationService {
             throw e;
         }
 
-
         Date quotationDate = new Date();
         String vesselName = (job.getVessel() != null && job.getVessel().getName() != null)
                 ? job.getVessel().getName().replaceAll("\\s+", "")
@@ -103,12 +117,16 @@ public class QuotationServiceImpl implements QuotationService {
         System.out.println("Quotation date: " + quotationDate);
 
 
+
         Quotation quotation = Quotation.builder()
                 .job(job)
                 .quotationFile(fileName)
                 .quotationDate(quotationDate)
                 .quotationNumber(quotationNumber)
                 .build();
+
+
+
 
         try {
             Quotation saved = quotationRepository.save(quotation);
@@ -119,7 +137,8 @@ public class QuotationServiceImpl implements QuotationService {
             throw e;
         }
 
-        System.out.println("=== saveQuotationFile END ===");
+        job.setStatus("Done");
+        jobRepository.save(job);
 
 
         return QuotationDTO.builder()
@@ -130,6 +149,8 @@ public class QuotationServiceImpl implements QuotationService {
                 .quotationDate(quotation.getQuotationDate())
                 .quotationNumber(quotation.getQuotationNumber())
                 .build();
+
+
     }
 
 

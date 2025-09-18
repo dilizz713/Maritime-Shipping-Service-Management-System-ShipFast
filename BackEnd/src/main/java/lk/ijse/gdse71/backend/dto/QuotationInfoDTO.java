@@ -12,6 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuotationInfoDTO {
+    private Long jobId;
     private String jobReference;
     private String quotationNumber;
     private String employeeName;

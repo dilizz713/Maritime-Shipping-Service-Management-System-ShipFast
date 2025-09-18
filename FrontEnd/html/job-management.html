@@ -726,10 +726,10 @@
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
 
-                // Convert to JSON
+
                 const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-                // Build table
+
                 let table = `<table class="table table-bordered table-striped text-center">`;
                 jsonData.forEach((row, rowIndex) => {
                     table += "<tr>";
@@ -744,10 +744,10 @@
                 });
                 table += "</table>";
 
-                // Insert into modal
+
                 document.getElementById("filePreviewContainer").innerHTML = table;
 
-                // Show modal
+
                 new bootstrap.Modal(document.getElementById("filePreviewModal")).show();
             })
             .catch(err => {

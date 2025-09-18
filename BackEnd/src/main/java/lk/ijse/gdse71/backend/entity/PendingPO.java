@@ -16,6 +16,7 @@ public class PendingPO {
 
     private String description;
     private Date date;
+    private String status;
 
     @OneToOne
     @JoinColumn(name = "job_id", nullable = false)

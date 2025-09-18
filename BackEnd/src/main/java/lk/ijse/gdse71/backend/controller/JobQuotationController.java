@@ -22,7 +22,6 @@ import java.util.Map;
 public class JobQuotationController {
     private final QuotationService quotationService;
 
-
     @PostMapping("/upload/{jobId}")
     public ResponseEntity<Map<String, Object>> uploadQuotation(
             @PathVariable Long jobId,
@@ -41,5 +40,11 @@ public class JobQuotationController {
     public ResponseEntity<List<QuotationInfoDTO>> getQuotationsInfoByJob(@PathVariable Long jobId) {
         List<QuotationInfoDTO> quotations = quotationService.getQuotationsInfoByJob(jobId);
         return ResponseEntity.ok(quotations);
+    }
+
+    @GetMapping("get-by-id/{id}")
+    public ResponseEntity<QuotationDTO> getQuotationById(@PathVariable Long id) {
+        QuotationDTO quotation = quotationService.getQuotationById(id);
+        return ResponseEntity.ok(quotation);
     }
 }

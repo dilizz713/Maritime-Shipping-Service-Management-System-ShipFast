@@ -13,4 +13,6 @@ public interface QuotationService {
     QuotationDTO saveQuotationFile(Long jobId, MultipartFile file) throws IOException;
 
     List<QuotationInfoDTO> getQuotationsInfoByJob(Long jobId);
+
+    QuotationDTO getQuotationById(Long id);
 }

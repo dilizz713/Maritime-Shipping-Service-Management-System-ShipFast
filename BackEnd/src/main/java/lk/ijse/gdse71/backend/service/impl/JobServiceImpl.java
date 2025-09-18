@@ -304,11 +304,11 @@ public class JobServiceImpl implements JobService {
                 .job(job)
                 .description(description)
                 .date(new Date())
+                .status("Pending")
                 .build();
 
         pendingPORepository.save(pendingPO);
 
-        job.setStatus("Processing");
         jobRepository.save(job);
 
         response.put("success", true);

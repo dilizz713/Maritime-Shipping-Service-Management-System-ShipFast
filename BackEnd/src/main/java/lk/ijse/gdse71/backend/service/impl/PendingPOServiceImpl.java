@@ -28,6 +28,7 @@ public class PendingPOServiceImpl implements PendingPOService {
                     .jobId(job.getId())
                     .jobReference(job.getJobReference())
                     .remark(job.getRemark())
+                    .status(po.getStatus())
                     .customerName(job.getCustomer().getCompanyName())
                     .vesselName(job.getVessel().getName())
                     .portName(job.getPort().getPortName())
