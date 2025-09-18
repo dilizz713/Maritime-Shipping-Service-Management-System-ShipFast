@@ -2,6 +2,7 @@ package lk.ijse.gdse71.backend.controller;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lk.ijse.gdse71.backend.dto.JobScheduleDTO;
+import lk.ijse.gdse71.backend.dto.JobScheduleInfoDTO;
 import lk.ijse.gdse71.backend.entity.Job;
 import lk.ijse.gdse71.backend.entity.JobSchedule;
 import lk.ijse.gdse71.backend.entity.PendingPO;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -43,13 +45,13 @@ public class JobScheduleController {
     @PostMapping("/approve/{jobId}")
     public ResponseEntity<APIResponse> approveJob(@PathVariable Long jobId) {
         Optional<Job> optionalJob = jobRepository.findById(jobId);
-        if(optionalJob.isEmpty()){
-            return ResponseEntity.ok(new APIResponse(404 , "Job not found", false));
+        if (optionalJob.isEmpty()) {
+            return ResponseEntity.ok(new APIResponse(404, "Job not found", false));
         }
 
         Job job = optionalJob.get();
 
-        // 1️ Save JobSchedule
+        // 1 Save JobSchedule
         JobSchedule schedule = JobSchedule.builder()
                 .job(job)
                 .status("Scheduled")
@@ -59,7 +61,7 @@ public class JobScheduleController {
                 .build();
         jobScheduleRepository.save(schedule);
 
-       // Update Pending PO Status
+        // Update Pending PO Status
         PendingPO pendingPO = pendingPORepository.findByJobId(jobId);
         if (pendingPO != null) {
             pendingPO.setStatus("Approved");
@@ -67,6 +69,29 @@ public class JobScheduleController {
         }
 
 
-        return ResponseEntity.ok(new APIResponse(200, "Job approved successfully" , true) );
+        return ResponseEntity.ok(new APIResponse(200, "Job approved successfully", true));
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<APIResponse> getAllJobSchedules() {
+        List<JobScheduleInfoDTO> schedules = jobScheduleService.getAllJobSchedules();
+        return ResponseEntity.ok(new APIResponse(200, "Job schedules fetched successfully", schedules));
+
+    }
+
+    @PutMapping("/update/{scheduleId}")
+    public ResponseEntity<APIResponse> updateJobSchedule(@PathVariable Long scheduleId,
+                                                         @RequestBody JobScheduleInfoDTO dto) {
+        APIResponse response = jobScheduleService.updateJobSchedule(scheduleId, dto);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/get/{scheduleId}")
+    public ResponseEntity<?> getJobScheduleById(@PathVariable Long scheduleId) {
+        JobScheduleInfoDTO scheduleDTO = jobScheduleService.getJobScheduleById(scheduleId);
+        if (scheduleDTO == null) {
+            return ResponseEntity.status(404).body(new APIResponse(404, "Job Schedule not found", false));
+        }
+        return ResponseEntity.ok(scheduleDTO);
     }
 }
