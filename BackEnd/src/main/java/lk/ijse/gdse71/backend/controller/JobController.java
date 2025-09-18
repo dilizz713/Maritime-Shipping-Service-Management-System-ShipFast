@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+        import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -141,7 +141,6 @@ public class JobController {
     }
 
 
-
     @PostMapping("/{jobId}/sendJobEmail")
     public ResponseEntity<Map<String, Object>> sendJobEmail(@PathVariable Long jobId) {
         Map<String, Object> result = jobService.sendJobEmail(jobId);
@@ -151,5 +150,23 @@ public class JobController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
     }
+
+    @PostMapping("/{jobId}/sendToPendingPO")
+    public ResponseEntity<Map<String, Object>> sendToPendingPO(
+            @PathVariable Long jobId,
+            @RequestParam(required = false) String description
+    ) {
+        try {
+            Map<String, Object> result = jobService.sendJobToPendingPO(jobId, description);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
+
 
 }

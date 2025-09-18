@@ -35,6 +35,7 @@ public class JobServiceImpl implements JobService {
     private final PortRepository portRepository;
     private final ServiceRepository servicesRepository;
     private final EmployeeRepository employeeRepository;
+    private final PendingPORepository pendingPORepository;
 
     private final JavaMailSender mailSender;
     private final EmailService emailService;
@@ -291,5 +292,31 @@ public class JobServiceImpl implements JobService {
 
         return response;
     }
+
+    @Override
+    public Map<String, Object> sendJobToPendingPO(Long jobId, String description) {
+        Map<String, Object> response = new HashMap<>();
+
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        PendingPO pendingPO = PendingPO.builder()
+                .job(job)
+                .description(description)
+                .date(new Date())
+                .build();
+
+        pendingPORepository.save(pendingPO);
+
+        job.setStatus("Processing");
+        jobRepository.save(job);
+
+        response.put("success", true);
+        response.put("message", "Job sent to Pending PO successfully");
+        response.put("pendingPOId", pendingPO.getId());
+
+        return response;
+    }
+
 
 }

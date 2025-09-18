@@ -50,4 +50,7 @@ public class Job {
 
     private String referenceFilePath;
 
+    @OneToOne(mappedBy = "job")
+    private PendingPO pendingPO;
+
 }

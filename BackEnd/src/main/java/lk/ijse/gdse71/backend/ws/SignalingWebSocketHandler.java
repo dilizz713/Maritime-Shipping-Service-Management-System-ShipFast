@@ -36,7 +36,6 @@ public class SignalingWebSocketHandler extends TextWebSocketHandler {
         String type = node.get("type").asText();
         String meetingCode = node.get("meetingCode").asText();
 
-        // Attach employee info from session attributes
         if(session.getAttributes().get("employeeName") != null) {
             ((ObjectNode) node).put("employeeName", (String) session.getAttributes().get("employeeName"));
         }

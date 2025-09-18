@@ -17,4 +17,7 @@ public interface JobService {
     JobDTO getJobById(Long jobId);
 
     Map<String, Object> sendJobEmail(Long jobId);
+
+
+    Map<String, Object> sendJobToPendingPO(Long jobId, String description);
 }

@@ -38,4 +38,6 @@ public class JobDTO {
     private String dateAsString;
 
     private MultipartFile referenceFile;
+
+    private String quotationRemark;
 }
