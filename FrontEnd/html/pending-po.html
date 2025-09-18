@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2 class="text-primary mb-4"><i class="bi bi-clipboard-check"></i> Pending PO</h2>
+<table class="table table-bordered" id="pendingPoTable">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Job Reference</th>
+        <th>Customer</th>
+        <th>Vessel</th>
+        <th>Service</th>
+        <th>Port</th>
+        <th>Job Remark</th>
+        <th>Quotation Remark</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    $(document).ready(function() {
+
+        // Load Pending PO jobs
+        function loadPendingJobs() {
+            $.get("http://localhost:8080/api/v1/jobs/pending", function (jobs) {
+                const tbody = $("#pendingPoTable tbody").empty();
+                jobs.forEach(job => {
+                    tbody.append(`
+                    <tr>
+                        <td>${new Date(job.date).toLocaleDateString()}</td>
+                        <td>${job.jobReference}</td>
+                        <td>${job.customerName}</td>
+                        <td>${job.vesselName}</td>
+                        <td>${job.serviceName}</td>
+                        <td>${job.portName}</td>
+                        <td>${job.remark}</td>
+                        <td>${job.quotationRemark}</td>
+                        <td>
+                            ${job.quotationRemark ? `<button class="btn btn-primary btn-sm" onclick="viewQuotation(${job.id})">
+                                <i class="bi bi-eye"></i>
+                            </button>` : ''}
+                        </td>
+                    </tr>
+                `);
+                });
+            });
+        }
+
+        loadPendingJobs();
+
+
+
+    });
+    function viewQuotation(jobId) {
+        window.location.href = `http://localhost:8080/pending-po/viewQuotation/${jobId}`;
+    }
+</script>
+</body>
+</html>
