@@ -39,5 +39,5 @@ public class JobDTO {
 
     private MultipartFile referenceFile;
 
-    private String quotationRemark;
+    private List<QuotationDTO> quotations;
 }

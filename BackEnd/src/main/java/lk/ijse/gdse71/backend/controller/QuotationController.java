@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.*;
 public class QuotationController {
     private final JavaMailSender mailSender;
 
-
-
     @PostMapping("/request")
     public ResponseEntity<APIResponse> requestQuotation(@RequestBody QuotationRequestDTO dto) {
         try {

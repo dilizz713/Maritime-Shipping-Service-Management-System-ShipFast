@@ -203,8 +203,36 @@
     </div>
 </div>
 
+<div class="modal fade" id="quotationModal" tabindex="-1" aria-labelledby="quotationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4 shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="quotationModalLabel"><i class="bi bi-file-earmark-text-fill me-2"></i>Quotation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <strong>Job Reference:</strong> <span id="modalJobReference"></span> |
+                    <strong>Customer:</strong> <span id="modalCustomer"></span> |
+                    <strong>Vessel:</strong> <span id="modalVessel"></span> |
+                    <strong>Employee:</strong> <span id="modalEmployee"></span>
+                </div>
+                <input type="file" id="quotationFile" accept=".xlsx,.xls" class="form-control mb-3" />
+                <div id="excelPreview" style="max-height: 400px; overflow:auto; border:1px solid #dee2e6; padding:5px;"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="modalJobId" />
+                <button type="button" class="btn btn-success" id="uploadQuotationBtn">
+                    <i class="bi bi-upload me-1"></i> Upload & Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="../lib/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <script src="../js/navigation-bar.js"></script>
 <script>
     $(document).ready(function() {
@@ -236,6 +264,9 @@
                     <td>
                         <i class="bi bi-pencil-square text-primary" style="cursor:pointer"
                             onclick="editPendingPODesc(${po.id}, '${po.description}')"></i>
+                            <i class="bi bi-file-earmark-text-fill text-success" style="cursor:pointer"
+                            onclick="openQuotationModal(${po.jobId}, '${po.jobReference}', '${po.customerName}', '${po.vesselName}', '${po.employeeName}')"
+                            title="View / Upload Quotation"></i>
                     </td>
                 </tr>
             `);
@@ -258,6 +289,75 @@
                 });
         }
     }
+
+    let uploadedFileData = null;
+
+    function openQuotationModal(jobId, jobReference, customer, vessel, employee) {
+        $("#modalJobId").val(jobId);
+        $("#modalJobReference").text(jobReference);
+        $("#modalCustomer").text(customer);
+        $("#modalVessel").text(vessel);
+        $("#modalEmployee").text(employee);
+
+        $("#quotationFile").val("");
+        $("#excelPreview").html("");
+        uploadedFileData = null;
+
+        var modal = new bootstrap.Modal(document.getElementById('quotationModal'));
+        modal.show();
+    }
+
+    // Preview Excel file when selected
+    $("#quotationFile").on("change", function(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+
+            const html = XLSX.utils.sheet_to_html(worksheet, { id: "sheetTable", editable: false });
+            $("#excelPreview").html(html);
+
+            uploadedFileData = data;
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+
+    $("#uploadQuotationBtn").click(function() {
+        if (!uploadedFileData) return alert("Select a file first!");
+
+        const jobId = $("#modalJobId").val();
+        const file = $("#quotationFile")[0].files[0];
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        $.ajax({
+            url: `http://localhost:8080/api/v1/job-quotation/upload/${jobId}`,
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                const quotation = res.quotation;
+                alert(`Quotation uploaded successfully!\nQuotation Number: ${quotation.quotationNumber}`);
+                $("#quotationModal").modal('hide');
+
+
+                loadPendingPOs();
+            },
+            error: function(err) {
+                console.error(err);
+                alert("Error uploading quotation!");
+            }
+        });
+    });
 
 
 </script>

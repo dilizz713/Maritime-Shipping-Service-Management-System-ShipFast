@@ -61,6 +61,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/vessels/**").permitAll()
                         .requestMatchers("/api/v1/jobs/**").permitAll()
                         .requestMatchers("/api/v1/pending-po/**").permitAll()
+                        .requestMatchers("/api/v1/job-quotation/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 )

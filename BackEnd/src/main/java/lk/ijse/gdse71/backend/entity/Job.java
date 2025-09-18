@@ -53,4 +53,5 @@ public class Job {
     @OneToOne(mappedBy = "job")
     private PendingPO pendingPO;
 
+
 }
