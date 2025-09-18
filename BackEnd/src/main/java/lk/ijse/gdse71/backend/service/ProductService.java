@@ -18,4 +18,6 @@ public interface ProductService {
     ProductDTO updateQuantity(Long id, Integer quantity);
 
     void deleteProduct(Long id);
+
+    List<ProductDTO> searchProducts(String q);
 }

@@ -2,12 +2,14 @@ package lk.ijse.gdse71.backend.dto;
 
 import lk.ijse.gdse71.backend.entity.Product;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class ProductDTO {
     private Long id;
     private String code;

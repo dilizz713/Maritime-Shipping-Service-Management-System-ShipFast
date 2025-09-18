@@ -73,4 +73,10 @@ public class ProductController {
         log.info("DELETE /delete/{} response: {}", id, response);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<APIResponse> searchProducts(@RequestParam String q) {
+        List<ProductDTO> products = productService.searchProducts(q);
+        return ResponseEntity.ok(new APIResponse(200, "Products fetched", products));
+    }
 }

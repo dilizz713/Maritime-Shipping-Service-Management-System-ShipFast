@@ -102,6 +102,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductDTO> searchProducts(String q) {
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(q);
+
+        return products.stream()
+                .map(p -> ProductDTO.builder()
+                        .id(p.getId())
+                        .name(p.getName())
+                        .code(p.getCode())
+                        .uomCode(p.getUom().getUomCode())
+                        .unitPrice(p.getUnitPrice())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public String generateNextProductCode() {
         Optional<Product> lastProductOpt = productRepository.findTopByOrderByIdDesc();
         int nextNumber = 1;

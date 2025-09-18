@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job,Long> {
@@ -22,4 +23,6 @@ public interface JobRepository extends JpaRepository<Job,Long> {
             "WHERE j.service.serviceName IN ('Provision Supply', 'Supply of Ship Stores') " +
             "AND j.jobReference = :ref")
     List<Job> searchProvisionJobs(@Param("ref") String ref);
+
+    Optional<Job> findByJobReference(String jobReference);
 }
