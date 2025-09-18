@@ -259,6 +259,21 @@
     </div>
 </div>
 
+<!-- Excel Preview Modal -->
+<div class="modal fade" id="excelPreviewModal" tabindex="-1" aria-labelledby="excelPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4 shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="excelPreviewModalLabel">Quotation Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="excelFilePreview" style="overflow:auto; max-height:600px; border:1px solid #dee2e6; padding:5px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 <script src="../lib/jquery-3.7.1.min.js"></script>
@@ -342,7 +357,7 @@
 
     $("#quotationFile").on("change", function(e) {
         const file = e.target.files[0];
-        if(!file) return;
+        if (!file) return;
 
         const reader = new FileReader();
         reader.onload = function(event) {
@@ -352,8 +367,21 @@
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
 
-            const html = XLSX.utils.sheet_to_html(worksheet, { id: "sheetTable", editable: false });
+
+            const html = XLSX.utils.sheet_to_html(worksheet, { id: "sheetTableUpload", editable: false });
+
+
             $("#excelPreview").html(html);
+
+
+            $("#sheetTableUpload").addClass("table table-bordered table-striped table-sm");
+
+            $("#sheetTableUpload th, #sheetTableUpload td").css({
+                "border": "1px solid #000",
+                "padding": "4px",
+                "text-align": "center",
+                "background-color": "#d4edda"
+            });
 
             uploadedFileData = data;
         };
@@ -410,7 +438,8 @@
                     <td>${q.employeeName}</td>
                     <td>${q.quotationNumber}</td>
                     <td>
-                        <a href="uploads/quotation/${q.quotationFile}" target="_blank" class="text-decoration-none">
+                        <a href="javascript:void(0);" class="text-decoration-none"
+                            onclick="viewQuotationFile('${q.quotationFile}')">
                             <i class="bi bi-file-earmark-text-fill text-success"></i> View
                         </a>
                     </td>
@@ -421,6 +450,35 @@
             console.error(err);
             tbody.append('<tr><td colspan="8" class="text-center text-danger">Failed to load quotations</td></tr>');
         });
+    }
+
+    function viewQuotationFile(fileName) {
+        const fileUrl = `http://localhost:8080/uploads/quotation/${fileName}`; // <- serve from backend
+        fetch(fileUrl)
+            .then(res => {
+                if(!res.ok) throw new Error("File not found");
+                return res.arrayBuffer();
+            })
+            .then(data => {
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheet];
+                const html = XLSX.utils.sheet_to_html(worksheet, { id: "sheetTable", editable: false });
+                $("#excelFilePreview").html(html);
+                $("#sheetTable").addClass("table table-bordered table-striped");
+
+                $("#sheetTable th, #sheetTable td").css({
+                    "border": "1px solid #000",
+                    "padding": "4px",
+                    "text-align": "center",
+                    "background-color": "#d4edda"
+                });
+                new bootstrap.Modal(document.getElementById('excelPreviewModal')).show();
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Failed to load quotation file.");
+            });
     }
 
 
