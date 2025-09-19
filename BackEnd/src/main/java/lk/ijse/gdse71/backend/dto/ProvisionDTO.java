@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ProvisionDTO {
+    private Long id;
     private String provisionReference;
     private String description;
     private String status;
