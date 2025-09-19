@@ -317,10 +317,11 @@
         $('#downloadExcelBtn').click(function () {
             let jobId = $('#viewJobSelect').val();
             let provisionRef = $('#viewProvisionSelect').val();
+            let currency = $('#currencySelect').val();
+
             if (!jobId || !provisionRef) return;
 
-
-            window.location.href = `http://localhost:8080/api/v1/provisions/downloadExcel?jobId=${jobId}&provisionRef=${provisionRef}`;
+            window.location.href = `http://localhost:8080/api/v1/provisions/downloadExcel?jobId=${jobId}&provisionRef=${provisionRef}&currency=${currency}`;
         });
 
         $('#convertCurrencyBtn').click(function() {

@@ -88,10 +88,20 @@ public class ProvisionController {
                 .body(excelData);
     }
 
+
     @GetMapping("/downloadExcel")
-    public ResponseEntity<byte[]> downloadProvisionExcel(@RequestParam Long jobId,
-                                                         @RequestParam String provisionRef) throws IOException {
+    public ResponseEntity<byte[]> downloadProvisionExcel(
+            @RequestParam Long jobId,
+            @RequestParam String provisionRef,
+            @RequestParam(defaultValue = "LKR") String currency) throws IOException {
+
         Provision provision = provisionService.getProvisionByJobAndRef(jobId, provisionRef);
+
+        if (!"LKR".equals(currency)) {
+            double rate = getConversionRate("LKR", currency);
+            provision.getItems().forEach(item -> item.setUnitPrice(item.getUnitPrice() * rate));
+        }
+
         byte[] excelData = ExcelGenerator.generateProvisionExcel(provision);
 
         return ResponseEntity.ok()
@@ -116,7 +126,7 @@ public class ProvisionController {
                         .body(Map.of("success", false, "error", "Currency API did not return a result"));
             }
 
-            // Cast safely
+
             Map<String, Object> rates = (Map<String, Object>) response.get("conversion_rates");
             if (!rates.containsKey(dto.getTo())) {
                 return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
@@ -140,6 +150,27 @@ public class ProvisionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("success", false, "error", e.getMessage()));
         }
+    }
+
+    private double getConversionRate(String from, String to) {
+        String url = String.format(
+                "https://v6.exchangerate-api.com/v6/%s/latest/%s",
+                apiKey, from
+        );
+
+        RestTemplate restTemplate = new RestTemplate();
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+
+        if (response == null || !"success".equals(response.get("result"))) {
+            throw new RuntimeException("Currency API did not return a result");
+        }
+
+        Map<String, Object> rates = (Map<String, Object>) response.get("conversion_rates");
+        if (!rates.containsKey(to)) {
+            throw new RuntimeException("Target currency not found");
+        }
+
+        return ((Number) rates.get(to)).doubleValue();
     }
 
 
