@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CurrencyConversionRequestDTO {
-    private double amount;
+    private Double amount;
     private String from;
     private String to;
 }

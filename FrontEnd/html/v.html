@@ -207,14 +207,12 @@
                     <div class="col-md-3"><b>Description:</b> <span id="provDesc"></span></div>
                 </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-3">
-                        <label>Currency</label>
-                        <select class="form-select form-select-sm" id="currencySelect">
-                            <option value="LKR" selected>LKR</option>
-                            <option value="USD">USD</option>
-                        </select>
-                    </div>
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <select class="form-select form-select-sm" id="currencySelect">
+                        <option value="LKR" selected>LKR</option>
+                        <option value="USD">USD</option>
+                    </select>
+                    <button class="btn btn-info btn-sm" id="convertCurrencyBtn">Convert</button>
                 </div>
 
                 <h4>Provision Items</h4>
@@ -272,7 +270,7 @@
             }
         });
 
-        // View button click
+
         $('#viewBtn').click(function () {
             let jobId = $('#viewJobSelect').val();
             let provisionRef = $('#viewProvisionSelect').val();
@@ -281,7 +279,7 @@
                 return;
             }
 
-            // Correct use of fail with $.get
+
             $.get(`http://localhost:8080/api/v1/provisions/details?jobId=${jobId}&provisionRef=${provisionRef}`)
                 .done(function (resp) {
                     let prov = resp.data;
@@ -305,7 +303,7 @@
                         <td>${item.remark || ''}</td>
                     </tr>
                 `);
-                        tr.data('lkr-price', item.unitPrice); // store original LKR price
+                        tr.data('lkr-price', item.unitPrice);
                         tbody.append(tr);
                     });
                     $('#downloadExcelBtn').prop('disabled', false);
@@ -325,16 +323,35 @@
             window.location.href = `http://localhost:8080/api/v1/provisions/downloadExcel?jobId=${jobId}&provisionRef=${provisionRef}`;
         });
 
-        $('#currencySelect').change(function () {
-            let currency = $(this).val();
-            $('#viewItemsTable tbody tr').each(function () {
-                let lkrPrice = $(this).data('lkr-price');
+        $('#convertCurrencyBtn').click(function() {
+            let currency = $('#currencySelect').val();
+
+            $('#viewItemsTable tbody tr').each(function() {
+                let row = $(this);
+                let lkrPrice = row.data('lkr-price');
+
                 if (currency === 'LKR') {
-                    $(this).find('td:eq(3)').text(lkrPrice.toFixed(2));
+                    row.find('td:eq(3)').text(lkrPrice.toFixed(2));
                 } else {
-                    let row = $(this);
-                    $.get(`http://localhost:8080/api/v1/provisions/convert?amount=${lkrPrice}&from=LKR&to=${currency}`, function (resp) {
-                        if (resp.data) row.find('td:eq(3)').text(resp.data.toFixed(2));
+                    $.ajax({
+                        url: 'http://localhost:8080/api/v1/provisions/convert',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            amount: lkrPrice,
+                            from: 'LKR',
+                            to: currency
+                        }),
+                        success: function(resp) {
+                            if (resp.success) {
+                                row.find('td:eq(3)').text(resp.convertedAmount.toFixed(2));
+                            } else {
+                                console.error('Conversion API failed:', resp.error);
+                            }
+                        },
+                        error: function(err) {
+                            console.error('Error calling conversion API:', err);
+                        }
                     });
                 }
             });

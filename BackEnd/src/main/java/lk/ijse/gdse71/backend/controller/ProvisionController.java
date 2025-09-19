@@ -103,10 +103,9 @@ public class ProvisionController {
     @PostMapping("/convert")
     public ResponseEntity<?> convertCurrency(@RequestBody CurrencyConversionRequestDTO dto) {
         try {
-            // Example URL for ExchangeRate-API free plan
             String url = String.format(
                     "https://v6.exchangerate-api.com/v6/%s/latest/%s",
-                    apiKey, dto.getFrom() // "LKR" in your case
+                    apiKey, dto.getFrom()
             );
 
             RestTemplate restTemplate = new RestTemplate();
@@ -117,8 +116,14 @@ public class ProvisionController {
                         .body(Map.of("success", false, "error", "Currency API did not return a result"));
             }
 
+            // Cast safely
             Map<String, Object> rates = (Map<String, Object>) response.get("conversion_rates");
-            double rate = ((Number) rates.get(dto.getTo())).doubleValue(); // get USD rate
+            if (!rates.containsKey(dto.getTo())) {
+                return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                        .body(Map.of("success", false, "error", "Target currency not found"));
+            }
+
+            double rate = ((Number) rates.get(dto.getTo())).doubleValue();
             double convertedAmount = dto.getAmount() * rate;
 
             return ResponseEntity.ok(Map.of(
@@ -131,12 +136,12 @@ public class ProvisionController {
             ));
 
         } catch (Exception e) {
+            e.printStackTrace(); // Log exception to see root cause
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("success", false, "error", e.getMessage()));
         }
-
-
     }
+
 
 
 
