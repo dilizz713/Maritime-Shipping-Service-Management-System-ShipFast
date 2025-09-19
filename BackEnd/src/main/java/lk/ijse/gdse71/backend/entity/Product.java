@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,5 +30,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "uom_id", nullable = false)
     private UOM uom;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProvisionItem> provisionItems;
+
 
 }

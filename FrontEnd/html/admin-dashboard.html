@@ -84,16 +84,14 @@
                 </a>
                 <div class="collapse ps-4" id="jobMenu">
                     <ul class="nav flex-column">
-                        <li class="nav-item"><a href="#" class="nav-link">Job Manage</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link">Quotation</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link">Pending PO</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link">Job Schedule</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link">Delivery Note</a></li>
+                        <li class="nav-item"><a href="job-management.html" class="nav-link">Job Manage</a></li>
+                        <li class="nav-item"><a href="pending-po.html" class="nav-link">Pending PO</a></li>
+                        <li class="nav-item"><a href="job-schedule.html" class="nav-link">Job Schedule</a></li>
                     </ul>
                 </div>
             </li>
             <li class="nav-item mb-2 costing-btn">
-                <a href="#" class="nav-link"><i class="bi bi-cash-coin me-2"></i>Costing</a>
+                <a href="#" class="nav-link"><i class="bi bi-cash-coin me-2"></i>Invoice</a>
             </li>
             <li class="nav-item mb-2 user-btn">
                 <a href="user-management.html" class="nav-link"><i class="bi bi-person-circle me-2"></i>User</a>
@@ -182,7 +180,7 @@
         $('#meetingModal .btn').click(function() {
             const action = $(this).text().trim();
             console.log("User selected:", action);
-            $('#meetingModal').modal('hide'); // Close modal after selection
+            $('#meetingModal').modal('hide');
         });
     });
 

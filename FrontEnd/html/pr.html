@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Provision</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .container { margin-top: 50px; }
+        .btn-icon { width: 30px; height: 30px; padding: 0; font-size: 18px; }
+        table th, table td { vertical-align: middle; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Create Provision</h2>
+    <form id="provisionForm">
+        <div class="mb-3">
+            <label>Job Reference</label>
+            <select class="form-select" id="jobSelect" name="jobId" required>
+                <option value="">Select Job</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label>Provision Reference</label>
+            <input type="text" class="form-control" name="provisionReference" readonly required>
+        </div>
+        <div class="mb-3">
+            <label>Provision Date</label>
+            <input type="date" class="form-control" name="provisionDate" id="provisionDate" required>
+        </div>
+        <div class="mb-3">
+            <label>Description</label>
+            <input type="text" class="form-control" name="description" required>
+        </div>
+        <div class="mb-3">
+            <label>Status</label>
+            <input type="text" class="form-control" name="status" required>
+        </div>
+        <hr>
+        <h4>Provision Items
+            <button type="button" id="addItemBtn" class="btn btn-success btn-icon ms-2">
+                <i class="bi bi-plus"></i>
+            </button>
+        </h4>
+        <table class="table table-bordered table-striped" id="itemsTable">
+            <thead class="table-light">
+            <tr>
+                <th>Remove</th>
+                <th>Product</th>
+                <th>Product Code</th>
+                <th>UOM</th>
+                <th>Unit Price</th>
+                <th>Quantity</th>
+                <th>Remark</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button type="submit" class="btn btn-primary mt-3">Save Provision</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let itemIndex = 0;
+    let products = [];
+
+    $('#provisionDate').val(new Date().toISOString().split('T')[0]);
+
+    function createItemRow(index) {
+        let productOptions = products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+        return `
+        <tr data-index="${index}">
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-icon removeItemBtn">
+                    <i class="bi bi-dash"></i>
+                </button>
+            </td>
+            <td>
+                <select class="form-select productSelect" data-index="${index}" name="items[${index}][productId]" required>
+                    <option value="">Select Product</option>
+                    ${productOptions}
+                </select>
+            </td>
+            <td><input type="text" class="form-control" name="items[${index}][productCode]" readonly></td>
+            <td><input type="text" class="form-control" name="items[${index}][uomCode]" readonly></td>
+            <td><input type="number" class="form-control" name="items[${index}][unitPrice]" step="0.01" readonly></td>
+            <td><input type="number" class="form-control" name="items[${index}][quantity]" required></td>
+            <td><input type="text" class="form-control" name="items[${index}][remark]"></td>
+            <input type="hidden" name="items[${index}][productName]" value="">
+        </tr>`;
+    }
+
+    $(document).ready(function () {
+        // Load jobs
+        $.get('http://localhost:8080/api/v1/provisions/jobs', function(resp){
+            let jobs = resp.data;
+            jobs.forEach(job => {
+                $('#jobSelect').append(`<option value="${job.id}">${job.jobReference}</option>`);
+            });
+        });
+
+        // Load products
+        $.get('http://localhost:8080/api/v1/provisions/products', function(resp){
+            products = resp.data;
+            $('#addItemBtn').click();
+        });
+
+        // Auto-generate provision reference
+        $(document).on('change', '#jobSelect', function() {
+            let jobId = $(this).val();
+            if(jobId){
+                $.get(`http://localhost:8080/api/v1/provisions/nextProvisionRef/${jobId}`, function(resp){
+                    $('input[name="provisionReference"]').val(resp.data);
+                });
+            } else {
+                $('input[name="provisionReference"]').val('');
+            }
+        });
+
+        // Add row
+        $('#addItemBtn').click(function () {
+            $('#itemsTable tbody').append(createItemRow(itemIndex++));
+        });
+
+        // Remove row
+        $(document).on('click', '.removeItemBtn', function () {
+            $(this).closest('tr').remove();
+        });
+
+        // Auto-fill product details
+        $(document).on('change', '.productSelect', function () {
+            let index = $(this).data('index');
+            let productId = parseInt($(this).val());
+            let product = products.find(p => p.id === productId);
+            if(product) {
+                $(`input[name="items[${index}][productCode]"]`).val(product.code);
+                $(`input[name="items[${index}][uomCode]"]`).val(product.uomCode || '');
+                $(`input[name="items[${index}][unitPrice]"]`).val(product.unitPrice);
+                $(`input[name="items[${index}][productName]"]`).val(product.name);
+            } else {
+                $(`input[name="items[${index}][productCode]"]`).val('');
+                $(`input[name="items[${index}][uomCode]"]`).val('');
+                $(`input[name="items[${index}][unitPrice]"]`).val('');
+                $(`input[name="items[${index}][productName]"]`).val('');
+            }
+        });
+
+        // Submit form
+        $('#provisionForm').submit(function(e){
+            e.preventDefault();
+            let formData = $(this).serializeArray();
+            let provision = { items: [] };
+
+            formData.forEach(field => {
+                let name = field.name;
+                let value = field.value;
+                if(name.startsWith('items[')) {
+                    let match = name.match(/items\[(\d+)\]\[(\w+)]/);
+                    if(match){
+                        let idx = parseInt(match[1]);
+                        let key = match[2];
+                        if(!provision.items[idx]) provision.items[idx] = {};
+                        provision.items[idx][key] = value;
+                    }
+                } else {
+                    provision[name] = value;
+                }
+            });
+
+            provision.jobId = parseInt(provision.jobId);
+            provision.items = provision.items.map(item => ({
+                productId: parseInt(item.productId),
+                productCode: item.productCode,
+                productName: item.productName,
+                uomCode: item.uomCode,
+                unitPrice: parseFloat(item.unitPrice),
+                quantity: parseInt(item.quantity),
+                remark: item.remark
+            }));
+
+            $.ajax({
+                url: 'http://localhost:8080/api/v1/provisions/create',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(provision),
+                success: function(response){
+                    alert('Provision saved successfully!');
+                    $('#provisionForm')[0].reset();
+                    $('#itemsTable tbody').html('');
+                    $('#addItemBtn').click();
+                    $('#provisionDate').val(new Date().toISOString().split('T')[0]);
+                },
+                error: function(err){
+                    console.error(err);
+                    alert('Error saving provision.');
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

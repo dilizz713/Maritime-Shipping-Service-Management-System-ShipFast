@@ -135,7 +135,6 @@ public class ProductServiceImpl implements ProductService {
         return String.format("P%04d", nextNumber);
     }
 
-    // Helper: convert entity to DTO
     private ProductDTO toDTO(Product product) {
         return new ProductDTO(
                 product.getId(),
