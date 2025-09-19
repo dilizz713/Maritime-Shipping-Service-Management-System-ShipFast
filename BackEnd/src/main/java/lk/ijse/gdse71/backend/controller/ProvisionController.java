@@ -3,12 +3,17 @@ package lk.ijse.gdse71.backend.controller;
 import lk.ijse.gdse71.backend.dto.JobDTO;
 import lk.ijse.gdse71.backend.dto.ProductDTO;
 import lk.ijse.gdse71.backend.dto.ProvisionDTO;
+import lk.ijse.gdse71.backend.entity.Provision;
 import lk.ijse.gdse71.backend.service.ProvisionService;
 import lk.ijse.gdse71.backend.util.APIResponse;
+import lk.ijse.gdse71.backend.util.ExcelGenerator;
+import lk.ijse.gdse71.backend.util.ProvisionExcelGenerator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -59,6 +64,33 @@ public class ProvisionController {
                                                            @RequestParam String provisionRef) {
         ProvisionDTO provision = provisionService.getProvisionDetails(jobId, provisionRef);
         return ResponseEntity.ok(new APIResponse(200, "Provision details fetched", provision));
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportProvisionToExcel(
+            @RequestParam Long jobId,
+            @RequestParam String provisionRef) throws IOException {
+
+        Provision provision = provisionService.getProvisionByJobAndRef(jobId, provisionRef);
+
+        byte[] excelData = ProvisionExcelGenerator.generateProvisionExcel(provision);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=" + provisionRef + ".xlsx")
+                .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .body(excelData);
+    }
+
+    @GetMapping("/downloadExcel")
+    public ResponseEntity<byte[]> downloadProvisionExcel(@RequestParam Long jobId,
+                                                         @RequestParam String provisionRef) throws IOException {
+        Provision provision = provisionService.getProvisionByJobAndRef(jobId, provisionRef);
+        byte[] excelData = ExcelGenerator.generateProvisionExcel(provision);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=" + provision.getProvisionReference() + ".xlsx")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(excelData);
     }
 
 

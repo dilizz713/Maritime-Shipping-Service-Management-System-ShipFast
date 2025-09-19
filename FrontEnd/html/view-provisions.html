@@ -13,7 +13,7 @@
 <div class="container">
     <h2>View Provision Details</h2>
 
-    <!-- Filters -->
+
     <div class="row mb-3">
         <div class="col-md-4">
             <label>Job Reference</label>
@@ -28,11 +28,14 @@
             </select>
         </div>
         <div class="col-md-4 d-flex align-items-end">
-            <button class="btn btn-primary" id="viewBtn">View</button>
+            <button class="btn btn-primary me-2" id="viewBtn">View</button>
+            <button class="btn btn-success" id="downloadExcelBtn" disabled>
+                Download Excel
+            </button>
         </div>
     </div>
 
-    <!-- Provision Details -->
+
     <div id="provisionDetails" style="display:none;">
         <h4>Provision Info</h4>
         <div class="row mb-3">
@@ -41,6 +44,8 @@
             <div class="col-md-3"><b>Status:</b> <span id="provStatus"></span></div>
             <div class="col-md-3"><b>Description:</b> <span id="provDesc"></span></div>
         </div>
+
+
 
         <h4>Provision Items</h4>
         <table class="table table-bordered table-striped" id="viewItemsTable">
@@ -67,13 +72,13 @@
 
     $(document).ready(function() {
 
-        // Load jobs (Provision Supply / Ship Stores Supply)
+        // Load jobs
         $.get('http://localhost:8080/api/v1/provisions/jobs', function(resp){
             jobs = resp.data;
             jobs.forEach(job => $('#viewJobSelect').append(`<option value="${job.id}">${job.jobReference}</option>`));
         });
 
-        // When job selected, load provision references
+        //  load provision references
         $('#viewJobSelect').change(function(){
             let jobId = $(this).val();
             $('#viewProvisionSelect').html('<option value="">Select Provision</option>');
@@ -107,19 +112,32 @@
                 let tbody = $('#viewItemsTable tbody').html('');
                 prov.items.forEach(item => {
                     tbody.append(`
-                    <tr>
-                        <td>${item.productName}</td>
-                        <td>${item.productCode}</td>
-                        <td>${item.uomCode}</td>
-                        <td>${item.unitPrice}</td>
-                        <td>${item.quantity}</td>
-                        <td>${item.remark || ''}</td>
-                    </tr>
-                `);
+                <tr>
+                    <td>${item.productName}</td>
+                    <td>${item.productCode}</td>
+                    <td>${item.uomCode}</td>
+                    <td>${item.unitPrice}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.remark || ''}</td>
+                </tr>
+            `);
                 });
+
+
+                $('#downloadExcelBtn').prop('disabled', false);
             }).fail(function(){
                 alert('Error fetching provision details');
             });
+        });
+
+        // Download Excel button
+        $('#downloadExcelBtn').click(function(){
+            let jobId = $('#viewJobSelect').val();
+            let provisionRef = $('#viewProvisionSelect').val();
+            if(!jobId || !provisionRef) return;
+
+
+            window.location.href = `http://localhost:8080/api/v1/provisions/downloadExcel?jobId=${jobId}&provisionRef=${provisionRef}`;
         });
     });
 </script>

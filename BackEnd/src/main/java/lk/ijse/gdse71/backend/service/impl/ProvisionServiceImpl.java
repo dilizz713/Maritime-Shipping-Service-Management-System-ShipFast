@@ -156,5 +156,13 @@ public class ProvisionServiceImpl implements ProvisionService {
         dto.setItems(items);
         return dto;
     }
+
+    @Override
+    public Provision getProvisionByJobAndRef(Long jobId, String provisionRef) {
+        return provisionRepository.findByJobIdAndProvisionReference(jobId, provisionRef)
+                .orElseThrow(() -> new RuntimeException(
+                        "Provision not found for Job ID: " + jobId + " and Provision Ref: " + provisionRef));
+
+    }
 }
 

@@ -1,8 +1,6 @@
 package lk.ijse.gdse71.backend.util;
 
-import lk.ijse.gdse71.backend.entity.ConfirmInquiry;
-import lk.ijse.gdse71.backend.entity.Inquiry;
-import lk.ijse.gdse71.backend.entity.InquiryItem;
+import lk.ijse.gdse71.backend.entity.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -120,6 +118,47 @@ public class ExcelGenerator {
             }
         }
     }
+
+    public static byte[] generateProvisionExcel(Provision provision) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Provision_" + provision.getProvisionReference());
+
+        int rowCount = 0;
+
+
+        Row header = sheet.createRow(rowCount++);
+        String[] headers = {"Product Name", "Product Code", "UOM", "Unit Price", "Quantity", "Remark"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = header.createCell(i);
+            cell.setCellValue(headers[i]);
+            CellStyle style = workbook.createCellStyle();
+            Font font = workbook.createFont();
+            font.setBold(true);
+            style.setFont(font);
+            cell.setCellStyle(style);
+        }
+
+
+        for (ProvisionItem item : provision.getItems()) {
+            Row row = sheet.createRow(rowCount++);
+            row.createCell(0).setCellValue(item.getProductName());
+            row.createCell(1).setCellValue(item.getProductCode());
+            row.createCell(2).setCellValue(item.getUomCode());
+            row.createCell(3).setCellValue(item.getUnitPrice());
+            row.createCell(4).setCellValue(item.getQuantity());
+            row.createCell(5).setCellValue(item.getRemark() != null ? item.getRemark() : "");
+        }
+
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        return outputStream.toByteArray();
+    }
+
 
 
 }
