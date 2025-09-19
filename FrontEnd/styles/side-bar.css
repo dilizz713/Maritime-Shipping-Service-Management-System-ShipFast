@@ -2,6 +2,12 @@ body {
     background-color: #f5f7fa;
     font-size: 0.875rem;
 }
+
+.sidebar .collapse ul.nav {
+    margin: 6px 0;
+    padding-left: 20px;
+    list-style-type: disc;
+}
 h1{
     font-size: 1.0rem;
 }

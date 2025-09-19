@@ -165,6 +165,13 @@ public class ProvisionServiceImpl implements ProvisionService {
 
     }
 
+    @Override
+    public Provision getProvisionByReference(String provisionRef) {
+        return provisionRepository.findByProvisionReference(provisionRef)
+                .orElseThrow(() -> new RuntimeException("Provision not found with ref: " + provisionRef));
+    }
+
+
 
 }
 

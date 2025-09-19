@@ -25,5 +25,5 @@ public interface ProvisionService {
     Provision getProvisionByJobAndRef(Long jobId, String provisionRef);
 
 
-
+    Provision getProvisionByReference(String provisionRef);
 }
