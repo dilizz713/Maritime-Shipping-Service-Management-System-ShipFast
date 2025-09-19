@@ -64,6 +64,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/job-quotation/**").permitAll()
                         .requestMatchers("/api/v1/job-schedule/**").permitAll()
                         .requestMatchers("/api/v1/provisions/**").permitAll()
+                        .requestMatchers("/api/v1/currencies/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 )

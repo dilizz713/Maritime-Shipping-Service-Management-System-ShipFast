@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.backend.controller;
 
+import lk.ijse.gdse71.backend.dto.CurrencyConversionRequestDTO;
 import lk.ijse.gdse71.backend.dto.JobDTO;
 import lk.ijse.gdse71.backend.dto.ProductDTO;
 import lk.ijse.gdse71.backend.dto.ProvisionDTO;
@@ -9,12 +10,14 @@ import lk.ijse.gdse71.backend.util.APIResponse;
 import lk.ijse.gdse71.backend.util.ExcelGenerator;
 import lk.ijse.gdse71.backend.util.ProvisionExcelGenerator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/provisions")
@@ -22,6 +25,10 @@ import java.util.List;
 @CrossOrigin
 public class ProvisionController {
     private final ProvisionService provisionService;
+
+    @Value("${currency.api.key}")
+    private String apiKey;
+
 
     @GetMapping("/products")
     public ResponseEntity<APIResponse> getAllProducts() {
@@ -92,6 +99,45 @@ public class ProvisionController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(excelData);
     }
+
+    @PostMapping("/convert")
+    public ResponseEntity<?> convertCurrency(@RequestBody CurrencyConversionRequestDTO dto) {
+        try {
+            // Example URL for ExchangeRate-API free plan
+            String url = String.format(
+                    "https://v6.exchangerate-api.com/v6/%s/latest/%s",
+                    apiKey, dto.getFrom() // "LKR" in your case
+            );
+
+            RestTemplate restTemplate = new RestTemplate();
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+
+            if (response == null || !"success".equals(response.get("result"))) {
+                return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                        .body(Map.of("success", false, "error", "Currency API did not return a result"));
+            }
+
+            Map<String, Object> rates = (Map<String, Object>) response.get("conversion_rates");
+            double rate = ((Number) rates.get(dto.getTo())).doubleValue(); // get USD rate
+            double convertedAmount = dto.getAmount() * rate;
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "from", dto.getFrom(),
+                    "to", dto.getTo(),
+                    "amount", dto.getAmount(),
+                    "convertedAmount", convertedAmount,
+                    "rate", rate
+            ));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "error", e.getMessage()));
+        }
+
+
+    }
+
 
 
 

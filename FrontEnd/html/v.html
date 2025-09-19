@@ -207,7 +207,15 @@
                     <div class="col-md-3"><b>Description:</b> <span id="provDesc"></span></div>
                 </div>
 
-
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label>Currency</label>
+                        <select class="form-select form-select-sm" id="currencySelect">
+                            <option value="LKR" selected>LKR</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
+                </div>
 
                 <h4>Provision Items</h4>
                 <table class="table table-bordered table-striped" id="viewItemsTable">
@@ -229,9 +237,6 @@
 </div>
 
 
-
-
-
 <script src="../lib/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/navigation-bar.js"></script>
@@ -241,25 +246,25 @@
     let currentProvisionId = null;
 
     $(document).ready(function() {
-        $('#meetingModal .btn').click(function() {
+        $('#meetingModal .btn').click(function () {
             const action = $(this).text().trim();
             console.log("User selected:", action);
             $('#meetingModal').modal('hide');
         });
 
         // Load jobs
-        $.get('http://localhost:8080/api/v1/provisions/jobs', function(resp){
+        $.get('http://localhost:8080/api/v1/provisions/jobs', function (resp) {
             jobs = resp.data;
             jobs.forEach(job => $('#viewJobSelect').append(`<option value="${job.id}">${job.jobReference}</option>`));
         });
 
         //  load provision references
-        $('#viewJobSelect').change(function(){
+        $('#viewJobSelect').change(function () {
             let jobId = $(this).val();
             $('#viewProvisionSelect').html('<option value="">Select Provision</option>');
             $('#viewProvisionSelect').prop('disabled', true);
-            if(jobId){
-                $.get(`http://localhost:8080/api/v1/provisions/byJob/${jobId}`, function(resp){
+            if (jobId) {
+                $.get(`http://localhost:8080/api/v1/provisions/byJob/${jobId}`, function (resp) {
                     provisions = resp.data;
                     provisions.forEach(p => $('#viewProvisionSelect').append(`<option value="${p.provisionReference}">${p.provisionReference}</option>`));
                     $('#viewProvisionSelect').prop('disabled', false);
@@ -268,54 +273,71 @@
         });
 
         // View button click
-        $('#viewBtn').click(function(){
+        $('#viewBtn').click(function () {
             let jobId = $('#viewJobSelect').val();
             let provisionRef = $('#viewProvisionSelect').val();
-            if(!jobId || !provisionRef){
+            if (!jobId || !provisionRef) {
                 alert('Please select both Job and Provision Reference');
                 return;
             }
 
-            $.get(`http://localhost:8080/api/v1/provisions/details?jobId=${jobId}&provisionRef=${provisionRef}`, function(resp){
-                let prov = resp.data;
-                $('#provisionDetails').show();
-                $('#provRef').text(prov.provisionReference);
-                $('#provDate').text(new Date(prov.provisionDate).toLocaleDateString());
-                $('#provStatus').text(prov.status);
-                $('#provDesc').text(prov.description);
+            // Correct use of fail with $.get
+            $.get(`http://localhost:8080/api/v1/provisions/details?jobId=${jobId}&provisionRef=${provisionRef}`)
+                .done(function (resp) {
+                    let prov = resp.data;
+                    $('#provisionDetails').show();
+                    $('#provRef').text(prov.provisionReference);
+                    $('#provDate').text(new Date(prov.provisionDate).toLocaleDateString());
+                    $('#provStatus').text(prov.status);
+                    $('#provDesc').text(prov.description);
 
-                currentProvisionId = prov.id;
+                    currentProvisionId = prov.id;
 
-                let tbody = $('#viewItemsTable tbody').html('');
-                prov.items.forEach(item => {
-                    tbody.append(`
-                    <tr data-item-id="${item.id}">
+                    let tbody = $('#viewItemsTable tbody').html('');
+                    prov.items.forEach(item => {
+                        let tr = $(`
+                    <tr>
                         <td>${item.productName}</td>
                         <td>${item.productCode}</td>
                         <td>${item.uomCode}</td>
-                        <td>${item.unitPrice}</td>
+                        <td>${item.unitPrice.toFixed(2)}</td>
                         <td>${item.quantity}</td>
                         <td>${item.remark || ''}</td>
                     </tr>
                 `);
+                        tr.data('lkr-price', item.unitPrice); // store original LKR price
+                        tbody.append(tr);
+                    });
+                    $('#downloadExcelBtn').prop('disabled', false);
+                })
+                .fail(function () {
+                    alert('Error fetching provision details');
                 });
-
-                $('#downloadExcelBtn').prop('disabled', false);
-            }).fail(function(){
-                alert('Error fetching provision details');
-            });
         });
 
-
-
         // Download Excel button
-        $('#downloadExcelBtn').click(function(){
+        $('#downloadExcelBtn').click(function () {
             let jobId = $('#viewJobSelect').val();
             let provisionRef = $('#viewProvisionSelect').val();
-            if(!jobId || !provisionRef) return;
+            if (!jobId || !provisionRef) return;
 
 
             window.location.href = `http://localhost:8080/api/v1/provisions/downloadExcel?jobId=${jobId}&provisionRef=${provisionRef}`;
+        });
+
+        $('#currencySelect').change(function () {
+            let currency = $(this).val();
+            $('#viewItemsTable tbody tr').each(function () {
+                let lkrPrice = $(this).data('lkr-price');
+                if (currency === 'LKR') {
+                    $(this).find('td:eq(3)').text(lkrPrice.toFixed(2));
+                } else {
+                    let row = $(this);
+                    $.get(`http://localhost:8080/api/v1/provisions/convert?amount=${lkrPrice}&from=LKR&to=${currency}`, function (resp) {
+                        if (resp.data) row.find('td:eq(3)').text(resp.data.toFixed(2));
+                    });
+                }
+            });
         });
     });
 
