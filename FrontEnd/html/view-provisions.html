@@ -373,11 +373,14 @@
         $('#generateInvoiceBtn').prop('disabled', !provisionRef);
     });
 
-    // Generate Invoice
-    $('#generateInvoiceBtn').click(function () {
-        if (!currentProvisionRef) return;
 
-        window.open(`http://localhost:8080/api/v1/invoice/provision-invoice?provisionRef=${currentProvisionRef}`, '_blank');
+    $('#generateInvoiceBtn').click(function () {
+        if (!$('#viewProvisionSelect').val()) return;
+
+        let currency = $('#currencySelect').val();
+        let provisionRef = $('#viewProvisionSelect').val();
+
+        window.open(`http://localhost:8080/api/v1/invoice/provision-invoice?provisionRef=${provisionRef}&currency=${currency}`, '_blank');
     });
 
 

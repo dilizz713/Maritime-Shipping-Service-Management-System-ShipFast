@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class CurrencyServiceImpl implements CurrencyService {
@@ -21,5 +23,16 @@ public class CurrencyServiceImpl implements CurrencyService {
                 apiKey, baseCurrency
         );
         return restTemplate.getForObject(url, Object.class);
+    }
+
+    @Override
+    public double convert(double amount, String from, String to) {
+        if (from.equalsIgnoreCase(to)) return amount;
+        Object response = getExchangeRates(from);
+        Map<?, ?> json = (Map<?, ?>) response;
+        Map<?, ?> rates = (Map<?, ?>) json.get("conversion_rates");
+        Double rate = Double.valueOf(rates.get(to).toString());
+
+        return amount * rate;
     }
 }
