@@ -117,6 +117,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public int getStockQty(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+        return product.getQuantity();
+    }
+
+    @Override
     public String generateNextProductCode() {
         Optional<Product> lastProductOpt = productRepository.findTopByOrderByIdDesc();
         int nextNumber = 1;

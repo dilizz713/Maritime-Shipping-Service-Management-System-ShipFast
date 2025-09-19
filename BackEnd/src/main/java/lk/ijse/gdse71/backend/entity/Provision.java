@@ -19,6 +19,8 @@ public class Provision {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "provision_reference")
     private String provisionReference;
     private String description;
     private String status;

@@ -47,7 +47,7 @@ public class ProvisionServiceImpl implements ProvisionService {
         Job job = jobRepository.findById(dto.getJobId())
                 .orElseThrow(() -> new RuntimeException("Job not found"));
 
-        // If provision reference not provided, generate automatically
+
         if(dto.getProvisionReference() == null || dto.getProvisionReference().isEmpty()){
             long count = provisionRepository.countByJobId(job.getId());
             dto.setProvisionReference(job.getJobReference() + "-PR" + String.format("%05d", count + 1));
@@ -77,7 +77,7 @@ public class ProvisionServiceImpl implements ProvisionService {
                     .unitPrice(itemDTO.getUnitPrice())
                     .quantity(itemDTO.getQuantity())
                     .remark(itemDTO.getRemark())
-                    .provision(provision) // set parent
+                    .provision(provision)
                     .build();
 
             provisionItems.add(item);
@@ -116,7 +116,7 @@ public class ProvisionServiceImpl implements ProvisionService {
 
         long count = provisionRepository.countByJobId(jobId);
 
-        return job.getJobReference() + "-PR" + String.format("%05d", count + 1);
+        return job.getJobReference() + "PR" + String.format("%05d", count + 1);
     }
 
     @Override
@@ -171,6 +171,24 @@ public class ProvisionServiceImpl implements ProvisionService {
                 .orElseThrow(() -> new RuntimeException("Provision not found with ref: " + provisionRef));
     }
 
+    @Override
+    public List<ProvisionItemDTO> getProvisionItemsByRef(String provisionRef) {
+        Provision provision = provisionRepository.findByProvisionReference(provisionRef)
+                .orElseThrow(() -> new RuntimeException("Provision not found with ref: " + provisionRef));
+
+        return provision.getItems().stream()
+                .map(item -> ProvisionItemDTO.builder()
+                        .id(item.getId())
+                        .productCode(item.getProductCode())
+                        .productName(item.getProductName())
+                        .uomCode(item.getUomCode())
+                        .unitPrice(item.getUnitPrice())
+                        .quantity(item.getQuantity())
+                        .remark(item.getRemark())
+                        .productId(item.getProduct().getId())
+                        .build())
+                .toList();
+    }
 
 
 }

@@ -79,4 +79,10 @@ public class ProductController {
         List<ProductDTO> products = productService.searchProducts(q);
         return ResponseEntity.ok(new APIResponse(200, "Products fetched", products));
     }
+
+    @GetMapping("/{id}/stock")
+    public ResponseEntity<Integer> getProductStock(@PathVariable Long id) {
+        int stockQty = productService.getStockQty(id);
+        return ResponseEntity.ok(stockQty);
+    }
 }

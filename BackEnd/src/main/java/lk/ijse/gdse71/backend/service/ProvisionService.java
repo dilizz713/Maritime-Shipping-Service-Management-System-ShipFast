@@ -3,6 +3,7 @@ package lk.ijse.gdse71.backend.service;
 import lk.ijse.gdse71.backend.dto.JobDTO;
 import lk.ijse.gdse71.backend.dto.ProductDTO;
 import lk.ijse.gdse71.backend.dto.ProvisionDTO;
+import lk.ijse.gdse71.backend.dto.ProvisionItemDTO;
 import lk.ijse.gdse71.backend.entity.Provision;
 
 import java.util.List;
@@ -26,4 +27,6 @@ public interface ProvisionService {
 
 
     Provision getProvisionByReference(String provisionRef);
+
+    List<ProvisionItemDTO> getProvisionItemsByRef(String ref);
 }
