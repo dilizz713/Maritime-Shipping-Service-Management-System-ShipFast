@@ -3,6 +3,7 @@ package lk.ijse.gdse71.backend.service;
 import lk.ijse.gdse71.backend.dto.JobDTO;
 import lk.ijse.gdse71.backend.entity.Job;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,4 +24,5 @@ public interface JobService {
     Map<String, Object> sendJobToPendingPO(Long jobId, String description);
 
 
+    List<Map<String, Object>> getJobsByDateRange(Date fromDate, Date toDate);
 }

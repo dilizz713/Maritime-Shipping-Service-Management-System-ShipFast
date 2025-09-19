@@ -25,4 +25,10 @@ public interface JobRepository extends JpaRepository<Job,Long> {
     List<Job> searchProvisionJobs(@Param("ref") String ref);
 
     Optional<Job> findByJobReference(String jobReference);
+
+
+    @Query("SELECT j FROM Job j " +
+            "LEFT JOIN FETCH j.pendingPO p " +
+            "WHERE j.date BETWEEN :fromDate AND :toDate")
+    List<Job> findByDateRange(Date fromDate, Date toDate);
 }

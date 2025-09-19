@@ -318,9 +318,22 @@ public class JobServiceImpl implements JobService {
         return response;
     }
 
+    @Override
+    public List<Map<String, Object>> getJobsByDateRange(Date fromDate, Date toDate) {
+        List<Job> jobs = jobRepository.findByDateRange(fromDate, toDate);
 
-
-
+        return jobs.stream().map(job -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("jobReference", job.getJobReference());
+            map.put("customerName", job.getCustomer().getCompanyName());
+            map.put("vesselName", job.getVessel().getName());
+            map.put("serviceName", job.getService().getServiceName());
+            map.put("employeeName", job.getEmployee().getName());
+            map.put("pendingPOStatus", job.getPendingPO() != null ? job.getPendingPO().getStatus() : "N/A");
+            map.put("jobStatus", job.getStatus() != null ? job.getStatus() : "N/A");
+            return map;
+        }).collect(Collectors.toList());
+    }
 
 
 }

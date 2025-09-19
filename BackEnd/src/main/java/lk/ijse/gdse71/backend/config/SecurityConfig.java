@@ -66,6 +66,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/provisions/**").permitAll()
                         .requestMatchers("/api/v1/currencies/**").permitAll()
                         .requestMatchers("/api/v1/invoice/**").permitAll()
+                        .requestMatchers("/api/v1/reports/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 )
