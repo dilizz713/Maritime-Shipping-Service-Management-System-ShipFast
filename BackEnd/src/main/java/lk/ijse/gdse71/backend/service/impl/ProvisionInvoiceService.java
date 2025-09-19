@@ -22,31 +22,6 @@ public class ProvisionInvoiceService {
     @Value("${invoice.api.key}")
     private String apiKey;
 
-    /*public byte[] generateInvoice(ProvisionInvoiceDTO invoiceDTO) throws Exception {
-        String url = "https://invoice-generator.com";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(apiKey);
-
-        String jsonPayload = objectMapper.writeValueAsString(invoiceDTO);
-
-        HttpEntity<String> request = new HttpEntity<>(jsonPayload, headers);
-
-        ResponseEntity<byte[]> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                request,
-                byte[].class
-        );
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody();
-        } else {
-            throw new RuntimeException("Invoice generation failed with status: " + response.getStatusCode());
-        }
-    }*/
-
     public byte[] generateInvoice(ProvisionInvoiceDTO invoiceDTO) throws Exception {
         String url = "https://invoice-generator.com";
 

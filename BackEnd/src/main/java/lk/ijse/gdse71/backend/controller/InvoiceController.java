@@ -1,7 +1,10 @@
 package lk.ijse.gdse71.backend.controller;
 
 import lk.ijse.gdse71.backend.dto.ProvisionInvoiceDTO;
+import lk.ijse.gdse71.backend.dto.ServiceInvoiceDTO;
+import lk.ijse.gdse71.backend.entity.Job;
 import lk.ijse.gdse71.backend.entity.Provision;
+import lk.ijse.gdse71.backend.service.JobService;
 import lk.ijse.gdse71.backend.service.ProvisionService;
 import lk.ijse.gdse71.backend.service.impl.CurrencyServiceImpl;
 import lk.ijse.gdse71.backend.service.impl.ProvisionInvoiceService;
@@ -12,6 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @RestController
 @RequestMapping("api/v1/invoice")
 @RequiredArgsConstructor
@@ -20,6 +26,7 @@ public class InvoiceController {
     private final ProvisionService provisionService;
     private final ProvisionInvoiceService provisionInvoiceService;
     private final CurrencyServiceImpl currencyService;
+    private final JobService jobService;
 
 
     @GetMapping("/provision-invoice")
@@ -53,4 +60,6 @@ public class InvoiceController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfData);
     }
+
+
 }
