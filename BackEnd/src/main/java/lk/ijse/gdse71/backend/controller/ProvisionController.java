@@ -48,5 +48,18 @@ public class ProvisionController {
         return ResponseEntity.ok(new APIResponse(200, "Next Provision Reference", nextRef));
     }
 
+    @GetMapping("/byJob/{jobId}")
+    public ResponseEntity<APIResponse> getProvisionsByJob(@PathVariable Long jobId) {
+        List<ProvisionDTO> provisions = provisionService.getProvisionsByJobId(jobId);
+        return ResponseEntity.ok(new APIResponse(200, "Provisions fetched", provisions));
+    }
+
+    @GetMapping("/details")
+    public ResponseEntity<APIResponse> getProvisionDetails(@RequestParam Long jobId,
+                                                           @RequestParam String provisionRef) {
+        ProvisionDTO provision = provisionService.getProvisionDetails(jobId, provisionRef);
+        return ResponseEntity.ok(new APIResponse(200, "Provision details fetched", provision));
+    }
+
 
 }

@@ -118,5 +118,43 @@ public class ProvisionServiceImpl implements ProvisionService {
 
         return job.getJobReference() + "-PR" + String.format("%05d", count + 1);
     }
+
+    @Override
+    public List<ProvisionDTO> getProvisionsByJobId(Long jobId) {
+        List<Provision> provisions = provisionRepository.findByJobId(jobId);
+        return provisions.stream().map(p -> {
+            ProvisionDTO dto = new ProvisionDTO();
+            dto.setProvisionReference(p.getProvisionReference());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public ProvisionDTO getProvisionDetails(Long jobId, String provisionRef) {
+        Provision provision = provisionRepository.findByJobIdAndProvisionReference(jobId, provisionRef)
+                .orElseThrow(() -> new RuntimeException("Provision not found"));
+
+        ProvisionDTO dto = new ProvisionDTO();
+        dto.setJobId(provision.getJob().getId());
+        dto.setProvisionReference(provision.getProvisionReference());
+        dto.setDescription(provision.getDescription());
+        dto.setStatus(provision.getStatus());
+        dto.setProvisionDate(provision.getProvisionDate());
+
+        List<ProvisionItemDTO> items = provision.getItems().stream().map(item -> {
+            ProvisionItemDTO itemDTO = new ProvisionItemDTO();
+            itemDTO.setProductId(item.getProduct().getId());
+            itemDTO.setProductCode(item.getProductCode());
+            itemDTO.setProductName(item.getProductName());
+            itemDTO.setUomCode(item.getUomCode());
+            itemDTO.setUnitPrice(item.getUnitPrice());
+            itemDTO.setQuantity(item.getQuantity());
+            itemDTO.setRemark(item.getRemark());
+            return itemDTO;
+        }).collect(Collectors.toList());
+
+        dto.setItems(items);
+        return dto;
+    }
 }
 

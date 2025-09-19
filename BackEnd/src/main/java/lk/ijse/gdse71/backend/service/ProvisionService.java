@@ -16,4 +16,8 @@ public interface ProvisionService {
     List<JobDTO> getJobsByServiceNames(List<String> strings);
 
     String generateNextProvisionReference(Long jobId);
+
+    List<ProvisionDTO> getProvisionsByJobId(Long jobId);
+
+    ProvisionDTO getProvisionDetails(Long jobId, String provisionRef);
 }
