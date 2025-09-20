@@ -159,5 +159,21 @@ public class RequestServicesServiceImpl implements RequestServicesService {
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public void updateStatus(Long id, String statusStr) {
+        ServiceRequest request = requestServicesRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + id));
+
+        RequestStatus status;
+        try {
+            status = RequestStatus.valueOf(statusStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid status: " + statusStr);
+        }
+
+        request.setStatus(status);
+        requestServicesRepository.save(request);
+    }
+
 
 }

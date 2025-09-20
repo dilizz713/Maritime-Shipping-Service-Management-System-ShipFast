@@ -20,6 +20,30 @@
         .table thead th {
             text-align: center;
         }
+        .status-btn {
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 3px;
+            font-size: 0.85rem;
+        }
+
+        .status-btn.ongoing {
+            background-color: #198754;
+            color: white;
+        }
+
+        .status-btn.rejected {
+            background-color: #dc3545;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -239,15 +263,13 @@
                                 </span>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary me-1 view-btn" data-id="${req.id}">
-                                    <i class="bi bi-eye"></i>
+                                 <button class="status-btn tick-btn" data-id="${req.id}" title="Mark as Ongoing">
+                                    <i class="bi bi-check-lg"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-success me-1 edit-btn" data-id="${req.id}">
-                                    <i class="bi bi-pencil-square"></i>
+                                <button class="status-btn cross-btn" data-id="${req.id}" title="Mark as Rejected">
+                                    <i class="bi bi-x-lg"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${req.id}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+
                             </td>
                         </tr>
                     `;
@@ -277,10 +299,43 @@
             const id = $(this).data("id");
             if (confirm("Are you sure you want to delete request ID " + id + "?")) {
                 alert("Deleted request ID: " + id);
-                // TODO: Call DELETE API
+
             }
         });
+
+        $(document).on("click", ".tick-btn", function () {
+            const id = $(this).data("id");
+            $.ajax({
+                url: `http://localhost:8080/api/v1/requestServices/updateStatus/${id}`,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify({status: "ONGOING"}),
+                success: function() {
+                    $(this).addClass("ongoing").removeClass("cross-btn tick-btn");
+                    loadServiceRequests();
+                }.bind(this),
+                error: function(err) { console.error(err); }
+            });
+        });
+
+        // Update status to REJECTED
+        $(document).on("click", ".cross-btn", function () {
+            const id = $(this).data("id");
+            $.ajax({
+                url: `http://localhost:8080/api/v1/requestServices/updateStatus/${id}`,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify({status: "REJECTED"}),
+                success: function() {
+                    $(this).addClass("rejected").removeClass("cross-btn tick-btn");
+                    loadServiceRequests();
+                }.bind(this),
+                error: function(err) { console.error(err); }
+            });
+        });
     });
+
+
 
 </script>
 </body>

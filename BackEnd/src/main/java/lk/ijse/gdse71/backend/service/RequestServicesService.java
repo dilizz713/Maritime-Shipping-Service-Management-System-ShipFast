@@ -12,4 +12,6 @@ public interface RequestServicesService {
     List<ServiceRequestDTO> getAllRequestsByCustomer(Long customerId);
 
     List<ServiceRequestDTO> getAllRequests();
+
+    void updateStatus(Long id, String status);
 }

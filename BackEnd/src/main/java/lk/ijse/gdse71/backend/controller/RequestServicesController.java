@@ -17,6 +17,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/requestServices")
@@ -60,6 +61,16 @@ public class RequestServicesController {
     public ResponseEntity<APIResponse> getAllRequests() {
         List<ServiceRequestDTO> requests = requestServicesService.getAllRequests();
         return ResponseEntity.ok(new APIResponse(200, "All requests retrieved successfully", requests));
+    }
+
+    @PutMapping("/updateStatus/{id}")
+    public ResponseEntity<APIResponse> updateStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+
+        String status = body.get("status");
+        requestServicesService.updateStatus(id, status);
+        return ResponseEntity.ok(new APIResponse(200, "Status updated successfully", true));
     }
 
 
