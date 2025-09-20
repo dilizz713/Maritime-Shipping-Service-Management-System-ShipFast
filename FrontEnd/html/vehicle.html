@@ -241,13 +241,12 @@
     // ======================= LOAD VEHICLES =======================
     function loadVehicles() {
         $.get(`${apiUrl}/all`, function(res) {
-            // Remove res.success check since backend doesn't have it
             if (Array.isArray(res.data)) {
                 const container = $("#vehicleCards");
                 container.empty();
 
                 res.data.forEach(vehicle => {
-                    const imgSrc = vehicle.image ? `http://localhost:8080/${vehicle.image}` : 'https://via.placeholder.com/300x200';
+                    const imgSrc = vehicle.image ? vehicle.image : 'https://via.placeholder.com/300x200';
 
                     console.log(vehicle.image);
                     const card = $(`
@@ -345,7 +344,7 @@
         editVehicleId = $(this).data("id");
 
         $.get(`${apiUrl}/${editVehicleId}`, function(res) {
-            if(res.data) { // Use res.data instead of res.success
+            if(res.data) {
                 const v = res.data;
                 $("#name").val(v.name);
                 $("#numberPlate").val(v.numberPlate);
@@ -354,7 +353,7 @@
                 $("#status").val(v.status);
 
                 if (v.image) {
-                    $("#previewImage").attr("src", `http://localhost:8080/${v.image}`).show();
+                    $("#previewImage").attr("src", v.image).show();
                 } else {
                     $("#previewImage").hide();
                 }

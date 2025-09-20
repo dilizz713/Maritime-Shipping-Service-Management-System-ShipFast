@@ -1,4 +1,6 @@
 package lk.ijse.gdse71.backend.service.impl;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import lk.ijse.gdse71.backend.dto.CustomerDTO;
 import lk.ijse.gdse71.backend.dto.VehicleDTO;
 import lk.ijse.gdse71.backend.entity.Customer;
@@ -21,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +31,17 @@ import java.util.stream.Collectors;
 public class VehicleServiceImpl implements VehicleService {
     private final String uploadDir = "uploads/";
     private final ModelMapper mapper;
+    private final Cloudinary cloudinary;
+
+    private String uploadToCloudinary(MultipartFile file) {
+        try {
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap("folder", "vehicles"));
+            return uploadResult.get("secure_url").toString();
+        } catch (IOException e) {
+            throw new RuntimeException("Image upload failed", e);
+        }
+    }
 
     @Autowired
     private final VehicleRepository vehicleRepository;
@@ -47,6 +61,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public void updateVehicle(Long id, VehicleDTO vehicleDTO, MultipartFile file) {
+
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
@@ -57,7 +72,7 @@ public class VehicleServiceImpl implements VehicleService {
         vehicle.setStatus(vehicleDTO.getStatus());
 
         if (file != null && !file.isEmpty()) {
-            vehicle.setImage(saveFile(file));
+            vehicle.setImage(uploadToCloudinary(file));
         }
 
         vehicleRepository.save(vehicle);
@@ -84,7 +99,7 @@ public class VehicleServiceImpl implements VehicleService {
             dto.setType(v.getType());
             dto.setModel(v.getModel());
             dto.setStatus(v.getStatus());
-            dto.setImage(v.getImage()); // String path
+            dto.setImage(v.getImage());
             return dto;
         }).collect(Collectors.toList());
     }
@@ -99,7 +114,7 @@ public class VehicleServiceImpl implements VehicleService {
         vehicle.setStatus(vehicleDTO.getStatus());
 
         if (file != null && !file.isEmpty()) {
-            vehicle.setImage(saveFile(file));
+            vehicle.setImage(uploadToCloudinary(file));
         }
 
         vehicleRepository.save(vehicle);
