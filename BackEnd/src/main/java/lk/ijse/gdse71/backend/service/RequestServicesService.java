@@ -10,4 +10,6 @@ public interface RequestServicesService {
     void updateRequest(ServiceRequestDTO serviceRequestDTO);
 
     List<ServiceRequestDTO> getAllRequestsByCustomer(Long customerId);
+
+    List<ServiceRequestDTO> getAllRequests();
 }

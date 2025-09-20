@@ -56,6 +56,12 @@ public class RequestServicesController {
         );
     }
 
+    @GetMapping("/getAllRequests")
+    public ResponseEntity<APIResponse> getAllRequests() {
+        List<ServiceRequestDTO> requests = requestServicesService.getAllRequests();
+        return ResponseEntity.ok(new APIResponse(200, "All requests retrieved successfully", requests));
+    }
+
 
 
 

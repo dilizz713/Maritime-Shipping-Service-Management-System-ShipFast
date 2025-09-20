@@ -16,6 +16,7 @@ public class ServiceRequestDTO {
     private String shipName;
     private Date requestingDate;
     private Long customerId;
+    private String customerName;
     private List<Long> serviceIds;
     private Long portId;
     private String description;

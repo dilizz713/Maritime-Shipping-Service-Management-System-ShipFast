@@ -136,8 +136,28 @@ public class RequestServicesServiceImpl implements RequestServicesService {
         }).toList();
     }
 
+    @Override
+    public List<ServiceRequestDTO> getAllRequests() {
+        List<ServiceRequest> requests = requestServicesRepository.findAll();
 
-
+        return requests.stream().map(request -> {
+            ServiceRequestDTO dto = new ServiceRequestDTO();
+            dto.setId(request.getId());
+            dto.setShipName(request.getShipName());
+            dto.setRequestingDate(request.getRequestingDate());
+            dto.setDescription(request.getDescription());
+            dto.setStatus(request.getStatus().name());
+            dto.setCustomerId(request.getCustomer() != null ? request.getCustomer().getId() : null);
+            dto.setCustomerName(request.getCustomer().getCompanyName());
+            dto.setPortId(request.getPort() != null ? request.getPort().getId() : null);
+            dto.setPortName(request.getPort() != null ? request.getPort().getPortName() : null);
+            dto.setServiceIds(request.getServices() != null ?
+                    request.getServices().stream().map(s -> s.getId()).toList() : null);
+            dto.setServiceNames(request.getServices() != null ?
+                    request.getServices().stream().map(s -> s.getServiceName()).toList() : null);
+            return dto;
+        }).collect(Collectors.toList());
+    }
 
 
 }
