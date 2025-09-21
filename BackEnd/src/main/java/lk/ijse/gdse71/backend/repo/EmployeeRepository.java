@@ -7,4 +7,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Employee findByNic(String nic);
+
+    long countByNameStartingWith(String firstName);
+
+    Employee findByMeetingIdentifier(String identifier);
 }

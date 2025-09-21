@@ -5,7 +5,7 @@ import lk.ijse.gdse71.backend.dto.EmployeeDTO;
 import java.util.List;
 
 public interface EmployeeService {
-    void save(EmployeeDTO employeeDTO);
+    String save(EmployeeDTO employeeDTO);
 
     void update(EmployeeDTO employeeDTO);
 

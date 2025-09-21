@@ -25,8 +25,12 @@ public class Employee {
     private String phone;
     private String department;
 
+    @Column(unique = true)
+    private String meetingIdentifier;
+
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<Job> jobs;
+
 
 
 

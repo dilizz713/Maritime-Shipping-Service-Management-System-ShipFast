@@ -276,7 +276,7 @@
 
         fetchEmployees();
 
-        function fetchEmployees() {
+        /*function fetchEmployees() {
             $.get(`${API_URL}/getAllEmployees`, function(response) {
                 if(response.status === 200) {
                     const tbody = $("#employeeTable tbody");
@@ -296,6 +296,53 @@
                             </td>
                         </tr>
                     `);
+                    });
+                }
+            });
+        }*/
+
+        function fetchEmployees() {
+            $.get(`${API_URL}/getAllEmployees`, function(response) {
+                if(response.status === 200) {
+                    const tbody = $("#employeeTable tbody");
+                    tbody.empty();
+
+                    const isAdmin = true; // set based on logged-in user
+
+                    // Table header
+                    let tableHeaders = `
+                <th>ID</th>
+                <th>Name</th>
+                <th>NIC</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Department</th>
+            `;
+                    if (isAdmin) {
+                        tableHeaders += `<th>Identifier</th>`;
+                    }
+                    tableHeaders += `<th>Actions</th>`;
+                    $("#employeeTable thead tr").html(tableHeaders);
+
+                    // Table body
+                    response.data.forEach(emp => {
+                        let row = `
+                    <td>${emp.id}</td>
+                    <td>${emp.name}</td>
+                    <td>${emp.nic}</td>
+                    <td>${emp.email}</td>
+                    <td>${emp.phone}</td>
+                    <td>${emp.department}</td>
+                `;
+                        if (isAdmin) {
+                            row += `<td>${emp.meetingIdentifier}</td>`;
+                        }
+                        row += `
+                    <td>
+                        <button class="btn btn-sm btn-primary edit-btn" data-id="${emp.id}"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="${emp.id}"><i class="bi bi-trash"></i></button>
+                    </td>`;
+                        tbody.append(row);
                     });
                 }
             });
@@ -336,6 +383,7 @@
                         fetchEmployees();
                         $("#employeeModal").modal('hide');
                         $("#employeeForm")[0].reset();
+                        alert("Employee saved successfully!\nMeeting Identifier: " + res.data);
                     },
                     error: function(err) {
                         alert(err.responseJSON?.message || "Error saving employee");

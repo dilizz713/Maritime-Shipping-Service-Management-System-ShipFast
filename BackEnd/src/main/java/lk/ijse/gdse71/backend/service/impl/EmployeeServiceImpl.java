@@ -21,13 +21,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final ModelMapper modelMapper;
 
     @Override
-    public void save(EmployeeDTO employeeDTO) {
-        Employee employee = employeeRepository.findByNic(employeeDTO.getNic());
-        if(employee == null) {
-            employeeRepository.save(modelMapper.map(employeeDTO, Employee.class));
-        }else{
-            throw new ResourceAlreadyExists("This employee has already exists!");
+    public String save(EmployeeDTO employeeDTO) {
+        Employee existing = employeeRepository.findByNic(employeeDTO.getNic());
+        if (existing != null) {
+            throw new ResourceAlreadyExists("This employee already exists!");
         }
+
+        // Generate identifier
+        String firstName = employeeDTO.getName().split(" ")[0];
+        long count = employeeRepository.countByNameStartingWith(firstName) + 1;
+        String identifier = String.format("%s%04d", firstName, count);
+
+        Employee emp = modelMapper.map(employeeDTO, Employee.class);
+        emp.setMeetingIdentifier(identifier);
+
+        employeeRepository.save(emp);
+        return identifier; // return identifier so controller can show it
     }
 
     @Override

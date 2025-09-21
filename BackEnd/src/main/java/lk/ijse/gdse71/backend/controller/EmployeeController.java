@@ -21,8 +21,9 @@ public class EmployeeController {
 
     @PostMapping("/saveEmployee")
     public ResponseEntity<APIResponse> saveEmployee(@RequestBody EmployeeDTO employeeDTO) {
-        employeeService.save(employeeDTO);
-        return  ResponseEntity.ok(new APIResponse(201 , "Employee saved successfully" , true));
+        String identifier = employeeService.save(employeeDTO);
+        return ResponseEntity.ok(new APIResponse(201,
+                "Employee saved successfully. Meeting Identifier: " + identifier, identifier));
     }
 
     @PutMapping("/updateEmployee")
