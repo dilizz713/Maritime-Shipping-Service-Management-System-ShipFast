@@ -51,7 +51,7 @@ public class JobScheduleController {
 
         Job job = optionalJob.get();
 
-        // 1 Save JobSchedule
+        //  Save JobSchedule
         JobSchedule schedule = JobSchedule.builder()
                 .job(job)
                 .status("Scheduled")

@@ -27,7 +27,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new ResourceAlreadyExists("This employee already exists!");
         }
 
-        // Generate identifier
+
         String firstName = employeeDTO.getName().split(" ")[0];
         long count = employeeRepository.countByNameStartingWith(firstName) + 1;
         String identifier = String.format("%s%04d", firstName, count);
@@ -35,7 +35,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee emp = modelMapper.map(employeeDTO, Employee.class);
 
         employeeRepository.save(emp);
-        return identifier; // return identifier so controller can show it
+        return identifier;
     }
 
     @Override

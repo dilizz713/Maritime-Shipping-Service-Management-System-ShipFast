@@ -63,7 +63,7 @@ public class BankAccountServiceImpl implements BankAccountService {
                 .orElseThrow(() -> new RuntimeException("Vendor not found"));
         account.setVendor(vendor);
 
-        // Handle Bank: either by ID or create/find by name
+        // Handle Bank
         Bank bank = null;
         if (dto.getBankId() != null) {
             bank = bankRepository.findById(dto.getBankId())

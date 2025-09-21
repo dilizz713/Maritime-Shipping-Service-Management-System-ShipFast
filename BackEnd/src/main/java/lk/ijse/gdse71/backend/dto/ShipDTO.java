@@ -12,6 +12,6 @@ public class ShipDTO {
     private Long id;
     private String name;
     private Double capacity;
-    private String location;   //country
+    private String location;
     private String shipType;
 }

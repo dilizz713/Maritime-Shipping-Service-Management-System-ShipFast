@@ -146,7 +146,7 @@ public class ProvisionController {
             ));
 
         } catch (Exception e) {
-            e.printStackTrace(); // Log exception to see root cause
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("success", false, "error", e.getMessage()));
         }

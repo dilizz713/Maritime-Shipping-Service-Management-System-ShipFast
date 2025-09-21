@@ -33,7 +33,7 @@ public class JobScheduleServiceImpl implements JobSceduleService {
         log.info("Received DTO: {}", dto);
 
         try {
-            // 1. Find job
+
             Job job = jobRepository.findById(dto.getJobId())
                     .orElseThrow(() -> {
                         log.error("Job not found with ID {}", dto.getJobId());
@@ -41,7 +41,7 @@ public class JobScheduleServiceImpl implements JobSceduleService {
                     });
             log.info("Job found: {} (Reference: {})", job.getId(), job.getJobReference());
 
-            // 2. Save schedule
+
             JobSchedule schedule = JobSchedule.builder()
                     .status(dto.getStatus())
                     .originalPO(dto.getOriginalPO())
@@ -53,11 +53,11 @@ public class JobScheduleServiceImpl implements JobSceduleService {
             jobScheduleRepository.save(schedule);
             log.info("JobSchedule created with ID: {}", schedule.getId());
 
-            // 3. Remove job from PendingPO
+
             Long deleted = pendingPORepository.deleteByJobId(dto.getJobId());
             log.info("PendingPO delete executed. Rows affected = {}", deleted);
 
-            // 4. Update job status → DONE
+
             job.setStatus("DONE");
             jobRepository.save(job);
             log.info("Job status updated to DONE for jobId {}", job.getId());

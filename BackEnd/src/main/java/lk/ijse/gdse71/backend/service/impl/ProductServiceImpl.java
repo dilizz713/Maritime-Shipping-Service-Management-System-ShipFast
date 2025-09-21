@@ -23,7 +23,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO saveProduct(ProductDTO productDTO) {
-        // Handle UOM
+
         UOM uom = null;
         if (productDTO.getUomId() != null) {
             uom = uomRepository.findById(productDTO.getUomId())
