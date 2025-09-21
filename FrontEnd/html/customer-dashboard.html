@@ -111,12 +111,68 @@
 </div>
 
 
+<!-- Profile Settings Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="profileModalLabel">Profile Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <input type="hidden" id="customerId">
+                    <div class="mb-3">
+                        <label for="companyName" class="form-label">Company Name</label>
+                        <input type="text" id="companyName" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactPerson" class="form-label">Contact Person</label>
+                        <input type="text" id="contactPerson" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" id="address" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mobileNumber" class="form-label">Mobile Number</label>
+                        <input type="text" id="mobileNumber" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="customerType" class="form-label">Customer Type</label>
+                        <select id="customerType" class="form-select" required>
+                            <option value="">Select Type</option>
+                            <option value="DIRECT">DIRECT</option>
+                            <option value="THIRD_PARTY">THIRD_PARTY</option>
+                        </select>
+                    </div>
+                    <div id="msg"></div>
+                    <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
     $(document).ready(function () {
         const username = localStorage.getItem("username") || "Name";
         $("#profileName").text(username);
+
+        const userId = localStorage.getItem("userId");
+        if(!userId){
+            alert("User not logged in");
+            window.location.href = "../html/signin.html";
+        }
 
 
         $("#setting-btn").click(function () {
@@ -135,14 +191,103 @@
             window.location.href = "#";
         });
 
-        $("#btnProfileSettings").click(function () {
-            window.location.href = "#";
-        });
 
         $("#btnDeleteAccount").click(function () {
-            if (confirm("Are you sure you want to permanently delete your account?")) {
-                alert("Your account deletion request has been submitted.");
+            if (!confirm("Are you sure you want to permanently delete your account?")) return;
+
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                alert("User not logged in");
+                return;
             }
+
+            $.ajax({
+                url: `http://localhost:8080/api/v1/customer/getAllCustomers`,
+                method: "GET",
+                success: function(res) {
+                    const customers = res.data;
+                    const customer = customers.find(c => c.userId == userId);
+
+                    if (!customer) {
+                        alert("Customer details not found");
+                        return;
+                    }
+
+                    $.ajax({
+                        url: `http://localhost:8080/api/v1/customer/deleteCustomer/${customer.id}`,
+                        method: "DELETE",
+                        success: function() {
+                            alert("Your account has been deleted successfully.");
+                            localStorage.clear();
+                            window.location.href = "../html/signin.html";
+                        },
+                        error: function() {
+                            alert("Failed to delete your account. Please try again.");
+                        }
+                    });
+                },
+                error: function() {
+                    alert("Failed to fetch customer details");
+                }
+            });
+        });
+
+
+        $("#btnProfileSettings").click(function () {
+            const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
+            profileModal.show();
+
+            // Fetch customer details
+            $.ajax({
+                url: `http://localhost:8080/api/v1/customer/getAllCustomers`,
+                method: "GET",
+                success: function(res) {
+                    const customers = res.data;
+                    const customer = customers.find(c => c.userId == userId);
+                    if(!customer) {
+                        alert("Customer details not found");
+                        return;
+                    }
+
+                    $("#customerId").val(customer.id);
+                    $("#companyName").val(customer.companyName);
+                    $("#contactPerson").val(customer.contactPerson);
+                    $("#address").val(customer.address);
+                    $("#mobileNumber").val(customer.mobileNumber);
+                    $("#email").val(customer.email);
+                    $("#customerType").val(customer.customerType);
+                },
+                error: function() {
+                    alert("Failed to fetch customer details");
+                }
+            });
+        });
+
+        $("#profileForm").submit(function(e){
+            e.preventDefault();
+            const dto = {
+                id: $("#customerId").val(),
+                companyName: $("#companyName").val(),
+                contactPerson: $("#contactPerson").val(),
+                address: $("#address").val(),
+                mobileNumber: $("#mobileNumber").val(),
+                email: $("#email").val(),
+                customerType: $("#customerType").val(),
+                userId: userId
+            };
+
+            $.ajax({
+                url: `http://localhost:8080/api/v1/customer/updateCustomer`,
+                method: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(dto),
+                success: function(res){
+                    $("#msg").html(`<div class="alert alert-success mt-2">${res.message}</div>`);
+                },
+                error: function(){
+                    $("#msg").html(`<div class="alert alert-danger mt-2">Failed to update profile</div>`);
+                }
+            });
         });
     });
 
