@@ -161,7 +161,8 @@
                 url: `http://localhost:8080/api/v1/requestServices/getAllRequestsByUser/${userId}`,
                 type: "GET",
                 success: function (res) {
-                    requests = Array.isArray(res) ? res : res.data || [];
+                   /* requests = Array.isArray(res) ? res : res.data || [];*/
+                    requests = res.data || [];
                     renderRequests();
                 },
                 error: function () {

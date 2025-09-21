@@ -611,7 +611,7 @@
 
     // Update an inquiry item
     $(document).on("click", ".updateItem", function(){
-        if(!confirm("Do you want to update this item?")) return; // <-- confirmation dialog
+        if(!confirm("Do you want to update this item?")) return;
 
         const row = $(this).closest("tr");
         const itemId = row.data("item-id");

@@ -34,4 +34,5 @@ public interface InquiryService {
     GRNDTO saveVerifiedProducts(Long confirmId, List<ReceivedProductCheckDTO> products);
 
     Long getConfirmIdByInquiryId(Long inquiryId);
+
 }
