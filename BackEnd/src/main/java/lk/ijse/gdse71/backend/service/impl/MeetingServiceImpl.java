@@ -34,7 +34,6 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     private String generateCode() {
-        // short 6-char code
         return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 6).toUpperCase();
     }
 }

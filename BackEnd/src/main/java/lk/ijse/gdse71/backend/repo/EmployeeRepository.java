@@ -10,5 +10,4 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     long countByNameStartingWith(String firstName);
 
-    Employee findByMeetingIdentifier(String identifier);
 }

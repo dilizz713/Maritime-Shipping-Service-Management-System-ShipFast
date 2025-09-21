@@ -33,7 +33,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         String identifier = String.format("%s%04d", firstName, count);
 
         Employee emp = modelMapper.map(employeeDTO, Employee.class);
-        emp.setMeetingIdentifier(identifier);
 
         employeeRepository.save(emp);
         return identifier; // return identifier so controller can show it
