@@ -1,7 +1,7 @@
 
 $(document).ready(function () {
     const username = localStorage.getItem("username");
-    const role = localStorage.getItem("role"); // get role
+    const role = localStorage.getItem("role");
 
     if (username) {
         $("#navbarUsername").text(username);

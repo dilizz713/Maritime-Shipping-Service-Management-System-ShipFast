@@ -23,16 +23,15 @@ $("#logout").on("click", function (e) {
     $.ajax({
         url: "http://localhost:8080/api/v1/auth/logout",
         type: "POST",
-        xhrFields: {
-            withCredentials: true
-        },
+        xhrFields: { withCredentials: true },
         success: function () {
             localStorage.clear();
-            window.location.href = "../html/signin.html";
+            window.location.replace("../html/signin.html");
         },
         error: function () {
             alert("Logout failed. Please try again.");
         }
     });
 });
+
 
