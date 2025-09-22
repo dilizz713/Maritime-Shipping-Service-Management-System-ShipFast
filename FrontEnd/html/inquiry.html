@@ -377,9 +377,28 @@
     </div>
 </div>
 
+<!-- Excel Preview Modal -->
+<div class="modal fade" id="filePreviewModal" tabindex="-1" aria-labelledby="filePreviewLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow-lg">
+            <div class="modal-header bg-success text-white border-0">
+                <h5 class="modal-title" id="filePreviewLabel"><i class="bi bi-file-earmark-excel-fill me-2"></i> Excel Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="filePreviewContainer" class="table-responsive"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 
 <script src="../lib/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/navigation-bar.js"></script>
 <script>
@@ -426,8 +445,13 @@
             data.forEach(i => {
 
                 let excelLink = i.excelFileName
-                    ? `<a href="https://docs.google.com/viewer?url=${API_URL}/inquiries/${i.id}/excel" target="_blank">${i.excelFileName}</a>`
-                    : 'Upload Excel';
+                    ? `<button class="btn btn-outline-success btn-sm previewExcel"
+                 data-id="${i.id}"
+                 data-filename="${i.excelFileName}"
+                 title="Preview Excel">
+           <i class="bi bi-file-earmark-excel-fill"></i>
+       </button>`
+                    : '<span class="text-muted">No File</span>';
 
                 tbody.append(`
                 <tr>
@@ -781,11 +805,53 @@
         row.css("background-color", "#d4edda");
     });
 
-    // Mark as incorrect
+
     $(document).on("click", ".markIncorrect", function() {
         const row = $(this).closest("tr");
         row.css("background-color", "#f8d7da");
     });
+
+
+    // Preview inquiry excel
+    $(document).on("click", ".previewExcel", function () {
+        const inquiryId = $(this).data("id");
+        const fileName = $(this).data("filename");
+
+        const fileURL = `${API_URL}/inquiries/${inquiryId}/excel`;
+
+        fetch(fileURL)
+            .then(res => res.arrayBuffer())
+            .then(data => {
+                const workbook = XLSX.read(data, { type: "array" });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+
+                const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+                let table = `<table class="table table-bordered table-striped text-center">`;
+                jsonData.forEach((row, rowIndex) => {
+                    table += "<tr>";
+                    row.forEach(cell => {
+                        if (rowIndex === 0) {
+                            table += `<th class="bg-success text-white fw-bold">${cell || ""}</th>`;
+                        } else {
+                            table += `<td>${cell || ""}</td>`;
+                        }
+                    });
+                    table += "</tr>";
+                });
+                table += "</table>";
+
+                document.getElementById("filePreviewContainer").innerHTML = table;
+
+                new bootstrap.Modal(document.getElementById("filePreviewModal")).show();
+            })
+            .catch(err => {
+                console.error("Error loading file:", err);
+                alert("❌ Unable to preview file.");
+            });
+    });
+
 
 
 
