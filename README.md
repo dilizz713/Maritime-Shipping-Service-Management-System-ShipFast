@@ -180,6 +180,10 @@ mvn spring-boot:run
 <img width="690" height="604" alt="Screenshot 2025-09-21 214135" src="https://github.com/user-attachments/assets/376f3aff-4b2b-41d0-a813-4ca1406f40cb" />
 <img width="553" height="513" alt="Screenshot 2025-09-21 214220" src="https://github.com/user-attachments/assets/14c98939-1d36-4c24-8d79-636e2780b7a2" />
 
+### Swagger
+<img width="1919" height="983" alt="Screenshot 2025-09-22 202725" src="https://github.com/user-attachments/assets/96f82dd6-cf1d-4031-8864-d53aaa27d50b" />
+
+
 
 
 
