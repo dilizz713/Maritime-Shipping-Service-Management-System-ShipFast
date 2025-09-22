@@ -85,13 +85,13 @@ mvn spring-boot:run
   
 ### 🚀 Features at a Glance
 
-✅ Service Request Tracking
-✅ Inquiry Management
-✅ Automated Invoice Generation
-✅ Currency Conversion
-✅ Secure Document Storage
-✅ Online Meetings Support
-✅ Real-Time Reports
+- ✅ Service Request Tracking
+- ✅ Inquiry Management
+- ✅ Automated Invoice Generation
+- ✅ Currency Conversion
+- ✅ Secure Document Storage
+- ✅ Online Meetings Support
+- ✅ Real-Time Reports
 
 
 ## 🛠️ Technology Stack
