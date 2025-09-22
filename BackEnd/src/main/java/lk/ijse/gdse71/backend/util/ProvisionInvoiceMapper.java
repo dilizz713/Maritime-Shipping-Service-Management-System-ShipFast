@@ -32,7 +32,7 @@ public class ProvisionInvoiceMapper {
                 .date(sdf.format(provision.getProvisionDate()))
                 .dueDate(null)
                 .notes("Thank you for your business")
-                .logoUrl("../FrontEnd/assets/ship%logo.png")
+                .logoUrl("")
                 .currency("LKR")
                 .items(items)
                 .totalAmount(totalAmount)
