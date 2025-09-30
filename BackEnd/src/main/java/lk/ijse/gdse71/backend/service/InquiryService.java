@@ -35,4 +35,5 @@ public interface InquiryService {
 
     Long getConfirmIdByInquiryId(Long inquiryId);
 
+    ConfirmInquiryDTO getConfirmedInquiryById(Long confirmId);
 }

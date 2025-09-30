@@ -148,6 +148,16 @@ public class InquiryController {
         }
     }
 
+    @GetMapping("/confirm-inquiries/{confirmId}")
+    public ResponseEntity<ConfirmInquiryDTO> getConfirmedInquiry(@PathVariable Long confirmId) {
+        try {
+            ConfirmInquiryDTO dto = inquiryService.getConfirmedInquiryById(confirmId);
+            return ResponseEntity.ok(dto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 
 
 

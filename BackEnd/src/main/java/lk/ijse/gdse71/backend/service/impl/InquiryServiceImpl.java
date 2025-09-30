@@ -9,6 +9,7 @@ import lk.ijse.gdse71.backend.service.EmailService;
 import lk.ijse.gdse71.backend.service.InquiryService;
 import lombok.RequiredArgsConstructor;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -43,6 +44,7 @@ public class InquiryServiceImpl implements InquiryService {
     private final EmailService emailService;
     private static int refCounter = 1;
     private final RequestMappingHandlerAdapter requestMappingHandlerAdapter;
+    private final ModelMapper modelMapper;
 
     private String generateReferenceNumber() {
         return String.format("REF%05d", refCounter++);
@@ -489,6 +491,13 @@ public class InquiryServiceImpl implements InquiryService {
         ConfirmInquiry confirm = confirmInquiryRepo.findByInquiryId(inquiryId)
                 .orElseThrow(() -> new RuntimeException("Confirm inquiry not found"));
         return confirm.getId();
+    }
+
+    @Override
+    public ConfirmInquiryDTO getConfirmedInquiryById(Long confirmId) {
+        ConfirmInquiry confirmInquiry = confirmInquiryRepo.findById(confirmId)
+                .orElseThrow(() -> new RuntimeException("Confirmed inquiry not found"));
+        return modelMapper.map(confirmInquiry, ConfirmInquiryDTO.class);
     }
 
 

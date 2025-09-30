@@ -392,7 +392,20 @@
     </div>
 </div>
 
-
+<!-- Confirm Description Modal -->
+<div class="modal fade" id="viewDescriptionModal" tabindex="-1" aria-labelledby="viewDescriptionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow-lg">
+            <div class="modal-header bg-info text-white border-0">
+                <h5 class="modal-title" id="viewDescriptionLabel"><i class="bi bi-file-text me-2"></i> Confirmation Description</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmDescriptionText" class="fw-bold text-secondary"></p>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <script src="../lib/jquery-3.7.1.min.js"></script>
@@ -473,6 +486,9 @@
                         </button>
                         <button class="btn btn-outline-warning btn-sm verifyProducts" data-id="${i.id}" title="Verify Received Products">
                             <i class="bi bi-card-checklist"></i>
+                        </button>
+                        <button class="btn btn-outline-info btn-sm viewDescription" data-id="${i.id}" title="View Confirmation Description">
+                            <i class="bi bi-file-text"></i>
                         </button>
                     </td>
                     <td>${excelLink}</td>
@@ -852,15 +868,21 @@
             });
     });
 
+    // View confirmation description
+    $(document).on("click", ".viewDescription", function() {
+        const inquiryId = $(this).data("id");
 
-
-
-
-
-
-
-
-
+        $.get(`${API_URL}/inquiries/${inquiryId}/confirmId`, function(confirmId) {
+            $.get(`${API_URL}/inquiries/confirm-inquiries/${confirmId}`, function(data) {
+                $("#confirmDescriptionText").text(data.description || "No description available.");
+                new bootstrap.Modal(document.getElementById("viewDescriptionModal")).show();
+            }).fail(function() {
+                alert("❌ Failed to fetch confirmation details.");
+            });
+        }).fail(function() {
+            alert("❌ This inquiry has not been confirmed yet.");
+        });
+    });
 
 
 </script>
