@@ -10,16 +10,14 @@ import lk.ijse.gdse71.backend.service.InquiryService;
 import lombok.RequiredArgsConstructor;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import lk.ijse.gdse71.backend.util.ExcelGenerator;
 import org.apache.poi.ss.usermodel.*;
@@ -42,13 +40,8 @@ public class InquiryServiceImpl implements InquiryService {
     private final GRNRepository  grnRepo;
     private static final String UPLOAD_DIR = "uploads/inquiries/";
     private final EmailService emailService;
-    private static int refCounter = 1;
     private final RequestMappingHandlerAdapter requestMappingHandlerAdapter;
     private final ModelMapper modelMapper;
-
-    private String generateReferenceNumber() {
-        return String.format("REF%05d", refCounter++);
-    }
 
 
     @Override
@@ -61,7 +54,7 @@ public class InquiryServiceImpl implements InquiryService {
                 .description(dto.getDescription())
                 .inquiryDate(dto.getInquiryDate())
                 .inquiryStatus(dto.getInquiryStatus() != null ? dto.getInquiryStatus() : InquiryStatus.PENDING)
-                .referenceNumber(generateReferenceNumber())
+                .referenceNumber("TEMP")
                 .build();
 
         List<InquiryItem> items = dto.getItems().stream().map(itemDTO -> {
@@ -80,7 +73,14 @@ public class InquiryServiceImpl implements InquiryService {
         inquiry.setItems(items);
 
         Inquiry saved = inquiryRepo.save(inquiry);
+
+// Step 3: now we can safely set reference number based on ID
+        saved.setReferenceNumber("REF" + String.format("%05d", saved.getId()));
+        saved = inquiryRepo.save(saved);
+
+// Update DTO with generated ref no.
         dto.setId(saved.getId());
+        dto.setReferenceNumber(saved.getReferenceNumber());
 
        // Generate Excel
         byte[] excelData = ExcelGenerator.generateInquiryExcel(saved);
@@ -499,6 +499,8 @@ public class InquiryServiceImpl implements InquiryService {
                 .orElseThrow(() -> new RuntimeException("Confirmed inquiry not found"));
         return modelMapper.map(confirmInquiry, ConfirmInquiryDTO.class);
     }
+
+
 
 
 

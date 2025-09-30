@@ -363,6 +363,7 @@
                         <th>Confirmed Qty</th>
                         <th>Received Qty</th>
                         <th>Description</th>
+                        <th>Confirmed</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -406,6 +407,8 @@
         </div>
     </div>
 </div>
+
+
 
 
 <script src="../lib/jquery-3.7.1.min.js"></script>
@@ -490,6 +493,7 @@
                         <button class="btn btn-outline-info btn-sm viewDescription" data-id="${i.id}" title="View Confirmation Description">
                             <i class="bi bi-file-text"></i>
                         </button>
+
                     </td>
                     <td>${excelLink}</td>
                 </tr>
@@ -757,6 +761,9 @@
                     <td>${item.confirmedQty}</td>
                     <td><input type="number" class="form-control receivedQty" value="${item.receivedQty || 0}" min="0"></td>
                     <td>${item.description || ''}</td>
+                    <td class="text-center">
+                        ${item.confirmed ? '<i class="bi bi-check-circle-fill text-success"></i>' : '<i class="bi bi-x-circle-fill text-danger"></i>'}
+                    </td>
                     <td class="d-flex gap-1">
                         <button class="btn btn-success btn-sm markCorrect"><i class="bi bi-check2"></i></button>
                         <button class="btn btn-danger btn-sm markIncorrect"><i class="bi bi-x"></i></button>
@@ -782,6 +789,8 @@
 
 
 
+
+
     $(document).on("click", "#saveVerification", function() {
         const confirmId = $("#verifyProductsModal").attr("data-confirm-id");
         const products = [];
@@ -791,7 +800,9 @@
             products.push({
                 itemId: row.data("item-id"),
                 receivedQty: parseInt(row.find(".receivedQty").val()) || 0,
-                correct: row.css("background-color") === "rgb(212, 237, 218)",
+                /*correct: row.css("background-color") === "rgb(212, 237, 218)",
+                description: row.find("td:eq(4)").text() || ""*/
+                confirmed: row.find("td:eq(5) i").hasClass("bi-check-circle-fill"),
                 description: row.find("td:eq(4)").text() || ""
             });
         });
@@ -814,7 +825,7 @@
     });
 
     // Mark as correct
-    $(document).on("click", ".markCorrect", function() {
+    /*$(document).on("click", ".markCorrect", function() {
         const row = $(this).closest("tr");
         const confirmedQty = parseInt(row.find("td:eq(2)").text());
         row.find(".receivedQty").val(confirmedQty);
@@ -825,6 +836,20 @@
     $(document).on("click", ".markIncorrect", function() {
         const row = $(this).closest("tr");
         row.css("background-color", "#f8d7da");
+    });*/
+
+    $(document).on("click", ".markCorrect", function() {
+        const row = $(this).closest("tr");
+        const confirmedQty = parseInt(row.find("td:eq(2)").text());
+        row.find(".receivedQty").val(confirmedQty);
+        row.css("background-color", "#d4edda"); // green
+        row.find("td:eq(5)").html('<i class="bi bi-check-circle-fill text-success"></i>'); // mark confirmed
+    });
+
+    $(document).on("click", ".markIncorrect", function() {
+        const row = $(this).closest("tr");
+        row.css("background-color", "#f8d7da"); // red
+        row.find("td:eq(5)").html('<i class="bi bi-x-circle-fill text-danger"></i>'); // mark not confirmed
     });
 
 
@@ -883,6 +908,8 @@
             alert("❌ This inquiry has not been confirmed yet.");
         });
     });
+
+
 
 
 </script>

@@ -5,6 +5,7 @@ import lombok.*;
 @Data
 @Builder
 public class ReceivedProductCheckDTO {
+    private Long id;
     private Long itemId;
     private String productCode;
     private String productName;

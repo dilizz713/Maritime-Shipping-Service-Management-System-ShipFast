@@ -2,6 +2,7 @@ package lk.ijse.gdse71.backend.controller;
 
 import lk.ijse.gdse71.backend.dto.*;
 import lk.ijse.gdse71.backend.entity.ConfirmInquiry;
+import lk.ijse.gdse71.backend.entity.ReceivedProduct;
 import lk.ijse.gdse71.backend.service.InquiryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -157,6 +159,8 @@ public class InquiryController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+
 
 
 
